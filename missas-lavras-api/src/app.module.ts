@@ -1,0 +1,47 @@
+import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { CacheModule } from '@nestjs/cache-manager';
+import { redisStore } from 'cache-manager-redis-store';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+import { MissasModule } from './missas/missas.module';
+import { Paroquia } from './paroquias/entities/paroquia.entity';
+import { Comunidade } from './comunidades/entities/comunidade.entity';
+import { HorarioMissa } from './missas/entities/horario-missa.entity';
+
+@Module({
+    imports: [
+        ConfigModule.forRoot({
+            isGlobal: true,
+        }),
+        TypeOrmModule.forRootAsync({
+            imports: [ConfigModule],
+            useFactory: (configService: ConfigService) => ({
+                type: 'postgres',
+                host: configService.get<string>('DB_HOST'),
+                port: configService.get<number>('DB_PORT'),
+                username: configService.get<string>('DB_USER'),
+                password: configService.get<string>('DB_PASS'),
+                database: configService.get<string>('DB_NAME'),
+                entities: [Paroquia, Comunidade, HorarioMissa],
+                synchronize: true, // Only for development!
+            }),
+            inject: [ConfigService],
+        }),
+        CacheModule.registerAsync({
+            isGlobal: true,
+            imports: [ConfigModule],
+            useFactory: async (configService: ConfigService) => ({
+                store: redisStore as any,
+                host: configService.get<string>('REDIS_HOST'),
+                port: configService.get<number>('REDIS_PORT'),
+            }),
+            inject: [ConfigService],
+        }),
+        MissasModule,
+    ],
+    controllers: [AppController],
+    providers: [AppService],
+})
+export class AppModule {}
