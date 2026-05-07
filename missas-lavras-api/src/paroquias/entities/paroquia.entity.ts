@@ -31,6 +31,6 @@ export class Paroquia {
     @UpdateDateColumn({ name: 'updated_at' })
     updatedAt: Date;
 
-    @OneToMany(() => Comunidade, (comunidade) => comunidade.paroquia)
+    @OneToMany(() => Comunidade, (comunidade: Comunidade) => comunidade.paroquia)
     comunidades: Comunidade[];
 }

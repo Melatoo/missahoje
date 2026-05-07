@@ -17,13 +17,11 @@ export class MissasService {
     async findAll(query: GetMissasDto) {
         const cacheKey = `missas:${query.dia_semana ?? 'all'}:${query.bairro ?? 'all'}`;
 
-        // Cache-Aside: check Redis first
         const cachedData = await this.cacheManager.get(cacheKey);
         if (cachedData) {
             return cachedData;
         }
 
-        // Build the query
         const qb = this.horarioMissaRepository
             .createQueryBuilder('horario')
             .leftJoinAndSelect('horario.comunidade', 'comunidade')
