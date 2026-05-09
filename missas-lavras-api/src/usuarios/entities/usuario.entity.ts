@@ -1,5 +1,5 @@
 import { Exclude } from "class-transformer";
-import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 export enum UserRole {
     ADMIN = 'admin',
@@ -7,8 +7,8 @@ export enum UserRole {
 }
 
 @Entity('usuarios')
-export class Usuarios {
-    @PrimaryGeneratedColumn({ type: 'uuid' })
+export class Usuario {
+    @PrimaryGeneratedColumn('uuid')
     id: string;
 
     @Column({ type: 'varchar', nullable: false })

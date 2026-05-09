@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Usuarios } from "./entities/usuarios.entity";
+import { Usuario } from "./entities/usuario.entity";
 import { Repository } from "typeorm";
 import bcryptjs from 'bcryptjs';
 import { CreateUsuarioDto } from "./dto/create-usuario.dto";
@@ -8,8 +8,8 @@ import { CreateUsuarioDto } from "./dto/create-usuario.dto";
 @Injectable()
 export class UsuariosService {
     constructor(
-        @InjectRepository(Usuarios)
-        private readonly usuariosRepository: Repository<Usuarios>,
+        @InjectRepository(Usuario)
+        private readonly usuariosRepository: Repository<Usuario>,
     ) {}
 
     async create(createUsuarioDto: CreateUsuarioDto) {
