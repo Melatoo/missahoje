@@ -1,10 +1,9 @@
-import { IsOptional, IsString } from 'class-validator';
-import { Type } from 'class-transformer';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateParoquiaDto {
-    @Type(() => String)
+    @IsNotEmpty({ message: 'O nome da paróquia é obrigatório.' })
     @IsString()
-    readonly name?: string;
+    readonly nome: string;
 
     @IsOptional()
     @IsString()
@@ -12,5 +11,5 @@ export class CreateParoquiaDto {
 
     @IsOptional()
     @IsString()
-    readonly site_ou_rede_social?: string;
+    readonly siteOuRedeSocial?: string;
 }

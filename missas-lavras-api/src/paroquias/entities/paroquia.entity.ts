@@ -19,8 +19,8 @@ export class Paroquia {
     @Column({ type: 'varchar', nullable: true })
     telefone: string;
 
-    @Column({ type: 'varchar', nullable: true })
-    site_ou_rede_social: string;
+    @Column({ name: 'site_ou_rede_social', type: 'varchar', nullable: true })
+    siteOuRedeSocial: string;
 
     @Column({ type: 'boolean', default: true })
     ativo: boolean;
