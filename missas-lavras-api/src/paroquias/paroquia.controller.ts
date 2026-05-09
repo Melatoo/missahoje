@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Param, Post, Put } from "@nestjs/common";
 import { ParoquiaService } from "./paroquia.service";
 import { CreateParoquiaDto } from "./dto/create-paroquias.dto";
-import { UpdateParoquiaDto } from "./dto/update-paroquia.dto";
+import { UpdateParoquiaDto } from "./dto/update-paroquias.dto";
 
 @Controller('paroquias')
 export class ParoquiaController {

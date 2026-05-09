@@ -3,7 +3,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Paroquia } from "./entities/paroquia.entity";
 import { Repository } from "typeorm";
 import { CreateParoquiaDto } from "./dto/create-paroquias.dto";
-import { UpdateParoquiaDto } from "./dto/update-paroquia.dto";
+import { UpdateParoquiaDto } from "./dto/update-paroquias.dto";
 
 @Injectable()
 export class ParoquiaService {
@@ -22,7 +22,7 @@ export class ParoquiaService {
     }
 
     async findByName(name: string) {
-        return await this.paroquiaRepository.findOne({ where: { nome:name } });
+        return await this.paroquiaRepository.findOne({ where: { nome: name } });
     }
 
     async update(id: string, updateParoquiaDto: UpdateParoquiaDto) {
@@ -36,5 +36,5 @@ export class ParoquiaService {
         }
 
         return await this.paroquiaRepository.save(paroquia);
-    }   
+    }
 }
