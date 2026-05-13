@@ -22,6 +22,11 @@ export class UsuariosController {
         return this.usuariosService.findOne(id);
     }
 
+    @Get(':email')
+    findByEmail(@Param('email') email: string) {
+        return this.usuariosService.findByEmail(email);
+    }
+
     @Put(':id')
     update(@Param('id') id: string, @Body() updateUsuarioDto: UpdateUsuarioDto) {
         return this.usuariosService.update(id, updateUsuarioDto);
