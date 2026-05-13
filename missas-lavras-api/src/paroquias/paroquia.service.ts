@@ -1,9 +1,9 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Paroquia } from "./entities/paroquia.entity";
 import { Repository } from "typeorm";
-import { CreateParoquiaDto } from "./dto/create-paroquias.dto";
-import { UpdateParoquiaDto } from "./dto/update-paroquias.dto";
+import { CreateParoquiaDto } from "./dto/create-paroquia.dto";
+import { UpdateParoquiaDto } from "./dto/update-paroquia.dto";
 
 @Injectable()
 export class ParoquiaService {
@@ -17,12 +17,19 @@ export class ParoquiaService {
         return await this.paroquiaRepository.save(paroquia);
     }
 
-    async findAll() {
+    async findAll(nome?: string) {
+        if (nome) {
+            return await this.paroquiaRepository.find({ where: { nome } });
+        }
         return await this.paroquiaRepository.find();
     }
 
-    async findByName(name: string) {
-        return await this.paroquiaRepository.findOne({ where: { nome: name } });
+    async findOne(id: string) {
+        const paroquia = await this.paroquiaRepository.findOne({ where: { id } });
+        if (!paroquia) {
+            throw new NotFoundException('Paróquia não encontrada');
+        }
+        return paroquia;
     }
 
     async update(id: string, updateParoquiaDto: UpdateParoquiaDto) {
@@ -32,9 +39,14 @@ export class ParoquiaService {
         });
 
         if (!paroquia) {
-            throw new Error('Paróquia não encontrada');
+            throw new NotFoundException('Paróquia não encontrada');
         }
 
         return await this.paroquiaRepository.save(paroquia);
+    }
+
+    async remove(id: string) {
+        const paroquia = await this.findOne(id);
+        return await this.paroquiaRepository.remove(paroquia);
     }
 }

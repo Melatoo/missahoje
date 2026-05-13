@@ -1,7 +1,7 @@
-import { Body, Controller, Get, Param, Post, Put } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post, Put, Query } from "@nestjs/common";
 import { ComunidadesService } from "./comunidades.service";
-import { CreateComunidadeDto } from "./dto/create-paroquias.dto";
-import { UpdateComunidadeDto } from "./dto/update-comunidades.dto";
+import { CreateComunidadeDto } from "./dto/create-comunidade.dto";
+import { UpdateComunidadeDto } from "./dto/update-comunidade.dto";
 
 @Controller('comunidades')
 export class ComunidadesController {
@@ -15,17 +15,22 @@ export class ComunidadesController {
     }
 
     @Get()
-    findAll() {
-        return this.comunidadesService.findAll();
+    findAll(@Query('nome') nome?: string) {
+        return this.comunidadesService.findAll(nome);
     }
 
-    @Get(':nome')
-    findByName(@Param('nome') nome: string) {
-        return this.comunidadesService.findByName(nome);
+    @Get(':id')
+    findOne(@Param('id') id: string) {
+        return this.comunidadesService.findOne(id);
     }
 
     @Put(':id')
     update(@Param('id') id: string, @Body() updateComunidadeDto: UpdateComunidadeDto) {
         return this.comunidadesService.update(id, updateComunidadeDto);
+    }
+
+    @Delete(':id')
+    remove(@Param('id') id: string) {
+        return this.comunidadesService.remove(id);
     }
 }

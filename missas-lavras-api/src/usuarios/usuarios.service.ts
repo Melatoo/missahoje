@@ -1,9 +1,10 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Usuario } from "./entities/usuario.entity";
 import { Repository } from "typeorm";
 import bcryptjs from 'bcryptjs';
-import { CreateUsuarioDto } from "./dto/create-usuarios.dto";
+import { CreateUsuarioDto } from "./dto/create-usuario.dto";
+import { UpdateUsuarioDto } from "./dto/update-usuario.dto";
 
 @Injectable()
 export class UsuariosService {
@@ -27,7 +28,42 @@ export class UsuariosService {
         return await this.usuariosRepository.save(usuario);
     }
 
+    async findAll() {
+        return await this.usuariosRepository.find();
+    }
+
+    async findOne(id: string) {
+        const usuario = await this.usuariosRepository.findOne({ where: { id } });
+        if (!usuario) {
+            throw new NotFoundException('Usuário não encontrado');
+        }
+        return usuario;
+    }
+
     async findByEmail(email: string) {
         return await this.usuariosRepository.findOne({ where: { email } });
+    }
+
+    async update(id: string, updateUsuarioDto: UpdateUsuarioDto) {
+        const usuario = await this.usuariosRepository.preload({
+            id,
+            ...updateUsuarioDto,
+        });
+
+        if (!usuario) {
+            throw new NotFoundException('Usuário não encontrado');
+        }
+
+        if (updateUsuarioDto.senha) {
+            const salt = await bcryptjs.genSalt();
+            usuario.senha = await bcryptjs.hash(updateUsuarioDto.senha, salt);
+        }
+
+        return await this.usuariosRepository.save(usuario);
+    }
+
+    async remove(id: string) {
+        const usuario = await this.findOne(id);
+        return await this.usuariosRepository.remove(usuario);
     }
 }

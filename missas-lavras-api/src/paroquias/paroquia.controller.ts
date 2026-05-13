@@ -1,7 +1,7 @@
-import { Body, Controller, Get, Param, Post, Put } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post, Put, Query } from "@nestjs/common";
 import { ParoquiaService } from "./paroquia.service";
-import { CreateParoquiaDto } from "./dto/create-paroquias.dto";
-import { UpdateParoquiaDto } from "./dto/update-paroquias.dto";
+import { CreateParoquiaDto } from "./dto/create-paroquia.dto";
+import { UpdateParoquiaDto } from "./dto/update-paroquia.dto";
 
 @Controller('paroquias')
 export class ParoquiaController {
@@ -13,17 +13,22 @@ export class ParoquiaController {
     }
 
     @Get()
-    findAll() {
-        return this.paroquiaService.findAll();
+    findAll(@Query('nome') nome?: string) {
+        return this.paroquiaService.findAll(nome);
     }
 
-    @Get(':nome')
-    findByName(@Param('nome') nome: string) {
-        return this.paroquiaService.findByName(nome);
+    @Get(':id')
+    findOne(@Param('id') id: string) {
+        return this.paroquiaService.findOne(id);
     }
 
     @Put(':id')
     update(@Param('id') id: string, @Body() updateParoquiaDto: UpdateParoquiaDto) {
         return this.paroquiaService.update(id, updateParoquiaDto);
+    }
+
+    @Delete(':id')
+    remove(@Param('id') id: string) {
+        return this.paroquiaService.remove(id);
     }
 }

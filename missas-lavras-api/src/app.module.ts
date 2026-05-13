@@ -6,9 +6,9 @@ import { redisStore } from 'cache-manager-redis-store';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { MissasModule } from './missas/missas.module';
-import { Paroquia } from './paroquias/entities/paroquia.entity';
-import { Comunidade } from './comunidades/entities/comunidade.entity';
-import { HorarioMissa } from './missas/entities/horario-missa.entity';
+import { UsuariosModule } from './usuarios/usuarios.module';
+import { ParoquiaModule } from './paroquias/paroquia.module';
+import { ComunidadesModule } from './comunidades/comunidades.module';
 
 @Module({
     imports: [
@@ -24,7 +24,7 @@ import { HorarioMissa } from './missas/entities/horario-missa.entity';
                 username: configService.get<string>('DB_USER'),
                 password: configService.get<string>('DB_PASS'),
                 database: configService.get<string>('DB_NAME'),
-                entities: [Paroquia, Comunidade, HorarioMissa],
+                autoLoadEntities: true,
                 synchronize: true, // Only for development!
             }),
             inject: [ConfigService],
@@ -40,6 +40,9 @@ import { HorarioMissa } from './missas/entities/horario-missa.entity';
             inject: [ConfigService],
         }),
         MissasModule,
+        UsuariosModule,
+        ParoquiaModule,
+        ComunidadesModule,
     ],
     controllers: [AppController],
     providers: [AppService],

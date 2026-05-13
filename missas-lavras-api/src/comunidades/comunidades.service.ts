@@ -1,9 +1,9 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Comunidade } from "./entities/comunidade.entity";
 import { Repository } from "typeorm";
-import { CreateComunidadeDto } from "./dto/create-paroquias.dto";
-import { UpdateComunidadeDto } from "./dto/update-comunidades.dto";
+import { CreateComunidadeDto } from "./dto/create-comunidade.dto";
+import { UpdateComunidadeDto } from "./dto/update-comunidade.dto";
 
 @Injectable()
 export class ComunidadesService {
@@ -17,12 +17,19 @@ export class ComunidadesService {
         return await this.comunidadesRepository.save(comunidade);
     }
 
-    async findAll() {
+    async findAll(nome?: string) {
+        if (nome) {
+            return await this.comunidadesRepository.find({ where: { nome } });
+        }
         return await this.comunidadesRepository.find();
     }
 
-    async findByName(name: string) {
-        return await this.comunidadesRepository.findOne({ where: { nome: name } });
+    async findOne(id: string) {
+        const comunidade = await this.comunidadesRepository.findOne({ where: { id } });
+        if (!comunidade) {
+            throw new NotFoundException('Comunidade não encontrada');
+        }
+        return comunidade;
     }
 
     async update(id: string, updateComunidadeDto: UpdateComunidadeDto) {
@@ -32,9 +39,14 @@ export class ComunidadesService {
         });
 
         if (!comunidade) {
-            throw new Error('Comunidade não encontrada');
+            throw new NotFoundException('Comunidade não encontrada');
         }
 
         return await this.comunidadesRepository.save(comunidade);
+    }
+
+    async remove(id: string) {
+        const comunidade = await this.findOne(id);
+        return await this.comunidadesRepository.remove(comunidade);
     }
 }

@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, IsUUID } from 'class-validator';
 
 export class CreateComunidadeDto {
     @IsNotEmpty({ message: 'O nome da comunidade é obrigatório.' })
@@ -13,7 +13,11 @@ export class CreateComunidadeDto {
     @IsString()
     readonly bairro: string;
 
+    @IsNotEmpty({ message: 'O ID da paróquia é obrigatório.' })
+    @IsUUID('4', { message: 'O ID da paróquia deve ser um UUID válido.' })
+    readonly paroquia_id: string;
+
     @IsOptional()
     @IsString()
-    readonly siteOuRedeSocial?: string;
+    readonly link_google_maps?: string;
 }
