@@ -9,6 +9,7 @@ import { MissasModule } from './missas/missas.module';
 import { UsuariosModule } from './usuarios/usuarios.module';
 import { ParoquiaModule } from './paroquias/paroquia.module';
 import { ComunidadesModule } from './comunidades/comunidades.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
     imports: [
@@ -43,6 +44,7 @@ import { ComunidadesModule } from './comunidades/comunidades.module';
         UsuariosModule,
         ParoquiaModule,
         ComunidadesModule,
+        AuthModule,
     ],
     controllers: [AppController],
     providers: [AppService],
