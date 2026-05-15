@@ -19,13 +19,19 @@ export class ParoquiaService {
 
     async findAll(nome?: string) {
         if (nome) {
-            return await this.paroquiaRepository.find({ where: { nome } });
+            return await this.paroquiaRepository.find({ 
+                where: { nome },
+                relations: ['comunidades']
+            });
         }
-        return await this.paroquiaRepository.find();
+        return await this.paroquiaRepository.find({ relations: ['comunidades'] });
     }
 
     async findOne(id: string) {
-        const paroquia = await this.paroquiaRepository.findOne({ where: { id } });
+        const paroquia = await this.paroquiaRepository.findOne({ 
+            where: { id },
+            relations: ['comunidades']
+        });
         if (!paroquia) {
             throw new NotFoundException('Paróquia não encontrada');
         }

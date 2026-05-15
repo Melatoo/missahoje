@@ -19,13 +19,21 @@ export class ComunidadesService {
 
     async findAll(nome?: string) {
         if (nome) {
-            return await this.comunidadesRepository.find({ where: { nome } });
+            return await this.comunidadesRepository.find({ 
+                where: { nome },
+                relations: ['paroquia', 'horarios_missa']
+            });
         }
-        return await this.comunidadesRepository.find();
+        return await this.comunidadesRepository.find({
+            relations: ['paroquia', 'horarios_missa']
+        });
     }
 
     async findOne(id: string) {
-        const comunidade = await this.comunidadesRepository.findOne({ where: { id } });
+        const comunidade = await this.comunidadesRepository.findOne({ 
+            where: { id },
+            relations: ['paroquia', 'horarios_missa']
+        });
         if (!comunidade) {
             throw new NotFoundException('Comunidade não encontrada');
         }
