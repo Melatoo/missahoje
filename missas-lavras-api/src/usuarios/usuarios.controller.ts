@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards } from "@nestjs/common";
 import { UsuariosService } from "./usuarios.service";
 import { CreateUsuarioDto } from "./dto/create-usuario.dto";
 import { UpdateUsuarioDto } from "./dto/update-usuario.dto";
@@ -19,18 +19,17 @@ export class UsuariosController {
     }
 
     @Get()
-    findAll() {
+    findAll(@Query('email') email?: string) {
+        if (email) {
+            return this.usuariosService.findByEmail(email);
+        }
+        
         return this.usuariosService.findAll();
     }
 
     @Get(':id')
     findOne(@Param('id') id: string) {
         return this.usuariosService.findOne(id);
-    }
-
-    @Get(':email')
-    findByEmail(@Param('email') email: string) {
-        return this.usuariosService.findByEmail(email);
     }
 
     @Put(':id')

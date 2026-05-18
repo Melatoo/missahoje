@@ -3,6 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CacheModule } from '@nestjs/cache-manager';
 import { redisStore } from 'cache-manager-redis-store';
+import { ThrottlerModule } from '@nestjs/throttler';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { MissasModule } from './missas/missas.module';
@@ -16,6 +17,10 @@ import { AuthModule } from './auth/auth.module';
         ConfigModule.forRoot({
             isGlobal: true,
         }),
+        ThrottlerModule.forRoot([{
+            ttl: 60000,
+            limit: 20,
+        }]),
         TypeOrmModule.forRootAsync({
             imports: [ConfigModule],
             useFactory: (configService: ConfigService) => ({
@@ -26,7 +31,7 @@ import { AuthModule } from './auth/auth.module';
                 password: configService.get<string>('DB_PASS'),
                 database: configService.get<string>('DB_NAME'),
                 autoLoadEntities: true,
-                synchronize: true, // Only for development!
+                synchronize: false,
             }),
             inject: [ConfigService],
         }),

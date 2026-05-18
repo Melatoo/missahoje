@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable, NotFoundException, ConflictException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Usuario } from "./entities/usuario.entity";
 import { Repository } from "typeorm";
@@ -16,7 +16,7 @@ export class UsuariosService {
     async create(createUsuarioDto: CreateUsuarioDto) {
         const emailExists = await this.findByEmail(createUsuarioDto.email);
         if (emailExists) {
-            throw new Error('Email já cadastrado');
+            throw new ConflictException('Email já cadastrado');
         }
 
         const salt = await bcryptjs.genSalt();
@@ -42,6 +42,13 @@ export class UsuariosService {
 
     async findByEmail(email: string) {
         return await this.usuariosRepository.findOne({ where: { email } });
+    }
+
+    async findByEmailWithPassword(email: string) {
+        return await this.usuariosRepository.createQueryBuilder('usuarios')
+            .addSelect('usuarios.senha')
+            .where('usuarios.email = :email', { email })
+            .getOne();
     }
 
     async update(id: string, updateUsuarioDto: UpdateUsuarioDto) {
