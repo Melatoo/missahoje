@@ -6,8 +6,8 @@ import { JwtPayload } from '../auth.service';
  * Deve ser usado em rotas protegidas pelo AuthGuard.
  */
 export const CurrentUser = createParamDecorator(
-  (data: unknown, ctx: ExecutionContext): JwtPayload => {
-    const request = ctx.switchToHttp().getRequest();
-    return request.user;
-  },
+    (data: unknown, ctx: ExecutionContext): JwtPayload => {
+        const request = ctx.switchToHttp().getRequest();
+        return request.user;
+    },
 );

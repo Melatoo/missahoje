@@ -27,8 +27,12 @@ export class AuthService {
      * Valida as credenciais do usuário.
      * Retorna o usuário (sem a senha) se as credenciais forem válidas, ou null.
      */
-    async validateUser(input: LoginDto): Promise<Omit<Usuario, 'senha'> | null> {
-        const usuario = await this.usuariosService.findByEmailWithPassword(input.email);
+    async validateUser(
+        input: LoginDto,
+    ): Promise<Omit<Usuario, 'senha'> | null> {
+        const usuario = await this.usuariosService.findByEmailWithPassword(
+            input.email,
+        );
 
         if (usuario?.ativo) {
             const isMatch = await bcryptjs.compare(input.senha, usuario.senha);

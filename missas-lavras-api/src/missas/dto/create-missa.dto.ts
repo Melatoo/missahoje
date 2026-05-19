@@ -1,4 +1,13 @@
-import { IsNotEmpty, IsOptional, IsString, IsUUID, IsNumber, Min, Max, Matches } from 'class-validator';
+import {
+    IsNotEmpty,
+    IsOptional,
+    IsString,
+    IsUUID,
+    IsNumber,
+    Min,
+    Max,
+    Matches,
+} from 'class-validator';
 
 export class CreateMissaDto {
     @IsNotEmpty({ message: 'O ID da comunidade é obrigatório.' })

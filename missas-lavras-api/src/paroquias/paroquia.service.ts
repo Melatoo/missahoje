@@ -1,16 +1,16 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Paroquia } from "./entities/paroquia.entity";
-import { Repository } from "typeorm";
-import { CreateParoquiaDto } from "./dto/create-paroquia.dto";
-import { UpdateParoquiaDto } from "./dto/update-paroquia.dto";
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Paroquia } from './entities/paroquia.entity';
+import { Repository } from 'typeorm';
+import { CreateParoquiaDto } from './dto/create-paroquia.dto';
+import { UpdateParoquiaDto } from './dto/update-paroquia.dto';
 
 @Injectable()
 export class ParoquiaService {
     constructor(
         @InjectRepository(Paroquia)
         private readonly paroquiaRepository: Repository<Paroquia>,
-    ) { }
+    ) {}
 
     async create(createParoquiaDto: CreateParoquiaDto) {
         const paroquia = this.paroquiaRepository.create(createParoquiaDto);
@@ -19,18 +19,20 @@ export class ParoquiaService {
 
     async findAll(nome?: string) {
         if (nome) {
-            return await this.paroquiaRepository.find({ 
+            return await this.paroquiaRepository.find({
                 where: { nome },
-                relations: ['comunidades']
+                relations: ['comunidades'],
             });
         }
-        return await this.paroquiaRepository.find({ relations: ['comunidades'] });
+        return await this.paroquiaRepository.find({
+            relations: ['comunidades'],
+        });
     }
 
     async findOne(id: string) {
-        const paroquia = await this.paroquiaRepository.findOne({ 
+        const paroquia = await this.paroquiaRepository.findOne({
             where: { id },
-            relations: ['comunidades']
+            relations: ['comunidades'],
         });
         if (!paroquia) {
             throw new NotFoundException('Paróquia não encontrada');

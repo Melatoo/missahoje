@@ -1,17 +1,21 @@
-import { Injectable, NotFoundException, ConflictException } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Usuario } from "./entities/usuario.entity";
-import { Repository } from "typeorm";
+import {
+    Injectable,
+    NotFoundException,
+    ConflictException,
+} from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Usuario } from './entities/usuario.entity';
+import { Repository } from 'typeorm';
 import bcryptjs from 'bcryptjs';
-import { CreateUsuarioDto } from "./dto/create-usuario.dto";
-import { UpdateUsuarioDto } from "./dto/update-usuario.dto";
+import { CreateUsuarioDto } from './dto/create-usuario.dto';
+import { UpdateUsuarioDto } from './dto/update-usuario.dto';
 
 @Injectable()
 export class UsuariosService {
     constructor(
         @InjectRepository(Usuario)
         private readonly usuariosRepository: Repository<Usuario>,
-    ) { }
+    ) {}
 
     async create(createUsuarioDto: CreateUsuarioDto) {
         const emailExists = await this.findByEmail(createUsuarioDto.email);
@@ -33,7 +37,9 @@ export class UsuariosService {
     }
 
     async findOne(id: string) {
-        const usuario = await this.usuariosRepository.findOne({ where: { id } });
+        const usuario = await this.usuariosRepository.findOne({
+            where: { id },
+        });
         if (!usuario) {
             throw new NotFoundException('Usuário não encontrado');
         }
@@ -45,7 +51,8 @@ export class UsuariosService {
     }
 
     async findByEmailWithPassword(email: string) {
-        return await this.usuariosRepository.createQueryBuilder('usuarios')
+        return await this.usuariosRepository
+            .createQueryBuilder('usuarios')
             .addSelect('usuarios.senha')
             .where('usuarios.email = :email', { email })
             .getOne();

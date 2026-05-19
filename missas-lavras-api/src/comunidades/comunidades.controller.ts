@@ -1,17 +1,25 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards } from "@nestjs/common";
-import { ComunidadesService } from "./comunidades.service";
-import { CreateComunidadeDto } from "./dto/create-comunidade.dto";
-import { UpdateComunidadeDto } from "./dto/update-comunidade.dto";
-import { AuthGuard } from "../auth/guards/auth.guard";
-import { RolesGuard } from "../auth/guards/roles.guard";
-import { Roles } from "../auth/decorators/roles.decorator";
-import { UserRole } from "../usuarios/entities/usuario.entity";
+import {
+    Body,
+    Controller,
+    Delete,
+    Get,
+    Param,
+    Post,
+    Put,
+    Query,
+    UseGuards,
+} from '@nestjs/common';
+import { ComunidadesService } from './comunidades.service';
+import { CreateComunidadeDto } from './dto/create-comunidade.dto';
+import { UpdateComunidadeDto } from './dto/update-comunidade.dto';
+import { AuthGuard } from '../auth/guards/auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { UserRole } from '../usuarios/entities/usuario.entity';
 
 @Controller('comunidades')
 export class ComunidadesController {
-    constructor(
-        private readonly comunidadesService: ComunidadesService,
-    ) { }
+    constructor(private readonly comunidadesService: ComunidadesService) {}
 
     @Post()
     @UseGuards(AuthGuard, RolesGuard)
@@ -33,7 +41,10 @@ export class ComunidadesController {
     @Put(':id')
     @UseGuards(AuthGuard, RolesGuard)
     @Roles(UserRole.ADMIN)
-    update(@Param('id') id: string, @Body() updateComunidadeDto: UpdateComunidadeDto) {
+    update(
+        @Param('id') id: string,
+        @Body() updateComunidadeDto: UpdateComunidadeDto,
+    ) {
         return this.comunidadesService.update(id, updateComunidadeDto);
     }
 

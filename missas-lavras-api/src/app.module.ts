@@ -17,10 +17,12 @@ import { AuthModule } from './auth/auth.module';
         ConfigModule.forRoot({
             isGlobal: true,
         }),
-        ThrottlerModule.forRoot([{
-            ttl: 60000,
-            limit: 20,
-        }]),
+        ThrottlerModule.forRoot([
+            {
+                ttl: 60000,
+                limit: 20,
+            },
+        ]),
         TypeOrmModule.forRootAsync({
             imports: [ConfigModule],
             useFactory: (configService: ConfigService) => ({
