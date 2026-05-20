@@ -10,11 +10,13 @@ export class ClearCacheInterceptor implements NestInterceptor {
 
     intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
         return next.handle().pipe(
-            tap(async () => {
-                const req = context.switchToHttp().getRequest();
-                if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method)) {
-                    await this.cacheManager.clear();
-                }
+            tap({
+                next: async () => {
+                    const req = context.switchToHttp().getRequest();
+                    if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method)) {
+                        await this.cacheManager.clear();
+                    }
+                },
             }),
         );
     }
