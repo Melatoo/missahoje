@@ -13,8 +13,7 @@ export class ComunidadesService {
     ) {}
 
     async create(createComunidadeDto: CreateComunidadeDto) {
-        const comunidade =
-            this.comunidadesRepository.create(createComunidadeDto);
+        const comunidade = this.comunidadesRepository.create(createComunidadeDto);
         return await this.comunidadesRepository.save(comunidade);
     }
 

@@ -9,7 +9,10 @@ import {
     Query,
     ValidationPipe,
     UseGuards,
+    UseInterceptors,
 } from '@nestjs/common';
+import { CacheInterceptor } from '@nestjs/cache-manager';
+import { ClearCacheInterceptor } from '../common/interceptors/clear-cache.interceptor';
 import { MissasService } from './missas.service';
 import { GetMissasDto } from './dto/get-missas.dto';
 import { CreateMissaDto } from './dto/create-missa.dto';
@@ -20,6 +23,7 @@ import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRole } from '../usuarios/entities/usuario.entity';
 
 @Controller('missas')
+@UseInterceptors(CacheInterceptor, ClearCacheInterceptor)
 export class MissasController {
     constructor(private readonly missasService: MissasService) {}
 

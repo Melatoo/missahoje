@@ -8,7 +8,10 @@ import {
     Put,
     Query,
     UseGuards,
+    UseInterceptors,
 } from '@nestjs/common';
+import { CacheInterceptor } from '@nestjs/cache-manager';
+import { ClearCacheInterceptor } from '../common/interceptors/clear-cache.interceptor';
 import { UsuariosService } from './usuarios.service';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { UpdateUsuarioDto } from './dto/update-usuario.dto';
@@ -20,6 +23,7 @@ import { UserRole } from './entities/usuario.entity';
 @Controller('usuarios')
 @UseGuards(AuthGuard, RolesGuard)
 @Roles(UserRole.ADMIN)
+@UseInterceptors(CacheInterceptor, ClearCacheInterceptor)
 export class UsuariosController {
     constructor(private readonly usuariosService: UsuariosService) {}
 

@@ -8,7 +8,10 @@ import {
     Put,
     Query,
     UseGuards,
+    UseInterceptors,
 } from '@nestjs/common';
+import { CacheInterceptor } from '@nestjs/cache-manager';
+import { ClearCacheInterceptor } from '../common/interceptors/clear-cache.interceptor';
 import { ComunidadesService } from './comunidades.service';
 import { CreateComunidadeDto } from './dto/create-comunidade.dto';
 import { UpdateComunidadeDto } from './dto/update-comunidade.dto';
@@ -18,6 +21,7 @@ import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRole } from '../usuarios/entities/usuario.entity';
 
 @Controller('comunidades')
+@UseInterceptors(CacheInterceptor, ClearCacheInterceptor)
 export class ComunidadesController {
     constructor(private readonly comunidadesService: ComunidadesService) {}
 

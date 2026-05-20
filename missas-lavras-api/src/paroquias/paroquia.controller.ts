@@ -8,7 +8,10 @@ import {
     Put,
     Query,
     UseGuards,
+    UseInterceptors,
 } from '@nestjs/common';
+import { CacheInterceptor } from '@nestjs/cache-manager';
+import { ClearCacheInterceptor } from '../common/interceptors/clear-cache.interceptor';
 import { ParoquiaService } from './paroquia.service';
 import { CreateParoquiaDto } from './dto/create-paroquia.dto';
 import { UpdateParoquiaDto } from './dto/update-paroquia.dto';
@@ -18,6 +21,7 @@ import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRole } from '../usuarios/entities/usuario.entity';
 
 @Controller('paroquias')
+@UseInterceptors(CacheInterceptor, ClearCacheInterceptor)
 export class ParoquiaController {
     constructor(private readonly paroquiaService: ParoquiaService) {}
 
