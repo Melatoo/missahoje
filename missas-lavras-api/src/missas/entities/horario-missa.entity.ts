@@ -4,6 +4,7 @@ import {
     Column,
     CreateDateColumn,
     UpdateDateColumn,
+    DeleteDateColumn,
     ManyToOne,
     JoinColumn,
 } from 'typeorm';
@@ -26,8 +27,8 @@ export class HorarioMissa {
     @Column({ type: 'varchar', nullable: true })
     observacao: string;
 
-    @Column({ type: 'boolean', default: true })
-    ativo: boolean;
+    @DeleteDateColumn({ name: 'deleted_at' })
+    deletedAt: Date;
 
     @CreateDateColumn({ name: 'created_at' })
     createdAt: Date;

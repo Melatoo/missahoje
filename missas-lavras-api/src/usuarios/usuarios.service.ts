@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import {
+    Injectable,
+    NotFoundException,
+    ConflictException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Usuario } from './entities/usuario.entity';
 import { Repository } from 'typeorm';
@@ -74,6 +78,6 @@ export class UsuariosService {
 
     async remove(id: string) {
         const usuario = await this.findOne(id);
-        return await this.usuariosRepository.remove(usuario);
+        return await this.usuariosRepository.softRemove(usuario);
     }
 }

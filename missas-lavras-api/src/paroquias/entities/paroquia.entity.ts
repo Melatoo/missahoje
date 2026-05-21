@@ -4,6 +4,7 @@ import {
     Column,
     CreateDateColumn,
     UpdateDateColumn,
+    DeleteDateColumn,
     OneToMany,
 } from 'typeorm';
 import { Comunidade } from '../../comunidades/entities/comunidade.entity';
@@ -22,8 +23,8 @@ export class Paroquia {
     @Column({ name: 'site_ou_rede_social', type: 'varchar', nullable: true })
     siteOuRedeSocial: string;
 
-    @Column({ type: 'boolean', default: true })
-    ativo: boolean;
+    @DeleteDateColumn({ name: 'deleted_at' })
+    deletedAt: Date;
 
     @CreateDateColumn({ name: 'created_at' })
     createdAt: Date;

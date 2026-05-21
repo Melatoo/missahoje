@@ -17,10 +17,7 @@ export class MissasService {
         const qb = this.horarioMissaRepository
             .createQueryBuilder('horario')
             .leftJoinAndSelect('horario.comunidade', 'comunidade')
-            .leftJoinAndSelect('comunidade.paroquia', 'paroquia')
-            .where('horario.ativo = :ativo', { ativo: true })
-            .andWhere('comunidade.ativo = :ativo', { ativo: true })
-            .andWhere('paroquia.ativo = :ativo', { ativo: true });
+            .leftJoinAndSelect('comunidade.paroquia', 'paroquia');
 
         if (query.dia_semana !== undefined) {
             qb.andWhere('horario.dia_semana = :dia_semana', {
@@ -68,6 +65,6 @@ export class MissasService {
 
     async remove(id: string) {
         const missa = await this.findOne(id);
-        return await this.horarioMissaRepository.remove(missa);
+        return await this.horarioMissaRepository.softRemove(missa);
     }
 }

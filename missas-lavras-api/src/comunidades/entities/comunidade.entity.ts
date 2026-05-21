@@ -4,6 +4,7 @@ import {
     Column,
     CreateDateColumn,
     UpdateDateColumn,
+    DeleteDateColumn,
     ManyToOne,
     OneToMany,
     JoinColumn,
@@ -31,8 +32,8 @@ export class Comunidade {
     @Column({ type: 'text', nullable: true })
     link_google_maps: string;
 
-    @Column({ type: 'boolean', default: true })
-    ativo: boolean;
+    @DeleteDateColumn({ name: 'deleted_at' })
+    deletedAt: Date;
 
     @CreateDateColumn({ name: 'created_at' })
     createdAt: Date;

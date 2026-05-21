@@ -5,6 +5,7 @@ import {
     Entity,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
+    DeleteDateColumn,
 } from 'typeorm';
 
 export enum UserRole {
@@ -35,8 +36,8 @@ export class Usuario {
     })
     role: UserRole;
 
-    @Column({ type: 'boolean', default: true })
-    ativo: boolean;
+    @DeleteDateColumn({ name: 'deleted_at' })
+    deletedAt: Date;
 
     @CreateDateColumn({ name: 'created_at' })
     createdAt: Date;

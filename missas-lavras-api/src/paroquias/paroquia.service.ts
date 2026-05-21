@@ -55,6 +55,6 @@ export class ParoquiaService {
 
     async remove(id: string) {
         const paroquia = await this.findOne(id);
-        return await this.paroquiaRepository.remove(paroquia);
+        return await this.paroquiaRepository.softRemove(paroquia);
     }
 }

@@ -13,7 +13,8 @@ export class ComunidadesService {
     ) {}
 
     async create(createComunidadeDto: CreateComunidadeDto) {
-        const comunidade = this.comunidadesRepository.create(createComunidadeDto);
+        const comunidade =
+            this.comunidadesRepository.create(createComunidadeDto);
         return await this.comunidadesRepository.save(comunidade);
     }
 
@@ -55,6 +56,6 @@ export class ComunidadesService {
 
     async remove(id: string) {
         const comunidade = await this.findOne(id);
-        return await this.comunidadesRepository.remove(comunidade);
+        return await this.comunidadesRepository.softRemove(comunidade);
     }
 }

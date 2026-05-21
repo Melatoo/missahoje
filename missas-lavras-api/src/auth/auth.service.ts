@@ -34,7 +34,7 @@ export class AuthService {
             input.email,
         );
 
-        if (usuario?.ativo) {
+        if (usuario) {
             const isMatch = await bcryptjs.compare(input.senha, usuario.senha);
             if (isMatch) {
                 // Remove a senha do objeto por segurança antes de retorná-lo
