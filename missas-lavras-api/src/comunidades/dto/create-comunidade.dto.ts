@@ -20,4 +20,8 @@ export class CreateComunidadeDto {
     @IsOptional()
     @IsString()
     readonly link_google_maps?: string;
+
+    @IsOptional()
+    @IsUUID('4', { message: 'O ID da cidade deve ser um UUID válido.' })
+    readonly cidade_id?: string;
 }

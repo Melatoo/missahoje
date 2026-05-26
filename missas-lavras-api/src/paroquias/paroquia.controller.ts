@@ -33,8 +33,8 @@ export class ParoquiaController {
     }
 
     @Get()
-    findAll(@Query('nome') nome?: string) {
-        return this.paroquiaService.findAll(nome);
+    findAll(@Query('cidadeId') cidadeId?: string, @Query('nome') nome?: string) {
+        return this.paroquiaService.findAll(cidadeId, nome);
     }
 
     @Get(':id')

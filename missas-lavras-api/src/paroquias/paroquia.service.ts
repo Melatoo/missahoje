@@ -17,16 +17,21 @@ export class ParoquiaService {
         return await this.paroquiaRepository.save(paroquia);
     }
 
-    async findAll(nome?: string) {
+    async findAll(cidadeId?: string, nome?: string) {
+        const qb = this.paroquiaRepository
+            .createQueryBuilder('paroquia')
+            .leftJoinAndSelect('paroquia.comunidades', 'comunidade')
+            .leftJoinAndSelect('comunidade.cidade', 'cidade');
+
         if (nome) {
-            return await this.paroquiaRepository.find({
-                where: { nome },
-                relations: ['comunidades'],
-            });
+            qb.andWhere('paroquia.nome ILIKE :nome', { nome: `%${nome}%` });
         }
-        return await this.paroquiaRepository.find({
-            relations: ['comunidades'],
-        });
+
+        if (cidadeId) {
+            qb.andWhere('comunidade.cidade_id = :cidadeId', { cidadeId });
+        }
+
+        return await qb.getMany();
     }
 
     async findOne(id: string) {

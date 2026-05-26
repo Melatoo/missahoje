@@ -33,8 +33,8 @@ export class ComunidadesController {
     }
 
     @Get()
-    findAll(@Query('nome') nome?: string) {
-        return this.comunidadesService.findAll(nome);
+    findAll(@Query('cidadeId') cidadeId?: string, @Query('nome') nome?: string) {
+        return this.comunidadesService.findAll(cidadeId, nome);
     }
 
     @Get(':id')

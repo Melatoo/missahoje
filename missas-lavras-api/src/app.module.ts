@@ -11,6 +11,7 @@ import { UsuariosModule } from './usuarios/usuarios.module';
 import { ParoquiaModule } from './paroquias/paroquia.module';
 import { ComunidadesModule } from './comunidades/comunidades.module';
 import { AuthModule } from './auth/auth.module';
+import { CidadesModule } from './cidades/cidades.module';
 
 @Module({
     imports: [
@@ -52,6 +53,7 @@ import { AuthModule } from './auth/auth.module';
         ParoquiaModule,
         ComunidadesModule,
         AuthModule,
+        CidadesModule,
     ],
     controllers: [AppController],
     providers: [AppService],

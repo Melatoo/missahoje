@@ -14,24 +14,41 @@ export class MissasService {
     ) {}
 
     async findAll(query: GetMissasDto) {
-        const qb = this.horarioMissaRepository
-            .createQueryBuilder('horario')
-            .leftJoinAndSelect('horario.comunidade', 'comunidade')
-            .leftJoinAndSelect('comunidade.paroquia', 'paroquia');
+        const qb = this.createBaseQuery();
 
-        if (query.dia_semana !== undefined) {
-            qb.andWhere('horario.dia_semana = :dia_semana', {
-                dia_semana: query.dia_semana,
-            });
-        }
-
-        if (query.bairro) {
-            qb.andWhere('comunidade.bairro ILIKE :bairro', {
-                bairro: `%${query.bairro}%`,
-            });
-        }
+        this.applyFiltroDia(qb, query.dia_semana);
+        this.applyFiltroBairro(qb, query.bairro);
+        this.applyFiltroCidade(qb, query.cidadeId);
 
         return await qb.getMany();
+    }
+
+    private createBaseQuery() {
+        return this.horarioMissaRepository
+            .createQueryBuilder('horario')
+            .leftJoinAndSelect('horario.comunidade', 'comunidade')
+            .leftJoinAndSelect('comunidade.paroquia', 'paroquia')
+            .leftJoinAndSelect('comunidade.cidade', 'cidade');
+    }
+
+    private applyFiltroDia(qb: any, dia_semana?: number) {
+        if (dia_semana !== undefined) {
+            qb.andWhere('horario.dia_semana = :dia_semana', { dia_semana });
+        }
+    }
+
+    private applyFiltroBairro(qb: any, bairro?: string) {
+        if (bairro) {
+            qb.andWhere('comunidade.bairro ILIKE :bairro', {
+                bairro: `%${bairro}%`,
+            });
+        }
+    }
+
+    private applyFiltroCidade(qb: any, cidadeId?: string) {
+        if (cidadeId) {
+            qb.andWhere('comunidade.cidade_id = :cidadeId', { cidadeId });
+        }
     }
 
     async create(createMissaDto: CreateMissaDto) {

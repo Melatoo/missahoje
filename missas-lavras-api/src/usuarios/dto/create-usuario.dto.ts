@@ -4,6 +4,8 @@ import {
     IsNotEmpty,
     IsString,
     IsStrongPassword,
+    IsOptional,
+    IsUUID,
 } from 'class-validator';
 
 export class CreateUsuarioDto {
@@ -32,4 +34,8 @@ export class CreateUsuarioDto {
         },
     )
     senha: string;
+
+    @IsOptional()
+    @IsUUID('4', { message: 'O ID da cidade deve ser um UUID válido.' })
+    cidade_id?: string;
 }

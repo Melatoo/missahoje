@@ -12,4 +12,8 @@ export class GetMissasDto {
     @IsOptional()
     @IsString()
     bairro?: string;
+
+    @IsOptional()
+    @IsString()
+    cidadeId?: string;
 }

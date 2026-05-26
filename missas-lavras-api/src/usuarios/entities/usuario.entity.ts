@@ -6,7 +6,10 @@ import {
     PrimaryGeneratedColumn,
     UpdateDateColumn,
     DeleteDateColumn,
+    ManyToOne,
+    JoinColumn,
 } from 'typeorm';
+import { Cidade } from '../../cidades/entities/cidade.entity';
 
 export enum UserRole {
     ADMIN = 'admin',
@@ -44,4 +47,11 @@ export class Usuario {
 
     @UpdateDateColumn({ name: 'updated_at' })
     updatedAt: Date;
+
+    @Column({ type: 'uuid', nullable: true })
+    cidade_id: string;
+
+    @ManyToOne(() => Cidade, (cidade) => cidade.usuarios)
+    @JoinColumn({ name: 'cidade_id' })
+    cidade: Cidade;
 }
