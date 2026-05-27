@@ -10,6 +10,7 @@ import {
     UseGuards,
     UseInterceptors,
 } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { CacheInterceptor } from '@nestjs/cache-manager';
 import { ClearCacheInterceptor } from '../common/interceptors/clear-cache.interceptor';
 import { ParoquiaService } from './paroquia.service';
@@ -21,11 +22,14 @@ import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRole } from '../usuarios/entities/usuario.entity';
 import { PaginationDto } from '../common/dto/pagination.dto';
 
+@ApiTags('Paróquias')
 @Controller('paroquias')
 @UseInterceptors(CacheInterceptor, ClearCacheInterceptor)
 export class ParoquiaController {
     constructor(private readonly paroquiaService: ParoquiaService) {}
 
+    @ApiOperation({ summary: 'Cria uma nova paróquia' })
+    @ApiBearerAuth()
     @Post()
     @UseGuards(AuthGuard, RolesGuard)
     @Roles(UserRole.ADMIN)
@@ -33,6 +37,7 @@ export class ParoquiaController {
         return this.paroquiaService.create(createParoquiaDto);
     }
 
+    @ApiOperation({ summary: 'Lista todas as paróquias paginadas' })
     @Get()
     findAll(
         @Query() options: PaginationDto,
@@ -42,11 +47,14 @@ export class ParoquiaController {
         return this.paroquiaService.findAll(options, cidadeId, nome);
     }
 
+    @ApiOperation({ summary: 'Busca uma paróquia pelo ID' })
     @Get(':id')
     findOne(@Param('id') id: string) {
         return this.paroquiaService.findOne(id);
     }
 
+    @ApiOperation({ summary: 'Atualiza uma paróquia' })
+    @ApiBearerAuth()
     @Put(':id')
     @UseGuards(AuthGuard, RolesGuard)
     @Roles(UserRole.ADMIN)
@@ -57,6 +65,8 @@ export class ParoquiaController {
         return this.paroquiaService.update(id, updateParoquiaDto);
     }
 
+    @ApiOperation({ summary: 'Remove uma paróquia' })
+    @ApiBearerAuth()
     @Delete(':id')
     @UseGuards(AuthGuard, RolesGuard)
     @Roles(UserRole.ADMIN)

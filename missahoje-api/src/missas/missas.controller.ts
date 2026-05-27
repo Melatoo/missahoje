@@ -11,6 +11,7 @@ import {
     UseGuards,
     UseInterceptors,
 } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { CacheInterceptor } from '@nestjs/cache-manager';
 import { ClearCacheInterceptor } from '../common/interceptors/clear-cache.interceptor';
 import { MissasService } from './missas.service';
@@ -22,11 +23,14 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRole } from '../usuarios/entities/usuario.entity';
 
+@ApiTags('Missas')
 @Controller('missas')
 @UseInterceptors(CacheInterceptor, ClearCacheInterceptor)
 export class MissasController {
     constructor(private readonly missasService: MissasService) {}
 
+    @ApiOperation({ summary: 'Cria uma nova missa' })
+    @ApiBearerAuth()
     @Post()
     @UseGuards(AuthGuard, RolesGuard)
     @Roles(UserRole.ADMIN)
@@ -34,6 +38,7 @@ export class MissasController {
         return this.missasService.create(createMissaDto);
     }
 
+    @ApiOperation({ summary: 'Lista todas as missas paginadas' })
     @Get()
     findAll(
         @Query(new ValidationPipe({ transform: true })) query: GetMissasDto,
@@ -41,11 +46,14 @@ export class MissasController {
         return this.missasService.findAll(query);
     }
 
+    @ApiOperation({ summary: 'Busca uma missa pelo ID' })
     @Get(':id')
     findOne(@Param('id') id: string) {
         return this.missasService.findOne(id);
     }
 
+    @ApiOperation({ summary: 'Atualiza uma missa' })
+    @ApiBearerAuth()
     @Put(':id')
     @UseGuards(AuthGuard, RolesGuard)
     @Roles(UserRole.ADMIN)
@@ -53,6 +61,8 @@ export class MissasController {
         return this.missasService.update(id, updateMissaDto);
     }
 
+    @ApiOperation({ summary: 'Remove uma missa' })
+    @ApiBearerAuth()
     @Delete(':id')
     @UseGuards(AuthGuard, RolesGuard)
     @Roles(UserRole.ADMIN)
