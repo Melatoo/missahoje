@@ -8,6 +8,7 @@ import {
   Delete,
   UseGuards,
   UseInterceptors,
+  Query,
 } from '@nestjs/common';
 import { CacheInterceptor } from '@nestjs/cache-manager';
 import { ClearCacheInterceptor } from '../common/interceptors/clear-cache.interceptor';
@@ -18,6 +19,7 @@ import { AuthGuard } from '../auth/guards/auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRole } from '../usuarios/entities/usuario.entity';
+import { PaginationDto } from '../common/dto/pagination.dto';
 
 @Controller('cidades')
 @UseInterceptors(CacheInterceptor, ClearCacheInterceptor)
@@ -32,8 +34,8 @@ export class CidadesController {
   }
 
   @Get()
-  findAll() {
-    return this.cidadesService.findAll();
+  findAll(@Query() options: PaginationDto) {
+    return this.cidadesService.findAll(options);
   }
 
   @Get(':id')

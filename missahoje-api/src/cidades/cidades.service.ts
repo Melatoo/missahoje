@@ -1,9 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { paginate, Pagination } from 'nestjs-typeorm-paginate';
 import { CreateCidadeDto } from './dto/create-cidade.dto';
 import { UpdateCidadeDto } from './dto/update-cidade.dto';
 import { Cidade } from './entities/cidade.entity';
+import { PaginationDto } from '../common/dto/pagination.dto';
 
 @Injectable()
 export class CidadesService {
@@ -17,8 +19,11 @@ export class CidadesService {
     return await this.cidadesRepository.save(cidade);
   }
 
-  async findAll() {
-    return await this.cidadesRepository.find();
+  async findAll(options: PaginationDto): Promise<Pagination<Cidade>> {
+    return paginate<Cidade>(this.cidadesRepository, {
+      page: options.page || 1,
+      limit: options.limit || 100,
+    });
   }
 
   async findOne(id: string) {

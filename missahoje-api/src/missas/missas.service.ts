@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { paginate, Pagination } from 'nestjs-typeorm-paginate';
 import { HorarioMissa } from './entities/horario-missa.entity';
 import { GetMissasDto } from './dto/get-missas.dto';
 import { CreateMissaDto } from './dto/create-missa.dto';
@@ -13,14 +14,17 @@ export class MissasService {
         private readonly horarioMissaRepository: Repository<HorarioMissa>,
     ) {}
 
-    async findAll(query: GetMissasDto) {
+    async findAll(query: GetMissasDto): Promise<Pagination<HorarioMissa>> {
         const qb = this.createBaseQuery();
 
         this.applyFiltroDia(qb, query.dia_semana);
         this.applyFiltroBairro(qb, query.bairro);
         this.applyFiltroCidade(qb, query.cidadeId);
 
-        return await qb.getMany();
+        return paginate<HorarioMissa>(qb, {
+            page: query.page || 1,
+            limit: query.limit || 100,
+        });
     }
 
     private createBaseQuery() {

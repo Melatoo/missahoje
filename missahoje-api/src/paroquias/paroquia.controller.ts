@@ -19,6 +19,7 @@ import { AuthGuard } from '../auth/guards/auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRole } from '../usuarios/entities/usuario.entity';
+import { PaginationDto } from '../common/dto/pagination.dto';
 
 @Controller('paroquias')
 @UseInterceptors(CacheInterceptor, ClearCacheInterceptor)
@@ -33,8 +34,12 @@ export class ParoquiaController {
     }
 
     @Get()
-    findAll(@Query('cidadeId') cidadeId?: string, @Query('nome') nome?: string) {
-        return this.paroquiaService.findAll(cidadeId, nome);
+    findAll(
+        @Query() options: PaginationDto,
+        @Query('cidadeId') cidadeId?: string,
+        @Query('nome') nome?: string,
+    ) {
+        return this.paroquiaService.findAll(options, cidadeId, nome);
     }
 
     @Get(':id')

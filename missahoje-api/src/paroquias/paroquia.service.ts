@@ -2,8 +2,10 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Paroquia } from './entities/paroquia.entity';
 import { Repository } from 'typeorm';
+import { paginate, Pagination } from 'nestjs-typeorm-paginate';
 import { CreateParoquiaDto } from './dto/create-paroquia.dto';
 import { UpdateParoquiaDto } from './dto/update-paroquia.dto';
+import { PaginationDto } from '../common/dto/pagination.dto';
 
 @Injectable()
 export class ParoquiaService {
@@ -17,7 +19,11 @@ export class ParoquiaService {
         return await this.paroquiaRepository.save(paroquia);
     }
 
-    async findAll(cidadeId?: string, nome?: string) {
+    async findAll(
+        options: PaginationDto,
+        cidadeId?: string,
+        nome?: string,
+    ): Promise<Pagination<Paroquia>> {
         const qb = this.paroquiaRepository
             .createQueryBuilder('paroquia')
             .leftJoinAndSelect('paroquia.comunidades', 'comunidade')
@@ -31,7 +37,10 @@ export class ParoquiaService {
             qb.andWhere('comunidade.cidade_id = :cidadeId', { cidadeId });
         }
 
-        return await qb.getMany();
+        return paginate<Paroquia>(qb, {
+            page: options.page || 1,
+            limit: options.limit || 100,
+        });
     }
 
     async findOne(id: string) {

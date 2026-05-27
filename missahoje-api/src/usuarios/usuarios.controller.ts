@@ -19,6 +19,7 @@ import { AuthGuard } from '../auth/guards/auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRole } from './entities/usuario.entity';
+import { PaginationDto } from '../common/dto/pagination.dto';
 
 @Controller('usuarios')
 @UseGuards(AuthGuard, RolesGuard)
@@ -33,12 +34,15 @@ export class UsuariosController {
     }
 
     @Get()
-    findAll(@Query('email') email?: string) {
+    findAll(
+        @Query() options: PaginationDto,
+        @Query('email') email?: string,
+    ) {
         if (email) {
             return this.usuariosService.findByEmail(email);
         }
 
-        return this.usuariosService.findAll();
+        return this.usuariosService.findAll(options);
     }
 
     @Get(':id')
