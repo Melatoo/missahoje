@@ -41,7 +41,7 @@ describe('CidadesService', () => {
 
   describe('create', () => {
     it('deve criar uma nova cidade', async () => {
-      const dto = { nome: 'Lavras', estado: 'MG' };
+      const dto = { nome: 'Lavras', estado: 'MG', slug: 'lavras-mg' };
       const cidadeCriada = { id: '123', ...dto };
 
       mockCidadesRepository.create.mockReturnValue(cidadeCriada);

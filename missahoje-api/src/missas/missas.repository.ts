@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, DeepPartial } from 'typeorm';
 import { paginate, Pagination } from 'nestjs-typeorm-paginate';
 import { HorarioMissa } from './entities/horario-missa.entity';
 import { GetMissasDto } from './dto/get-missas.dto';
@@ -39,7 +39,7 @@ export class MissasRepository {
         });
     }
 
-    create(data: any): HorarioMissa {
+    create(data: DeepPartial<HorarioMissa>): HorarioMissa {
         return this.repository.create(data);
     }
 
