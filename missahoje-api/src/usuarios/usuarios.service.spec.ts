@@ -13,6 +13,7 @@ jest.mock('nestjs-typeorm-paginate', () => ({
 jest.mock('bcryptjs', () => ({
   genSalt: jest.fn().mockResolvedValue('salt'),
   hash: jest.fn().mockResolvedValue('hashed_password'),
+  compare: jest.fn(),
 }));
 
 describe('UsuariosService', () => {
@@ -130,6 +131,37 @@ describe('UsuariosService', () => {
       expect(mockQueryBuilder.addSelect).toHaveBeenCalledWith('usuarios.senha');
       expect(mockQueryBuilder.where).toHaveBeenCalledWith('usuarios.email = :email', { email: 'teste@teste.com' });
       expect(mockQueryBuilder.getOne).toHaveBeenCalled();
+    });
+  });
+
+  describe('validateCredentials', () => {
+    it('deve retornar o usuário (sem a senha) se a senha bater', async () => {
+      const usuarioComSenha = { id: '123', email: 'test@test.com', senha: 'hash', nome: 'Test' };
+      mockQueryBuilder.getOne.mockResolvedValue(usuarioComSenha);
+      (bcryptjs.compare as jest.Mock).mockResolvedValue(true);
+
+      const resultado = await service.validateCredentials('test@test.com', '123');
+
+      expect(resultado).toEqual({ id: '123', email: 'test@test.com', nome: 'Test' });
+      expect(bcryptjs.compare).toHaveBeenCalledWith('123', 'hash');
+    });
+
+    it('deve retornar null se o e-mail não for encontrado', async () => {
+      mockQueryBuilder.getOne.mockResolvedValue(null);
+
+      const resultado = await service.validateCredentials('wrong@test.com', '123');
+
+      expect(resultado).toBeNull();
+    });
+
+    it('deve retornar null se a senha não bater', async () => {
+      const usuarioComSenha = { id: '123', email: 'test@test.com', senha: 'hash', nome: 'Test' };
+      mockQueryBuilder.getOne.mockResolvedValue(usuarioComSenha);
+      (bcryptjs.compare as jest.Mock).mockResolvedValue(false);
+
+      const resultado = await service.validateCredentials('test@test.com', 'wrong');
+
+      expect(resultado).toBeNull();
     });
   });
 

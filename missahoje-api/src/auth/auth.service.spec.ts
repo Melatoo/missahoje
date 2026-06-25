@@ -3,17 +3,12 @@ import { UnauthorizedException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UsuariosService } from '../usuarios/usuarios.service';
 import { JwtService } from '@nestjs/jwt';
-import bcryptjs from 'bcryptjs';
-
-jest.mock('bcryptjs', () => ({
-  compare: jest.fn(),
-}));
 
 describe('AuthService', () => {
   let service: AuthService;
 
   const mockUsuariosService = {
-    findByEmailWithPassword: jest.fn(),
+    validateCredentials: jest.fn(),
   };
 
   const mockJwtService = {
@@ -45,32 +40,19 @@ describe('AuthService', () => {
 
   describe('validateUser', () => {
     it('deve retornar o usuário (sem a senha) se as credenciais forem válidas', async () => {
-      const usuarioBanco = { id: '1', email: 'test@test.com', senha: 'hash', role: 'USER' };
-      mockUsuariosService.findByEmailWithPassword.mockResolvedValue(usuarioBanco);
-      (bcryptjs.compare as jest.Mock).mockResolvedValue(true);
+      const usuarioValido = { id: '1', email: 'test@test.com', role: 'USER' };
+      mockUsuariosService.validateCredentials.mockResolvedValue(usuarioValido);
 
       const resultado = await service.validateUser({ email: 'test@test.com', senha: '123' });
 
-      expect(resultado).toEqual({ id: '1', email: 'test@test.com', role: 'USER' });
-      expect(mockUsuariosService.findByEmailWithPassword).toHaveBeenCalledWith('test@test.com');
-      expect(bcryptjs.compare).toHaveBeenCalledWith('123', 'hash');
+      expect(resultado).toEqual(usuarioValido);
+      expect(mockUsuariosService.validateCredentials).toHaveBeenCalledWith('test@test.com', '123');
     });
 
-    it('deve retornar null se o email não existir', async () => {
-      mockUsuariosService.findByEmailWithPassword.mockResolvedValue(null);
+    it('deve retornar null se as credenciais forem inválidas', async () => {
+      mockUsuariosService.validateCredentials.mockResolvedValue(null);
 
       const resultado = await service.validateUser({ email: 'wrong@test.com', senha: '123' });
-
-      expect(resultado).toBeNull();
-      expect(bcryptjs.compare).not.toHaveBeenCalled();
-    });
-
-    it('deve retornar null se a senha estiver incorreta', async () => {
-      const usuarioBanco = { id: '1', email: 'test@test.com', senha: 'hash', role: 'USER' };
-      mockUsuariosService.findByEmailWithPassword.mockResolvedValue(usuarioBanco);
-      (bcryptjs.compare as jest.Mock).mockResolvedValue(false);
-
-      const resultado = await service.validateUser({ email: 'test@test.com', senha: 'wrong' });
 
       expect(resultado).toBeNull();
     });
@@ -80,12 +62,7 @@ describe('AuthService', () => {
     it('deve gerar e retornar o token se validado com sucesso', async () => {
       const usuarioValido = { id: '1', email: 'test@test.com', role: 'USER' };
       
-      // Como authenticate chama validateUser e signIn da mesma classe,
-      // podemos mockar as chamadas através de spyOn no próprio service,
-      // ou apenas mockar os serviços internos para o fluxo inteiro.
-      // O mais realista é testar o fluxo (integração das partes no service).
-      mockUsuariosService.findByEmailWithPassword.mockResolvedValue({ ...usuarioValido, senha: '123' });
-      (bcryptjs.compare as jest.Mock).mockResolvedValue(true);
+      mockUsuariosService.validateCredentials.mockResolvedValue(usuarioValido);
       mockJwtService.signAsync.mockResolvedValue('token-jwt-aqui');
 
       const resultado = await service.authenticate({ email: 'test@test.com', senha: '123' });
@@ -94,7 +71,7 @@ describe('AuthService', () => {
     });
 
     it('deve lançar UnauthorizedException se validateUser falhar', async () => {
-      mockUsuariosService.findByEmailWithPassword.mockResolvedValue(null);
+      mockUsuariosService.validateCredentials.mockResolvedValue(null);
 
       await expect(service.authenticate({ email: 'test@test.com', senha: '123' }))
         .rejects.toThrow(UnauthorizedException);

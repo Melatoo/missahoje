@@ -1,7 +1,6 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsuariosService } from '../usuarios/usuarios.service';
 import { JwtService } from '@nestjs/jwt';
-import bcryptjs from 'bcryptjs';
 import { Usuario } from 'src/usuarios/entities/usuario.entity';
 
 import { LoginDto } from './dto/login.dto';
@@ -30,20 +29,10 @@ export class AuthService {
     async validateUser(
         input: LoginDto,
     ): Promise<Omit<Usuario, 'senha'> | null> {
-        const usuario = await this.usuariosService.findByEmailWithPassword(
+        return await this.usuariosService.validateCredentials(
             input.email,
+            input.senha,
         );
-
-        if (usuario) {
-            const isMatch = await bcryptjs.compare(input.senha, usuario.senha);
-            if (isMatch) {
-                // Remove a senha do objeto por segurança antes de retorná-lo
-                const { senha, ...result } = usuario;
-                return result;
-            }
-        }
-
-        return null;
     }
 
     /**

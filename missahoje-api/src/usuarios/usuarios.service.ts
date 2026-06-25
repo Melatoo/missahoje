@@ -63,6 +63,23 @@ export class UsuariosService {
             .getOne();
     }
 
+    async validateCredentials(
+        email: string,
+        senhaLimpa: string,
+    ): Promise<Omit<Usuario, 'senha'> | null> {
+        const usuario = await this.findByEmailWithPassword(email);
+
+        if (usuario) {
+            const isMatch = await bcryptjs.compare(senhaLimpa, usuario.senha);
+            if (isMatch) {
+                const { senha, ...result } = usuario;
+                return result;
+            }
+        }
+
+        return null;
+    }
+
     async update(id: string, updateUsuarioDto: UpdateUsuarioDto) {
         const usuario = await this.usuariosRepository.preload({
             id,
