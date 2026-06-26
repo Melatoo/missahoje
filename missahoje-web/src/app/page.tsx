@@ -37,7 +37,7 @@ export default async function Home() {
         }}
       />
 
-      <header className="w-full max-w-2xl mx-auto px-6 pt-12 pb-8 flex flex-col items-center justify-center relative z-10">
+      <header className="w-full max-w-2xl mx-auto px-6 pt-12 pb-8 flex flex-col items-center justify-center relative z-20">
         <h1 className="font-serif text-5xl md:text-6xl text-foreground font-medium tracking-tight mb-2">
           Missa Hoje
         </h1>

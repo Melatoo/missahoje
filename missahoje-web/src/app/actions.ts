@@ -1,11 +1,13 @@
 'use server'
 
 import { cookies } from 'next/headers';
+import { revalidatePath } from 'next/cache';
 
 export async function setLocationCookie(cidadeId: string, cidadeNome: string) {
   const cookieStore = await cookies();
   cookieStore.set('cidadeId', cidadeId, { path: '/', maxAge: 60 * 60 * 24 * 365 }); // 1 year
   cookieStore.set('cidadeNome', cidadeNome, { path: '/', maxAge: 60 * 60 * 24 * 365 }); // 1 year
+  revalidatePath('/');
 }
 
 export async function getLocationCookie() {
