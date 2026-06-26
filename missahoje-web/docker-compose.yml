@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "3001:3000"
+      - "3000:3000"
     volumes:
       - .:/app
       - /app/node_modules
@@ -14,4 +14,8 @@ services:
     environment:
       - NODE_ENV=development
       # Permitir hot-reload em Docker para Next.js
-      - WATCHPACK_POLLING=true 
+      - WATCHPACK_POLLING=true
+      - NEXT_PUBLIC_API_URL=http://localhost:3001
+      - SSR_API_URL=http://host.docker.internal:3001
+    extra_hosts:
+      - "host.docker.internal:host-gateway"

@@ -3,22 +3,32 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-primary: #1E3A8A; /* deep blue */
+  --color-surface: var(--surface);
+  --color-primary: #D4AF37;
+  /* Ouro Litúrgico */
   --color-primary-foreground: #ffffff;
-  --color-secondary: #D97706; /* amber/gold */
+  --color-secondary: #2B4C7E;
+  /* Azul Mariano */
   --color-secondary-foreground: #ffffff;
+  --color-border: #E6E1D6;
   --font-sans: var(--font-inter);
+  --font-serif: var(--font-cormorant);
 }
 
 :root {
-  --background: #f8fafc;
-  --foreground: #0f172a;
+  --background: #F9F6F0;
+  /* Pedra/Pergaminho */
+  --foreground: #2C2C2A;
+  /* Carvão */
+  --surface: #FFFFFF;
+  /* Altar */
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0f172a;
-    --foreground: #f8fafc;
+    --background: #1A1A18;
+    --foreground: #EAE6DF;
+    --surface: #252522;
   }
 }
 

@@ -34,7 +34,7 @@ import { CidadesModule } from './cidades/cidades.module';
                 password: configService.get<string>('DB_PASS'),
                 database: configService.get<string>('DB_NAME'),
                 autoLoadEntities: true,
-                synchronize: false,
+                synchronize: true,
             }),
             inject: [ConfigService],
         }),
