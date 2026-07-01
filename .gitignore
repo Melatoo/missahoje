@@ -147,3 +147,10 @@ vite.config.ts.timestamp-*
 .idea/
 .DS_Store
 Thumbs.db
+
+# BMad and AI Agents
+_bmad/
+_bmad-output/
+.agent/
+.agents/
+skills-lock.json

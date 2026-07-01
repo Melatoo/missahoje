@@ -1,34 +1,29 @@
-import type { Metadata } from "next";
-import { Inter, Cormorant_Garamond } from "next/font/google";
-import "./globals.css";
+import type { Metadata } from 'next';
+import { Inter, Cinzel, Lora } from 'next/font/google';
+import Providers from '../lib/react-query';
+import './globals.css';
 
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-});
-
-const cormorant = Cormorant_Garamond({
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-cormorant",
-  subsets: ["latin"],
-});
+const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
+const cinzel = Cinzel({ subsets: ['latin'], variable: '--font-cinzel' });
+const lora = Lora({ subsets: ['latin'], variable: '--font-lora' });
 
 export const metadata: Metadata = {
-  title: "MissaHoje",
-  description: "Encontre os horários de missas e paróquias mais próximas",
+  title: 'Missa Hoje - Encontre Missas Perto de Você',
+  description: 'Descubra os horários das missas nas paróquias mais próximas. Simples, sagrado e rápido.',
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
-    <html
-      lang="pt-BR"
-      className={`${inter.variable} ${cormorant.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col">{children}</body>
+    <html lang="pt-BR">
+      <body className={`${inter.variable} ${cinzel.variable} ${lora.variable}`}>
+        <Providers>
+          {children}
+        </Providers>
+      </body>
     </html>
   );
 }

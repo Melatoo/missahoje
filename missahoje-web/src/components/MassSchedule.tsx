@@ -1,129 +1,106 @@
 'use client';
 
-import { useState } from 'react';
-import { HorarioMissa } from '../types';
+import { useState, useTransition } from 'react';
+import { useRouter } from 'next/navigation';
 import { getMissas } from '../lib/api';
+import { HorarioMissa } from '../types';
 
-interface MassScheduleProps {
-  cidadeId?: string;
-  initialMissas: HorarioMissa[];
-}
-
-type Tab = 'hoje' | 'amanha' | 'fds';
-
-export function MassSchedule({ cidadeId, initialMissas }: MassScheduleProps) {
-  const [activeTab, setActiveTab] = useState<Tab>('hoje');
+export function MassSchedule({ cidadeId, initialMissas }: { cidadeId: string, initialMissas: HorarioMissa[] }) {
   const [missas, setMissas] = useState<HorarioMissa[]>(initialMissas);
-  const [loading, setLoading] = useState(false);
+  const [activeDay, setActiveDay] = useState(new Date().getDay());
+  const [isLoading, setIsLoading] = useState(false);
+  const [isPending, startTransition] = useTransition();
+  const router = useRouter();
 
-  const fetchMissasForTab = async (tab: Tab) => {
-    setActiveTab(tab);
-    setLoading(true);
+  const dias = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
+  const diasAbreviados = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
 
+  const fetchMissas = async (dia: number) => {
+    setActiveDay(dia);
+    setIsLoading(true);
     try {
-      const today = new Date().getDay();
-      let targets: number[] = [];
-      
-      if (tab === 'hoje') {
-        targets = [today];
-      } else if (tab === 'amanha') {
-        targets = [(today + 1) % 7];
-      } else if (tab === 'fds') {
-        // Saturday and Sunday
-        targets = [6, 0];
-      }
-
-      // Fetch all required days
-      const results = await Promise.all(
-        targets.map(dia => getMissas(cidadeId, dia))
-      );
-      
-      // Combine results
-      const combined = results.flatMap(r => r.items);
-      
-      // Sort by time
-      combined.sort((a, b) => a.horario.localeCompare(b.horario));
-      
-      setMissas(combined);
+      const response = await getMissas(cidadeId, dia);
+      setMissas(response.items.sort((a, b) => a.horario.localeCompare(b.horario)));
     } catch (error) {
-      console.error(error);
+      console.error('Erro ao buscar missas', error);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
+  const formatTime = (time: string) => {
+    return time.slice(0, 5);
+  };
+
   return (
-    <section className="flex flex-col gap-4 mt-4">
-      <div className="flex items-center gap-2 mb-2 overflow-x-auto pb-2 scrollbar-hide">
-        <button 
-          onClick={() => fetchMissasForTab('hoje')}
-          className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap cursor-pointer transition-colors ${
-            activeTab === 'hoje' 
-              ? 'bg-foreground text-background' 
-              : 'text-foreground/70 hover:bg-black/5 border border-transparent hover:border-border/50'
-          }`}
-        >
-          Hoje
-        </button>
-        <button 
-          onClick={() => fetchMissasForTab('amanha')}
-          className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap cursor-pointer transition-colors ${
-            activeTab === 'amanha' 
-              ? 'bg-foreground text-background' 
-              : 'text-foreground/70 hover:bg-black/5 border border-transparent hover:border-border/50'
-          }`}
-        >
-          Amanhã
-        </button>
-        <button 
-          onClick={() => fetchMissasForTab('fds')}
-          className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap cursor-pointer transition-colors ${
-            activeTab === 'fds' 
-              ? 'bg-foreground text-background' 
-              : 'text-foreground/70 hover:bg-black/5 border border-transparent hover:border-border/50'
-          }`}
-        >
-          Fim de Semana
-        </button>
+    <div className="w-full flex flex-col gap-6">
+      
+      {/* Selector de Dias */}
+      <div className="glass-panel rounded-full p-2 flex overflow-x-auto snap-x hide-scrollbar">
+        {diasAbreviados.map((dia, index) => (
+          <button
+            key={index}
+            onClick={() => fetchMissas(index)}
+            className={`flex-1 min-w-[80px] snap-center py-3 rounded-full font-medium transition-colors text-white text-glow text-lg ${
+              activeDay === index 
+                ? 'bg-primary/50 border border-white/40 shadow-lg' 
+                : 'hover:bg-white/10'
+            }`}
+          >
+            {dia}
+          </button>
+        ))}
       </div>
 
-      <div className="flex flex-col gap-0 border border-border rounded-2xl bg-surface overflow-hidden shadow-sm min-h-[200px]">
-        {loading ? (
-          // Skeleton loaders
-          Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="flex items-center justify-between p-5 border-b border-border animate-pulse">
-              <div className="flex flex-col gap-2">
-                <div className="h-5 w-48 bg-border rounded"></div>
-                <div className="h-4 w-24 bg-border/50 rounded"></div>
+      {/* Lista de Missas */}
+      <div className="glass-panel rounded-[2rem] p-4 md:p-8 flex-1 overflow-y-auto min-h-[400px]">
+        <h3 className="font-serif text-3xl text-white font-medium mb-6 text-glow px-4">
+          Horários de {dias[activeDay]}
+        </h3>
+        
+        {isLoading ? (
+          <div className="flex flex-col gap-4">
+            {[1, 2, 3].map(i => (
+              <div key={i} className="h-28 bg-white/5 animate-pulse rounded-2xl border border-white/10" />
+            ))}
+          </div>
+        ) : missas.length > 0 ? (
+          <div className="flex flex-col gap-4">
+            {missas.map((missa) => (
+              <div 
+                key={missa.id} 
+                className="bg-white/10 hover:bg-white/20 transition-colors rounded-2xl p-6 flex items-center justify-between border border-white/10"
+              >
+                <div className="flex-1 pr-4">
+                  <h4 className="text-xl md:text-2xl text-white font-bold mb-1 text-glow">{missa.paroquia.nome}</h4>
+                  <p className="text-white/80 text-md md:text-lg text-glow line-clamp-1">{missa.paroquia.bairro}</p>
+                </div>
+                <div className="text-3xl md:text-4xl text-white font-serif font-bold text-glow">
+                  {formatTime(missa.horario)}
+                </div>
               </div>
-              <div className="h-8 w-16 bg-border rounded"></div>
-            </div>
-          ))
-        ) : missas.length === 0 ? (
-          <div className="p-8 text-center text-foreground/60 flex flex-col items-center justify-center h-full">
-            Nenhuma missa encontrada para este período.
+            ))}
           </div>
         ) : (
-          missas.map((missa, i) => (
-            <div 
-              key={missa.id || i} 
-              className={`flex items-center justify-between p-5 hover:bg-black/[0.02] transition-colors cursor-pointer ${
-                i !== missas.length - 1 ? 'border-b border-border' : ''
-              }`}
-            >
-              <div className="flex flex-col">
-                <span className="font-medium text-foreground text-lg">
-                  {missa.comunidade?.paroquia?.nome || missa.comunidade?.nome || 'Comunidade'}
-                </span>
-                <span className="text-sm text-foreground/60">
-                  {missa.comunidade?.nome} {missa.comunidade?.bairro ? `- ${missa.comunidade.bairro}` : ''}
-                </span>
-              </div>
-              <span className="font-serif text-2xl text-foreground/80">{missa.horario.substring(0, 5)}</span>
-            </div>
-          ))
+          <div className="flex flex-col items-center justify-center h-48 text-center p-8">
+            <span className="text-5xl mb-4 opacity-70">🕊️</span>
+            <p className="text-white/90 text-lg md:text-xl text-glow max-w-sm">
+              Não temos missas cadastradas para {dias[activeDay].toLowerCase()} nesta cidade.
+            </p>
+          </div>
         )}
       </div>
-    </section>
+
+      <style dangerouslySetInnerHTML={{
+        __html: `
+        .hide-scrollbar::-webkit-scrollbar {
+          display: none;
+        }
+        .hide-scrollbar {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+      `}} />
+    </div>
   );
 }

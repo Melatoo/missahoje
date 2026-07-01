@@ -27,47 +27,34 @@ export default async function Home() {
   const nextMass = initialMissas.find(m => m.horario > currentTimeStr);
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col relative overflow-hidden font-sans">
-      {/* Elemento Assinatura: Efeito Vitral (Stained Glass Ambient Light) */}
-      <div className="absolute top-[-20%] left-[-10%] w-[120%] h-[60%] opacity-30 pointer-events-none mix-blend-multiply dark:mix-blend-screen"
-        style={{
-          background: 'radial-gradient(circle at 50% 50%, var(--color-primary) 0%, var(--color-secondary) 40%, transparent 70%)',
-          filter: 'blur(80px)',
-          animation: 'pulse-slow 8s infinite alternate ease-in-out'
-        }}
-      />
-
-      <header className="w-full max-w-2xl mx-auto px-6 pt-12 pb-8 flex flex-col items-center justify-center relative z-20">
-        <h1 className="font-serif text-5xl md:text-6xl text-foreground font-medium tracking-tight mb-2">
+    <div className="min-h-screen flex flex-col relative font-sans selection:bg-primary/30">
+      
+      <header className="w-full mx-auto px-4 md:px-8 pt-8 md:pt-12 pb-6 flex flex-col md:flex-row items-center justify-between gap-6 relative z-20">
+        <h1 className="font-serif text-5xl md:text-6xl text-white font-medium tracking-tight text-glow">
           Missa Hoje
         </h1>
         <CitySelector currentCityId={cidadeId} currentCityName={cidadeNome} />
       </header>
 
-      <main className="flex-1 w-full max-w-2xl mx-auto px-6 pb-24 flex flex-col gap-8 relative z-10">
+      <main className="flex-1 w-full max-w-7xl mx-auto px-4 md:px-8 pb-24 flex flex-col relative z-10">
         {!cidadeId ? (
-          <div className="bg-surface rounded-2xl p-8 text-center shadow-sm border border-border mt-8">
-            <h2 className="font-serif text-2xl mb-2 text-foreground">Bem-vindo ao Missa Hoje</h2>
-            <p className="text-foreground/70">
-              Por favor, selecione sua cidade no botão acima para visualizar os horários de missa mais próximos a você.
-            </p>
+          <div className="glass-panel rounded-[3rem] p-12 md:p-20 text-center mt-8 md:mt-16 flex flex-col items-center justify-center gap-8 max-w-3xl mx-auto w-full">
+            <div className="text-8xl md:text-9xl mb-2 opacity-90 drop-shadow-2xl">🕊️</div>
+            <div>
+              <h2 className="font-serif text-4xl md:text-5xl mb-4 text-white font-medium leading-tight text-glow">Onde você está?</h2>
+              <p className="text-white/90 text-lg md:text-xl max-w-md mx-auto leading-relaxed text-glow">
+                Por favor, selecione sua cidade no botão acima para descobrirmos os horários e paróquias mais próximas de você.
+              </p>
+            </div>
           </div>
         ) : (
-          <>
+          <div className="grid grid-cols-1 lg:grid-cols-[1.3fr_1fr] gap-8 md:gap-12 w-full mt-6">
             <NextMassCard nextMass={nextMass} />
             <MassSchedule cidadeId={cidadeId} initialMissas={initialMissas} />
-          </>
+          </div>
         )}
       </main>
 
-      {/* Style for animation */}
-      <style dangerouslySetInnerHTML={{
-        __html: `
-        @keyframes pulse-slow {
-          0% { transform: scale(1) translate(0, 0); opacity: 0.2; }
-          100% { transform: scale(1.05) translate(2%, 2%); opacity: 0.4; }
-        }
-      `}} />
     </div>
   );
 }

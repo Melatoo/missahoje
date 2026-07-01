@@ -1,46 +1,59 @@
 import { HorarioMissa } from '../types';
 
-interface NextMassCardProps {
-  nextMass?: HorarioMissa;
-}
-
-export function NextMassCard({ nextMass }: NextMassCardProps) {
+export function NextMassCard({ nextMass }: { nextMass?: HorarioMissa }) {
   if (!nextMass) {
-    return (
-      <section className="flex flex-col gap-3">
-        <h2 className="text-sm uppercase tracking-widest text-foreground/60 font-semibold ml-1">
-          Próxima Missa
-        </h2>
-        <div className="bg-surface rounded-2xl p-6 md:p-8 shadow-sm border border-border flex items-center justify-center">
-          <p className="text-foreground/60">Nenhuma missa agendada encontrada.</p>
-        </div>
-      </section>
-    );
+    return null;
   }
 
-  // To calculate 'Começa em X min', we would need more robust date handling, 
-  // but for now we can just show the time.
+  // Helper to get time without seconds
+  const formatTime = (time: string) => {
+    return time.slice(0, 5);
+  };
+
   return (
-    <section className="flex flex-col gap-3">
-      <h2 className="text-sm uppercase tracking-widest text-foreground/60 font-semibold ml-1">
-        Próxima Missa perto de você
-      </h2>
-      <div className="bg-surface rounded-2xl p-6 md:p-8 shadow-sm border border-border flex flex-col md:flex-row md:items-center justify-between gap-4 transition-transform hover:-translate-y-1">
-        <div className="flex flex-col gap-1">
-          <h3 className="font-serif text-2xl md:text-3xl text-foreground font-medium">
-            {nextMass.comunidade?.paroquia?.nome || nextMass.comunidade?.nome || 'Comunidade Desconhecida'}
+    <div className="glass-panel p-8 md:p-12 rounded-[2rem] md:rounded-[3rem] w-full relative overflow-hidden flex flex-col justify-between min-h-[300px]">
+      
+      {/* Glow Effect / Overlay decorativo sutil por trás do vidro */}
+      <div className="absolute top-0 right-0 w-full h-full bg-primary/20 mix-blend-overlay pointer-events-none" />
+      <div className="absolute -top-32 -right-32 w-64 h-64 bg-secondary/30 blur-[100px] rounded-full pointer-events-none" />
+
+      <div className="relative z-10">
+        <div className="flex items-center gap-3 mb-6">
+          <span className="bg-secondary text-secondary-foreground px-4 py-1.5 rounded-full text-sm font-bold uppercase tracking-widest shadow-lg">
+            Próxima Missa
+          </span>
+        </div>
+        
+        <h2 className="font-serif text-7xl md:text-8xl text-white font-medium tracking-tight mb-2 text-glow">
+          {formatTime(nextMass.horario)}
+        </h2>
+        
+        <div className="mt-8">
+          <h3 className="text-2xl md:text-3xl text-white font-bold mb-2 text-glow">
+            {nextMass.paroquia.nome}
           </h3>
-          <p className="text-foreground/70 text-sm md:text-base">
-            {nextMass.comunidade?.nome} - {nextMass.comunidade?.bairro || 'Centro'}
+          <p className="text-white/90 text-lg md:text-xl font-medium max-w-md leading-relaxed text-glow">
+            {nextMass.paroquia.endereco}
+            <br />
+            {nextMass.paroquia.bairro}
           </p>
         </div>
-        <div className="flex flex-col items-start md:items-end gap-2">
-          <div className="text-4xl font-serif text-primary font-medium">{nextMass.horario.substring(0, 5)}</div>
-          <div className="bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-semibold border border-primary/20">
-            Hoje
-          </div>
-        </div>
       </div>
-    </section>
+      
+      {/* Botão de Rota */}
+      <div className="relative z-10 mt-10 md:mt-12 flex justify-end">
+        <a 
+          href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(nextMass.paroquia.nome + ' ' + nextMass.paroquia.endereco)}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="bg-white/20 hover:bg-white/30 backdrop-blur-md text-white px-8 py-4 rounded-full font-bold flex items-center gap-3 transition-colors border border-white/30 shadow-xl text-glow w-full md:w-auto justify-center text-lg md:text-xl h-16"
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+          </svg>
+          Como chegar
+        </a>
+      </div>
+    </div>
   );
 }

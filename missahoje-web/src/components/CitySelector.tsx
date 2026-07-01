@@ -1,109 +1,86 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { Cidade } from '../types';
 import { getCidades } from '../lib/api';
+import { Cidade } from '../types';
 import { setLocationCookie } from '../app/actions';
 
-interface CitySelectorProps {
-  currentCityId?: string;
-  currentCityName?: string;
-}
-
-export function CitySelector({ currentCityId, currentCityName }: CitySelectorProps) {
-  const router = useRouter();
+export function CitySelector({ currentCityId, currentCityName }: { currentCityId?: string, currentCityName?: string }) {
   const [isOpen, setIsOpen] = useState(false);
   const [cidades, setCidades] = useState<Cidade[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isPending, startTransition] = useTransition();
+  const router = useRouter();
 
   useEffect(() => {
-    let active = true;
     if (isOpen && cidades.length === 0) {
-      const loadData = async () => {
-        setLoading(true);
-        try {
-          const data = await getCidades();
-          if (active) setCidades(data.items);
-        } catch (e) {
-          console.error(e);
-        } finally {
-          if (active) setLoading(false);
-        }
-      };
-      loadData();
+      setIsLoading(true);
+      getCidades().then(data => {
+        setCidades(data.items.sort((a, b) => a.nome.localeCompare(b.nome)));
+      }).catch(err => {
+        console.error("Erro ao carregar cidades", err);
+      }).finally(() => {
+        setIsLoading(false);
+      });
     }
-    return () => {
-      active = false;
-    };
   }, [isOpen, cidades.length]);
 
   const handleSelect = async (cidade: Cidade) => {
-    await setLocationCookie(cidade.id, cidade.nome);
     setIsOpen(false);
-    router.refresh();
+    await setLocationCookie(cidade.id, cidade.nome);
+    startTransition(() => {
+      router.refresh();
+    });
   };
 
-  const displayName = currentCityName || "Selecionar Cidade";
-
   return (
-    <>
+    <div className="relative z-50">
       <button 
-        onClick={() => setIsOpen(true)}
-        className="flex items-center gap-2 text-foreground/80 hover:text-foreground transition-colors px-4 py-2 rounded-full border border-border/50 hover:bg-black/5 bg-surface/50 backdrop-blur-sm cursor-pointer"
+        onClick={() => setIsOpen(!isOpen)}
+        className="glass-panel text-glow text-white px-6 py-3 rounded-full flex items-center gap-3 hover:bg-white/20 transition-all font-medium text-lg min-w-[200px] justify-between shadow-xl"
       >
-        <span className="text-sm">📍 {displayName}</span>
-        <span className="text-xs opacity-60 uppercase tracking-widest font-semibold">Alterar</span>
+        <div className="flex items-center gap-2">
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+          <span className="truncate max-w-[180px]">
+            {isPending ? 'Atualizando...' : (currentCityName || 'Escolher cidade...')}
+          </span>
+        </div>
+        <svg className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
       </button>
 
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm transition-opacity">
-          <div 
-            className="absolute inset-0" 
-            onClick={() => setIsOpen(false)}
-          />
-          <div className="relative bg-surface w-full max-w-md rounded-3xl shadow-xl border border-border overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-            <div className="p-6 border-b border-border">
-              <h3 className="font-serif text-2xl text-foreground font-medium">Onde você está?</h3>
-              <p className="text-sm text-foreground/60 mt-1">Selecione sua cidade para ver os horários de missa.</p>
-            </div>
-            
-            <div className="max-h-[60vh] overflow-y-auto p-2">
-              {loading ? (
-                <div className="p-8 text-center text-foreground/50 text-sm">Carregando cidades...</div>
-              ) : cidades.length === 0 ? (
-                <div className="p-8 text-center text-foreground/50 text-sm">Nenhuma cidade encontrada.</div>
-              ) : (
-                <div className="flex flex-col gap-1">
-                  {cidades.map((cidade) => (
+        <div className="absolute top-full right-0 md:right-auto md:left-0 mt-4 w-[90vw] md:w-80 glass-panel rounded-2xl overflow-hidden shadow-2xl animate-in fade-in slide-in-from-top-4">
+          <div className="p-4 border-b border-white/20">
+            <h3 className="font-serif text-white font-medium text-glow text-lg">Selecione sua cidade</h3>
+          </div>
+          <div className="max-h-[50vh] md:max-h-80 overflow-y-auto overscroll-contain">
+            {isLoading ? (
+              <div className="p-8 text-center text-white/80 animate-pulse text-glow">
+                Carregando cidades...
+              </div>
+            ) : (
+              <ul className="flex flex-col">
+                {cidades.map((cidade) => (
+                  <li key={cidade.id}>
                     <button
-                      key={cidade.id}
                       onClick={() => handleSelect(cidade)}
-                      className={`flex items-center justify-between w-full p-4 rounded-2xl transition-colors text-left ${
-                        currentCityId === cidade.id 
-                          ? 'bg-primary/10 text-primary font-medium' 
-                          : 'hover:bg-black/5 text-foreground'
-                      }`}
+                      className={`w-full text-left px-5 py-4 text-white text-glow hover:bg-white/20 transition-colors border-b border-white/10 last:border-0 ${currentCityId === cidade.id ? 'bg-primary/40 font-bold' : ''}`}
                     >
-                      <span className="text-lg">{cidade.nome}</span>
-                      <span className="text-sm opacity-60">{cidade.estado}</span>
+                      {cidade.nome}
                     </button>
-                  ))}
-                </div>
-              )}
-            </div>
-            
-            <div className="p-4 border-t border-border flex justify-end">
-              <button 
-                onClick={() => setIsOpen(false)}
-                className="px-6 py-2 text-sm font-medium text-foreground/70 hover:text-foreground hover:bg-black/5 rounded-full transition-colors"
-              >
-                Cancelar
-              </button>
-            </div>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 }
