@@ -10,12 +10,14 @@ export type PermissionStatus = 'prompt' | 'granted' | 'denied';
 interface MapState {
   center: Coordinates;
   zoom: number;
+  bounds: { southWest: Coordinates; northEast: Coordinates } | null;
   userLocation: Coordinates | null;
   permissionStatus: PermissionStatus;
 
   // Actions
   setCenter: (center: Coordinates) => void;
   setZoom: (zoom: number) => void;
+  setBounds: (bounds: { southWest: Coordinates; northEast: Coordinates } | null) => void;
   setUserLocation: (location: Coordinates) => void;
   setPermissionStatus: (status: PermissionStatus) => void;
   requestGeolocation: () => void;
@@ -29,11 +31,13 @@ const DETAILED_ZOOM = 14;
 export const useMapStore = create<MapState>((set) => ({
   center: DEFAULT_CENTER,
   zoom: DEFAULT_ZOOM,
+  bounds: null,
   userLocation: null,
   permissionStatus: 'prompt',
 
   setCenter: (center) => set({ center }),
   setZoom: (zoom) => set({ zoom }),
+  setBounds: (bounds) => set({ bounds }),
   setUserLocation: (location) => set({ userLocation: location }),
   setPermissionStatus: (status) => set({ permissionStatus: status }),
 
@@ -57,7 +61,7 @@ export const useMapStore = create<MapState>((set) => ({
         });
       },
       (error) => {
-        console.error('Geolocation error:', error);
+        console.warn('Geolocation error:', error.message || error);
         set({ permissionStatus: 'denied' });
       },
       {

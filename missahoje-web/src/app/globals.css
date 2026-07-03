@@ -1,10 +1,10 @@
 @import "tailwindcss";
 
 @theme inline {
-  --color-primary: hsl(215, 80%, 40%); /* Deep Marian Blue */
+  --color-primary: #0f2c59; /* Marian Blue */
   --color-primary-foreground: #ffffff;
   
-  --color-secondary: hsl(45, 90%, 60%); /* Sacred Gold */
+  --color-secondary: #d4af37; /* Vatican Gold */
   --color-secondary-foreground: #1a1a1a;
   
   --color-glass-surface: rgba(255, 255, 255, 0.15);
@@ -28,8 +28,8 @@
 }
 
 :root {
-  --background: #0f172a;
-  --foreground: #ffffff;
+  --background: #fcfaf8; /* Parchment */
+  --foreground: #1a1a1a;
 }
 
 body {
@@ -40,9 +40,6 @@ body {
   background-attachment: fixed;
   color: var(--foreground);
   font-family: var(--font-inter), Arial, Helvetica, sans-serif;
-  
-  /* Dimmer Overlay para garantir legibilidade dos vidros sobre a foto */
-  box-shadow: inset 0 0 0 2000px rgba(15, 23, 42, 0.65);
 }
 
 /* Utilitários Glassmorphism Base */

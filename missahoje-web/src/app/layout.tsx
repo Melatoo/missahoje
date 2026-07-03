@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Inter, Cinzel, Lora } from 'next/font/google';
 import Providers from '../lib/react-query';
+import { LayoutShell } from '../components/layouts/LayoutShell';
 import './globals.css';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
@@ -21,7 +22,9 @@ export default function RootLayout({
     <html lang="pt-BR">
       <body className={`${inter.variable} ${cinzel.variable} ${lora.variable}`}>
         <Providers>
-          {children}
+          <LayoutShell>
+            {children}
+          </LayoutShell>
         </Providers>
       </body>
     </html>
