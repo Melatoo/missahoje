@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MissaHoje - Brainstorming de UI/UX</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --secondary: #1e40af;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --accent: #f59e0b;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            margin: 0;
+            padding: 40px 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            transition: transform 0.2s;
+            border-top: 4px solid var(--primary);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card h3 {
+            margin-top: 0;
+            color: var(--secondary);
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .insight {
+            background: #eff6ff;
+            border-left: 4px solid var(--primary);
+            padding: 16px;
+            margin: 16px 0;
+            border-radius: 0 8px 8px 0;
+            font-style: italic;
+        }
+
+        .moscow-section {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            margin-top: 40px;
+        }
+
+        .moscow-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .moscow-item {
+            padding: 20px;
+            border-radius: 12px;
+        }
+
+        .must { background: #fee2e2; border-left: 4px solid #ef4444; }
+        .should { background: #fef3c7; border-left: 4px solid #f59e0b; }
+        .could { background: #e0e7ff; border-left: 4px solid #6366f1; }
+        .wont { background: #f3f4f6; border-left: 4px solid #9ca3af; }
+
+        .moscow-item h4 {
+            margin-top: 0;
+            margin-bottom: 12px;
+            font-size: 1.1rem;
+        }
+
+        ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .badge {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 16px;
+        }
+
+        @media (max-width: 600px) {
+            .moscow-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <span class="badge">Sessão Concluída</span>
+            <h1>MissaHoje UI/UX</h1>
+            <p class="subtitle">Descobertas e Decisões de Brainstorming (Modo Parceiro Criativo)</p>
+        </header>
+
+        <div class="grid">
+            <div class="card">
+                <h3>🎯 Job to Be Done</h3>
+                <p><strong>O que o usuário quer:</strong> Descobrir igrejas locais, horários de missas próximas e conhecer novos párocos na região.</p>
+                <div class="insight">
+                    Decisão: Rejeitada a ideia de "rede social". O foco é ser utilitário, direto ao ponto. Uma UI centrada em um mapa (estilo Airbnb), onde clicar no "pin" abre detalhes vitais da paróquia.
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>🧠 Empathy Map</h3>
+                <p><strong>O que o usuário sente:</strong> Ansiedade sobre o desconhecido (Tem estacionamento? É seguro? Como é o estilo da liturgia?).</p>
+                <div class="insight">
+                    Decisão: Como desenvolvedor solo, o escopo será restrito à estrutura da Igreja (acessibilidade, estacionamento) e não aos detalhes granulares de cada missa para garantir a entrega da v1.0.
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>🐝 Polinização Cruzada</h3>
+                <p><strong>De onde roubar ideias:</strong> Soluções de listagem baseadas em geolocalização e proximidade.</p>
+                <div class="insight">
+                    Decisão: Rejeitado qualquer sistema de "avaliação" ou ranking de igrejas. Adotado o modelo do <strong>TotalPass</strong>: ordenação estrita e imparcial por proximidade física e busca por nome.
+                </div>
+            </div>
+        </div>
+
+        <div class="moscow-section">
+            <h2 style="text-align: center; margin-bottom: 30px; color: var(--text-main);">Convergência: O MVP do MissaHoje (MoSCoW)</h2>
+            
+            <div class="moscow-grid">
+                <div class="moscow-item must">
+                    <h4 style="color: #b91c1c;">🔴 MUST HAVE (Obrigatório)</h4>
+                    <ul>
+                        <li>Mapa em tela cheia como interface primária.</li>
+                        <li>Ordenação/Exibição estrita por Geolocalização (mais próximas primeiro).</li>
+                        <li>Pesquisa de Igrejas pelo nome.</li>
+                        <li>Card/Modal inferior que abre ao clicar no pin da paróquia.</li>
+                    </ul>
+                </div>
+
+                <div class="moscow-item should">
+                    <h4 style="color: #b45309;">🟡 SHOULD HAVE (Importante)</h4>
+                    <ul>
+                        <li>Navegação clara para as funcionalidades que já existem no backend.</li>
+                        <li>Filtros rápidos e básicos no mapa.</li>
+                    </ul>
+                </div>
+
+                <div class="moscow-item could">
+                    <h4 style="color: #4338ca;">🔵 COULD HAVE (Para o Futuro)</h4>
+                    <ul>
+                        <li>Badges visuais no card (Estacionamento, Acessibilidade, etc).</li>
+                        <li>Informações e alertas granulares específicos de horários de missas.</li>
+                    </ul>
+                </div>
+
+                <div class="moscow-item wont">
+                    <h4 style="color: #374151;">⚫ WON'T HAVE (Descartado)</h4>
+                    <ul>
+                        <li>Rede social, feeds ou stories comunitários.</li>
+                        <li>Sistema de avaliação (estrelinhas) ou ranking de qualidade.</li>
+                        <li>Validação de informações através de crowdsourcing (por agora).</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

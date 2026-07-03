@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MissaHoje - UX Mockup 3 (Sacred)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500&display=swap');
+        
+        /* Fontes Sagradas */
+        .font-heading { font-family: 'Cinzel', serif; }
+        .font-serif { font-family: 'Lora', serif; }
+        .font-sans { font-family: 'Inter', sans-serif; }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        sacred: {
+                            50: '#fcfaf8',  // Off-white/Parchment
+                            100: '#f3ece1',
+                            200: '#e5d5c0',
+                            300: '#d4af37', // Vatican Gold
+                            800: '#2c3e50', // Slate blue/grey
+                            900: '#1a252f', // Deep dark
+                            marian: '#0f2c59' // Deep Marian Blue
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-sacred-100 h-screen flex justify-center items-center p-4 font-sans">
+
+    <!-- Container do Dispositivo (Mobile) -->
+    <div class="relative w-full max-w-[400px] h-[800px] bg-sacred-50 rounded-[32px] shadow-2xl overflow-hidden border-[8px] border-sacred-900 flex flex-col">
+        
+        <!-- Header Image Area (Foto da Igreja) -->
+        <div class="relative h-72 bg-sacred-900">
+            <!-- Imagem com um filtro mais denso/sagrado -->
+            <img src="https://images.unsplash.com/photo-1548625149-fc4a29cf7092?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Igreja" class="w-full h-full object-cover mix-blend-luminosity opacity-80">
+            
+            <div class="absolute inset-0 bg-gradient-to-t from-sacred-900 via-transparent to-black/60"></div>
+            
+            <button class="absolute top-12 left-4 text-white p-2.5 rounded-full hover:bg-white/10 transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+            </button>
+            
+            <!-- Nome sobre a imagem em Serif Clássica -->
+            <div class="absolute bottom-10 left-6 right-6">
+                <h1 class="font-heading text-3xl font-bold text-white leading-tight mb-1 text-shadow">Paróquia São Francisco</h1>
+                <p class="text-sacred-200 font-serif text-sm italic flex items-center gap-2">
+                    <svg class="w-4 h-4 text-sacred-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path></svg>
+                    Centro (a 1.2 km)
+                </p>
+            </div>
+        </div>
+
+        <!-- Conteúdo do Card Expandido -->
+        <div class="flex-grow bg-sacred-50 -mt-6 rounded-t-[24px] relative z-10 px-6 pt-8 overflow-y-auto pb-8 shadow-[0_-10px_20px_rgba(0,0,0,0.2)]">
+            
+            <!-- Badges Elegantes -->
+            <div class="flex gap-2 mb-8 overflow-x-auto scrollbar-hide pb-1">
+                <div class="flex items-center gap-1.5 bg-white border border-sacred-200 px-3 py-1.5 rounded text-xs font-medium text-sacred-800 whitespace-nowrap shadow-sm uppercase tracking-wider">
+                    <span class="text-sacred-300">🚗</span> Estacionamento
+                </div>
+                <div class="flex items-center gap-1.5 bg-white border border-sacred-200 px-3 py-1.5 rounded text-xs font-medium text-sacred-800 whitespace-nowrap shadow-sm uppercase tracking-wider">
+                    <span class="text-sacred-300">♿</span> Acessibilidade
+                </div>
+            </div>
+
+            <!-- Divisor Sagrado (Ornamental) -->
+            <div class="flex items-center justify-center gap-4 mb-8">
+                <div class="h-px bg-sacred-200 flex-grow"></div>
+                <div class="w-2 h-2 rotate-45 bg-sacred-300"></div>
+                <div class="h-px bg-sacred-200 flex-grow"></div>
+            </div>
+
+            <!-- Horários de Missas -->
+            <h2 class="font-heading text-xl font-bold text-sacred-marian mb-6 text-center">Horários de Missas</h2>
+
+            <!-- Hoje (Destacado) -->
+            <div class="bg-white border-t-2 border-sacred-300 rounded-lg p-5 mb-6 shadow-sm">
+                <div class="flex justify-between items-center mb-4 border-b border-sacred-100 pb-3">
+                    <h3 class="font-serif font-bold text-sacred-900 text-lg">Hoje, Quinta-feira</h3>
+                    <span class="text-sacred-300 text-[10px] uppercase font-bold tracking-widest border border-sacred-300 px-2 py-0.5 rounded-sm">Próxima</span>
+                </div>
+                
+                <div class="flex flex-col gap-3">
+                    <!-- Passado -->
+                    <div class="flex justify-between items-center opacity-40">
+                        <span class="font-sans font-medium text-sacred-800 line-through">07:00</span>
+                        <span class="text-xs font-serif italic text-sacred-800">Concluída</span>
+                    </div>
+                    
+                    <!-- Destaque (Próxima Missa) -->
+                    <div class="flex justify-between items-center bg-sacred-marian text-white p-3 rounded shadow-md -mx-2 px-4">
+                        <span class="font-heading text-lg font-bold tracking-wider">18:30</span>
+                        <span class="text-xs font-sans uppercase tracking-widest text-sacred-200">Daqui a 30 min</span>
+                    </div>
+                    
+                    <!-- Futuro -->
+                    <div class="flex justify-between items-center pt-1">
+                        <span class="font-sans font-medium text-sacred-800">20:00</span>
+                        <span class="text-xs font-serif italic text-sacred-800">Padre Antônio</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Outros Dias (Mais discretos) -->
+            <div class="space-y-4">
+                <div class="flex justify-between items-center border-b border-sacred-200 pb-2">
+                    <h3 class="font-serif font-medium text-sacred-800">Sexta-feira</h3>
+                    <div class="flex gap-3 font-sans text-sm text-sacred-900">
+                        <span>07:00</span>
+                        <span>18:30</span>
+                    </div>
+                </div>
+                
+                <div class="flex justify-between items-center border-b border-sacred-200 pb-2">
+                    <h3 class="font-serif font-medium text-sacred-800">Sábado</h3>
+                    <div class="flex gap-3 font-sans text-sm text-sacred-900">
+                        <span>16:00</span>
+                        <span>18:00</span>
+                        <span>19:30</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    
+    <div class="hidden md:flex flex-col ml-12 max-w-md">
+        <div class="bg-white p-8 rounded-sm shadow-xl border-t-4 border-sacred-300">
+            <h1 class="font-heading text-2xl font-bold text-sacred-marian mb-4">Mockup 3: UX "Sagrado"</h1>
+            <p class="font-serif text-sacred-800 mb-6 italic">Uma identidade visual que evoca reverência e tradição, sem perder a usabilidade utilitária.</p>
+            
+            <h3 class="font-bold text-sacred-900 mb-2 uppercase text-sm tracking-widest">O que mudou:</h3>
+            <ul class="space-y-3 mb-6 text-sm font-sans text-sacred-800">
+                <li class="flex items-start gap-2"><span class="text-sacred-300">✦</span> <strong>Tipografia:</strong> Uso de fontes Serifadas Clássicas (Cinzel/Lora) para títulos, evocando hinários e escrituras. Fonte sem-serifa (Inter) mantida para leitura de dados.</li>
+                <li class="flex items-start gap-2"><span class="text-sacred-300">✦</span> <strong>Cores:</strong> Substituímos o "azul startup pastel" por cores litúrgicas e arquitetônicas: <strong>Azul Mariano Escuro</strong> e <strong>Ouro do Vaticano (Gold)</strong>, sobre um fundo levemente "pergaminho" (off-white).</li>
+                <li class="flex items-start gap-2"><span class="text-sacred-300">✦</span> <strong>Geometria:</strong> Menos cantos arredondados gigantes. Usamos linhas retas e divisores ornamentais sutis para dar um ar mais sóbrio e adulto.</li>
+                <li class="flex items-start gap-2"><span class="text-sacred-300">✦</span> <strong>Lista de Horários:</strong> Em vez de "pílulas soltas", os horários são listados como um "missal", com a missa mais próxima chamando toda a atenção com uma barra sólida escura.</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
