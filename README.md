@@ -50,7 +50,7 @@ O ecossistema do projeto foi desenhado para rodar facilmente via **Docker**. Tud
    *(Use `docker-compose up -d` para rodar em segundo plano, liberando o terminal).*
 
 3. O sistema fará o download das imagens, instalará as dependências do Node e iniciará o servidor. 
-   A API estará disponível no seu host através de: **`http://localhost:3000`**
+   A API estará disponível no seu host através de: **`http://localhost:3001`**
 
 > **Dica:** O container da API utiliza volumes para mapear o seu código local. Ele roda em *watch mode*, portanto, qualquer alteração que você fizer nos arquivos da pasta `src/` refletirá imediatamente no container sem precisar reiniciá-lo!
 

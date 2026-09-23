@@ -52,7 +52,7 @@ async function seed() {
     });
 
     if (!loginRes.ok) {
-        console.error('❌ Falha ao logar na API. Verifique se o servidor está rodando na porta 3000.');
+        console.error('❌ Falha ao logar na API. Verifique se o servidor está rodando na porta 3001.');
         const err = await loginRes.text();
         console.error(err);
         process.exit(1);
