@@ -11,35 +11,46 @@ export interface PaginatedResponse<T> {
   meta: PaginationMeta;
 }
 
-export interface Cidade {
+interface Timestamps {
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+}
+
+export interface Cidade extends Timestamps {
   id: string;
   nome: string;
   estado: string;
-  ibge_id: string;
+  slug: string;
+  comunidades?: Comunidade[];
 }
 
-export interface Paroquia {
+export interface Paroquia extends Timestamps {
   id: string;
   nome: string;
-  cidade_id: string;
-  cidade?: Cidade;
+  telefone: string | null;
+  siteOuRedeSocial: string | null;
+  comunidades?: Comunidade[];
 }
 
-export interface Comunidade {
+export interface Comunidade extends Timestamps {
   id: string;
+  paroquia_id: string;
+  cidade_id: string | null;
   nome: string;
   endereco: string;
   bairro: string;
-  cep: string;
-  paroquia_id: string;
+  link_google_maps: string | null;
   paroquia?: Paroquia;
+  cidade?: Cidade;
+  horarios_missa?: HorarioMissa[];
 }
 
-export interface HorarioMissa {
+export interface HorarioMissa extends Timestamps {
   id: string;
   comunidade_id: string;
   dia_semana: number;
   horario: string;
-  observacao?: string;
+  observacao: string | null;
   comunidade?: Comunidade;
 }
