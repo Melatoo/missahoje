@@ -3,43 +3,43 @@ import { resolve } from 'node:path';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 const compose = readFileSync(resolve(__dirname, '../../../missahoje-api/docker-compose.yml'), 'utf8');
-const servicoApi = compose.split(/^  db:/m)[0];
+const apiService = compose.split(/^  db:/m)[0];
 
-function portaPublicadaDaApi() {
-  const porta = servicoApi.match(/^\s+-\s*"(\d+):\d+"/m)?.[1];
-  if (!porta) throw new Error('Porta da API não encontrada no docker-compose.yml');
-  return porta;
+function apiPublishedPort() {
+  const port = apiService.match(/^\s+-\s*"(\d+):\d+"/m)?.[1];
+  if (!port) throw new Error('Porta da API não encontrada no docker-compose.yml');
+  return port;
 }
 
 describe('URL base da API', () => {
-  it('a API escuta, dentro do container, na porta que o docker-compose encaminha', () => {
-    const portaDoContainer = servicoApi.match(/^\s+-\s*"\d+:(\d+)"/m)?.[1];
-
-    expect(servicoApi).toMatch(new RegExp(`^\\s+-\\s*PORT=${portaDoContainer}$`, 'm'));
-  });
-
   afterEach(() => {
     vi.unstubAllEnvs();
     vi.resetModules();
+  });
+
+  it('a API escuta, dentro do container, na porta que o docker-compose encaminha', () => {
+    const containerPort = apiService.match(/^\s+-\s*"\d+:(\d+)"/m)?.[1];
+
+    expect(apiService).toMatch(new RegExp(`^\\s+-\\s*PORT=${containerPort}$`, 'm'));
   });
 
   it('sem NEXT_PUBLIC_API_URL, aponta para a porta publicada pelo docker-compose da API', async () => {
     vi.stubEnv('NEXT_PUBLIC_API_URL', '');
     const { api } = await import('./axios');
 
-    expect(api.defaults.baseURL).toBe(`http://localhost:${portaPublicadaDaApi()}`);
+    expect(api.defaults.baseURL).toBe(`http://localhost:${apiPublishedPort()}`);
   });
 
   it('.env.example aponta para a porta publicada pelo docker-compose da API', () => {
-    const exemplo = readFileSync(resolve(__dirname, '../../.env.example'), 'utf8');
+    const envExample = readFileSync(resolve(__dirname, '../../.env.example'), 'utf8');
 
-    expect(exemplo).toContain(`NEXT_PUBLIC_API_URL=http://localhost:${portaPublicadaDaApi()}`);
+    expect(envExample).toContain(`NEXT_PUBLIC_API_URL=http://localhost:${apiPublishedPort()}`);
   });
 
   it('respeita NEXT_PUBLIC_API_URL quando definida', async () => {
-    vi.stubEnv('NEXT_PUBLIC_API_URL', 'https://api.exemplo.com');
+    vi.stubEnv('NEXT_PUBLIC_API_URL', 'https://api.example.com');
     const { api } = await import('./axios');
 
-    expect(api.defaults.baseURL).toBe('https://api.exemplo.com');
+    expect(api.defaults.baseURL).toBe('https://api.example.com');
   });
 });
