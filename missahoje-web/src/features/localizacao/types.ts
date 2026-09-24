@@ -8,3 +8,14 @@ export interface Cidade extends Timestamps {
   slug: string;
   comunidades?: Comunidade[];
 }
+
+export interface Coordinates {
+  lat: number;
+  lng: number;
+}
+
+export type PermissionStatus = 'prompt' | 'granted' | 'denied';
+
+export type CidadeSelecionada = Pick<Cidade, 'id' | 'nome' | 'estado' | 'slug'>;
+
+export type OrigemCidade = 'gps' | 'ip' | 'manual';
