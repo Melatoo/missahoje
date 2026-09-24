@@ -1,4 +1,4 @@
-import { MapComponent } from '../features/map/components/MapComponent';
+import { MapComponent } from '../features/mapa/components/MapComponent';
 
 export default function Home() {
   return (

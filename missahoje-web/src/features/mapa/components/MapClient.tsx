@@ -2,11 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
-import { useQuery } from '@tanstack/react-query';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { useMapStore } from '../store/useMapStore';
-import { getParishesInBounds } from '../services/parishMapService';
+import type { MappedComunidade } from '../types';
 import { MapPin } from './MapPin';
 
 // Fix for default marker icon in Leaflet + Next.js
@@ -55,19 +54,16 @@ function MapEventsHandler() {
   return null;
 }
 
-export default function MapClient() {
+interface MapClientProps {
+  pins?: MappedComunidade[];
+}
+
+export default function MapClient({ pins = [] }: MapClientProps) {
   const center = useMapStore((state) => state.center);
   const zoom = useMapStore((state) => state.zoom);
-  const bounds = useMapStore((state) => state.bounds);
   const userLocation = useMapStore((state) => state.userLocation);
 
-  const { data: parishes = [] } = useQuery({
-    queryKey: ['parishes', bounds],
-    queryFn: () => getParishesInBounds(bounds),
-    enabled: !!bounds,
-  });
-
-  const [activeParishId, setActiveParishId] = useState<string | null>(null);
+  const [activeComunidadeId, setActiveComunidadeId] = useState<string | null>(null);
 
   return (
     <MapContainer
@@ -85,12 +81,12 @@ export default function MapClient() {
         <Marker position={[userLocation.lat, userLocation.lng]} />
       )}
 
-      {parishes.map((parish) => (
+      {pins.map((pin) => (
         <MapPin
-          key={parish.id}
-          parish={parish}
-          isActive={parish.id === activeParishId}
-          onClick={(p) => setActiveParishId(p.id)}
+          key={pin.comunidade.id}
+          pin={pin}
+          isActive={pin.comunidade.id === activeComunidadeId}
+          onClick={(p) => setActiveComunidadeId(p.comunidade.id)}
         />
       ))}
       

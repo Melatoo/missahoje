@@ -1,23 +1,19 @@
 import { create } from 'zustand';
-
-export type Coordinates = {
-  lat: number;
-  lng: number;
-};
+import type { Coordinates, MapBounds } from '../types';
 
 export type PermissionStatus = 'prompt' | 'granted' | 'denied';
 
 interface MapState {
   center: Coordinates;
   zoom: number;
-  bounds: { southWest: Coordinates; northEast: Coordinates } | null;
+  bounds: MapBounds | null;
   userLocation: Coordinates | null;
   permissionStatus: PermissionStatus;
 
   // Actions
   setCenter: (center: Coordinates) => void;
   setZoom: (zoom: number) => void;
-  setBounds: (bounds: { southWest: Coordinates; northEast: Coordinates } | null) => void;
+  setBounds: (bounds: MapBounds | null) => void;
   setUserLocation: (location: Coordinates) => void;
   setPermissionStatus: (status: PermissionStatus) => void;
   requestGeolocation: () => void;
