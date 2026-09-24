@@ -1,9 +1,5 @@
 import type { Comunidade } from '@/features/comunidades/types';
-
-export interface Coordinates {
-  lat: number;
-  lng: number;
-}
+import type { Coordinates } from '@/features/localizacao/types';
 
 export interface MapBounds {
   southWest: Coordinates;
