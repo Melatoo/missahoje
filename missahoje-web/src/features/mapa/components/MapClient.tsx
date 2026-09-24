@@ -5,6 +5,7 @@ import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { useMapStore } from '../store/useMapStore';
+import { useLocalizacaoStore } from '@/features/localizacao/store/useLocalizacaoStore';
 import type { MappedComunidade } from '../types';
 import { MapPin } from './MapPin';
 
@@ -61,7 +62,7 @@ interface MapClientProps {
 export default function MapClient({ pins = [] }: MapClientProps) {
   const center = useMapStore((state) => state.center);
   const zoom = useMapStore((state) => state.zoom);
-  const userLocation = useMapStore((state) => state.userLocation);
+  const userLocation = useLocalizacaoStore((state) => state.coordinates);
 
   const [activeComunidadeId, setActiveComunidadeId] = useState<string | null>(null);
 
