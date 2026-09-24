@@ -1,22 +1,19 @@
 import React from 'react';
+import Link from 'next/link';
+import { Wordmark } from '../Wordmark';
 
 export function LayoutShell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen flex flex-col md:flex-row relative font-sans">
-      {/* Mobile Header / Desktop Sidebar */}
-      <aside className="w-full md:w-80 bg-background/80 backdrop-blur-md border-b md:border-b-0 md:border-r border-white/20 p-6 flex flex-col z-20">
-        <h1 className="font-title text-4xl text-primary font-medium tracking-tight">
-          MissaHoje
-        </h1>
-        <p className="text-sm text-foreground/70 mt-2 font-serif">Encontre missas perto de você</p>
-        
-        {/* Placeholder for future sidebar content (filters, search) */}
-        <div className="mt-8 flex-1">
+    <div className="flex min-h-dvh flex-col">
+      <header className="sticky top-0 z-20 border-b bg-background">
+        <div className="mx-auto flex h-14 w-full max-w-xl items-center px-gutter">
+          <Link href="/" className="inline-flex min-h-11 items-center text-brand">
+            <Wordmark className="h-5 w-auto" />
+          </Link>
         </div>
-      </aside>
+      </header>
 
-      {/* Main Content Area (Map + Overlays) */}
-      <main className="flex-1 relative z-10 bg-transparent">
+      <main className="mx-auto flex w-full max-w-xl flex-1 flex-col px-gutter pt-6 pb-10">
         {children}
       </main>
     </div>
