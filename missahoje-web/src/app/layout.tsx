@@ -1,11 +1,10 @@
 import type { Metadata } from 'next';
-import { Inter, Cinzel, Lora } from 'next/font/google';
+import { Inter, Lora } from 'next/font/google';
 import Providers from '../lib/react-query';
 import { LayoutShell } from '../components/layouts/LayoutShell';
 import './globals.css';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
-const cinzel = Cinzel({ subsets: ['latin'], variable: '--font-cinzel' });
 const lora = Lora({ subsets: ['latin'], variable: '--font-lora' });
 
 export const metadata: Metadata = {
@@ -19,8 +18,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="pt-BR">
-      <body className={`${inter.variable} ${cinzel.variable} ${lora.variable}`}>
+    <html lang="pt-BR" className={`${inter.variable} ${lora.variable}`}>
+      <body>
         <Providers>
           <LayoutShell>
             {children}
