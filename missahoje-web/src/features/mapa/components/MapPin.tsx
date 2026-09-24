@@ -1,17 +1,17 @@
 import { Marker } from 'react-leaflet';
 import L from 'leaflet';
-import { Parish } from '../types';
+import type { MappedComunidade } from '../types';
 import { useMemo } from 'react';
 import { renderToString } from 'react-dom/server';
 import { MapPin as MapPinIcon } from 'lucide-react';
 
 interface MapPinProps {
-  parish: Parish;
+  pin: MappedComunidade;
   isActive?: boolean;
-  onClick?: (parish: Parish) => void;
+  onClick?: (pin: MappedComunidade) => void;
 }
 
-export function MapPin({ parish, isActive = false, onClick }: MapPinProps) {
+export function MapPin({ pin, isActive = false, onClick }: MapPinProps) {
   // We use useMemo to avoid recreating the icon on every render unless isActive changes
   const icon = useMemo(() => {
     // Generate the HTML for the custom div icon
@@ -47,10 +47,10 @@ export function MapPin({ parish, isActive = false, onClick }: MapPinProps) {
 
   return (
     <Marker
-      position={[parish.location.lat, parish.location.lng]}
+      position={[pin.position.lat, pin.position.lng]}
       icon={icon}
       eventHandlers={{
-        click: () => onClick?.(parish),
+        click: () => onClick?.(pin),
       }}
     />
   );
