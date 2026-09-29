@@ -1,4 +1,3 @@
-/** "Agora", "Daqui a 25 min", "Daqui a 1h 20min", "Daqui a 2 dias". */
 export function formatarDaquiA(minutos: number): string {
   if (minutos <= 0) return 'Agora';
   if (minutos < 60) return `Daqui a ${minutos} min`;

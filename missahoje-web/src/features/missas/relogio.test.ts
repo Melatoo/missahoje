@@ -3,14 +3,12 @@ import { horarioEmMinutos, relogioLocal } from './relogio';
 
 describe('relógio local', () => {
   it('lê dia e hora no fuso pedido', () => {
-    // domingo 14:30 UTC = domingo 11:30 em São Paulo (UTC-3)
     const agora = new Date('2026-09-27T14:30:00Z');
 
     expect(relogioLocal(agora, 'America/Sao_Paulo')).toEqual({ diaSemana: 0, minutos: 11 * 60 + 30 });
   });
 
   it('o mesmo instante cai em outro dia dependendo do fuso', () => {
-    // segunda 02:30 UTC = domingo 23:30 em São Paulo e 22:30 em Manaus
     const agora = new Date('2026-09-28T02:30:00Z');
 
     expect(relogioLocal(agora, 'UTC')).toEqual({ diaSemana: 1, minutos: 150 });

@@ -9,17 +9,13 @@ export type ItemAgenda =
 
 export interface DiaAgenda {
   diaSemana: number;
-  /** 0 = hoje, 1 = amanhã… */
   deslocamento: number;
   itens: ItemAgenda[];
 }
 
 export interface Agenda {
-  /** Hoje (se tiver missa) e, quando hoje já acabou, o próximo dia que tem missa. */
   dias: DiaAgenda[];
-  /** Todas as missas no próximo horário — várias igrejas podem ter missa na mesma hora. */
   proximas: HorarioMissa[];
-  /** `null` só quando não há nenhuma missa cadastrada na semana. */
   minutosAteProxima: number | null;
 }
 
@@ -29,10 +25,6 @@ function missasDoDia(missas: HorarioMissa[], diaSemana: number): HorarioMissa[] 
     .sort((a, b) => horarioEmMinutos(a.horario) - horarioEmMinutos(b.horario));
 }
 
-/**
- * Classifica os horários em passou / próximo / futuro a partir de `agora`.
- * Quando não sobra nenhum horário hoje, emenda no próximo dia que tem missa (até uma semana à frente).
- */
 export function montarAgenda(missas: HorarioMissa[], agora: Relogio): Agenda {
   const hoje = missasDoDia(missas, agora.diaSemana);
   const futurasHoje = hoje.filter((m) => horarioEmMinutos(m.horario) >= agora.minutos);
