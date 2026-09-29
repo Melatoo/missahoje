@@ -19,7 +19,7 @@ export interface Agenda {
   minutosAteProxima: number | null;
 }
 
-function missasDoDia(missas: HorarioMissa[], diaSemana: number): HorarioMissa[] {
+export function missasDoDia(missas: HorarioMissa[], diaSemana: number): HorarioMissa[] {
   return missas
     .filter((m) => m.dia_semana === diaSemana)
     .sort((a, b) => horarioEmMinutos(a.horario) - horarioEmMinutos(b.horario));
