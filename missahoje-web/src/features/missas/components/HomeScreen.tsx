@@ -112,12 +112,14 @@ function TodayAgenda({ agenda }: { agenda: Agenda }) {
       {anuncio && <p className="sr-only">{anuncio}</p>}
       {agenda.dias.map((dia) => {
         const headingId = `dia-${dia.deslocamento}`;
+        const showHeading = agenda.dias.length > 1 || dia.deslocamento > 0;
         return (
           <section
             key={dia.deslocamento}
-            aria-labelledby={agenda.dias.length > 1 ? headingId : undefined}
-            className="flex flex-col gap-3">
-            {agenda.dias.length > 1 && (
+            aria-labelledby={showHeading ? headingId : undefined}
+            className="flex flex-col gap-3"
+          >
+            {showHeading && (
               <h2 id={headingId} className="text-sm font-medium text-muted-foreground">
                 {formatDayHeading(dia.diaSemana, dia.deslocamento)}
               </h2>
@@ -164,11 +166,11 @@ function EmptyNotice({ data, cidadeNome, bairro, query, hoje }: EmptyNoticeProps
     <HomeNotice
       actions={
         <>
-          <Button asChild variant="outline">
-            <Link href={hrefWithDia(query, diaSeguinte === hoje ? null : diaSeguinte)}>
-              Ver {diaSeguinte === hoje ? 'hoje' : formatDayName(diaSeguinte)}
-            </Link>
-          </Button>
+          {diaSeguinte !== hoje && (
+            <Button asChild variant="outline">
+              <Link href={hrefWithDia(query, diaSeguinte)}>Ver {formatDayName(diaSeguinte)}</Link>
+            </Button>
+          )}
           {verTodosOsBairros}
         </>
       }
