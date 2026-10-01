@@ -8,12 +8,24 @@ export function parseNeighborhood(value: string | null): string | null {
   return value?.trim() || null;
 }
 
+function toHref(params: URLSearchParams): string {
+  const query = params.toString();
+  return query ? `/?${query}` : '/';
+}
+
 function hrefWith(current: string, name: string, value: string | null): string {
   const params = new URLSearchParams(current);
   if (value === null) params.delete(name);
   else params.set(name, value);
-  const query = params.toString();
-  return query ? `/?${query}` : '/';
+  return toHref(params);
+}
+
+export function hrefWithCity(current: string, citySlug: string): string {
+  const params = new URLSearchParams(current);
+  params.delete('bairro');
+  params.delete('cidade');
+  const ordered = new URLSearchParams([['cidade', citySlug], ...params]);
+  return toHref(ordered);
 }
 
 export function hrefWithDay(current: string, day: Weekday | null): string {

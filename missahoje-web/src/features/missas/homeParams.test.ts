@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { hrefWithDay, hrefWithNeighborhood, parseDay, parseNeighborhood } from './homeParams';
+import { hrefWithCity, hrefWithDay, hrefWithNeighborhood, parseDay, parseNeighborhood } from './homeParams';
 
 describe('?dia= na URL', () => {
   it.each([
@@ -45,5 +45,13 @@ describe('links que trocam o filtro', () => {
 
   it('remove o bairro', () => {
     expect(hrefWithNeighborhood('bairro=Centro&dia=sexta', null)).toBe('/?dia=sexta');
+  });
+
+  it('trocar de cidade mantém o dia e descarta o bairro da cidade anterior', () => {
+    expect(hrefWithCity('cidade=belo-horizonte&bairro=Savassi&dia=sexta', 'lavras')).toBe('/?cidade=lavras&dia=sexta');
+  });
+
+  it('trocar de cidade sem params só põe a cidade', () => {
+    expect(hrefWithCity('', 'lavras')).toBe('/?cidade=lavras');
   });
 });

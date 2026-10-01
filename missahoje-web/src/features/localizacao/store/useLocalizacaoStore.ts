@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { findCidadeBySlug } from '../cidades';
 import { getCurrentPosition } from '../geolocation';
 import { cidadeCookie, coordinatesCookies, readLocalizacao } from '../persistence';
 import { resolveInitialLocation, type SearchParamsLike } from '../resolveInitialLocation';
@@ -22,6 +23,7 @@ interface LocalizacaoState {
   initialize: (params: SearchParamsLike) => void;
   requestPosition: () => Promise<void>;
   selectCidade: (cidade: CidadeSelecionada, origem: OrigemCidade) => void;
+  resolveLink: (cidades: CidadeSelecionada[]) => void;
 }
 
 function readCookieHeader(): string {
@@ -100,5 +102,20 @@ export const useLocalizacaoStore = create<LocalizacaoState>((set, get) => ({
   selectCidade: (cidade, origem) => {
     writeCookies([cidadeCookie(cidade, origem)]);
     set({ cidade, origemCidade: origem, link: null });
+  },
+
+  resolveLink: (cidades) => {
+    const { link, cidade } = get();
+    if (!link?.cidadeSlug || cidade) return;
+
+    const encontrada = findCidadeBySlug(cidades, link.cidadeSlug);
+    if (encontrada) {
+      const { id, nome, estado, slug } = encontrada;
+      set({ cidade: { id, nome, estado, slug }, origemCidade: null });
+      return;
+    }
+
+    const salva = readLocalizacao(readCookieHeader());
+    set({ cidade: salva.cidade, origemCidade: salva.origemCidade, link: null });
   },
 }));
