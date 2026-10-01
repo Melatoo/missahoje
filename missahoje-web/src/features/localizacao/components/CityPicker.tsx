@@ -3,7 +3,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { ChevronDownIcon, MapPinIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -38,6 +38,7 @@ export function CityPicker() {
   const city = useLocalizacaoStore((state) => state.cidade);
   const selectCidade = useLocalizacaoStore((state) => state.selectCidade);
   const [search, setSearch] = useState('');
+  const triggerRef = useRef<HTMLButtonElement>(null);
 
   const cities = useQuery({ ...cidadesQuery(), enabled: open });
   const results = cities.data ? filterCidades(cities.data, search) : [];
@@ -59,6 +60,7 @@ export function CityPicker() {
     <Popover open={open} onOpenChange={changeOpen}>
       <PopoverTrigger asChild>
         <Button
+          ref={triggerRef}
           variant="ghost"
           aria-label={city ? `Cidade: ${label}. Trocar cidade` : label}
           className="-mr-3 max-w-[60%] gap-1.5 px-3 data-[pending=true]:invisible"
@@ -73,9 +75,8 @@ export function CityPicker() {
         align="end"
         className="w-[calc(100vw-2rem)] max-w-sm p-0"
         onCloseAutoFocus={(event) => {
-          if (!returnFocusTo?.isConnected) return;
           event.preventDefault();
-          returnFocusTo.focus();
+          (returnFocusTo?.isConnected ? returnFocusTo : triggerRef.current)?.focus();
         }}
       >
         <Command ref={syncActiveDescendant} label="Escolher cidade" shouldFilter={false} loop>
