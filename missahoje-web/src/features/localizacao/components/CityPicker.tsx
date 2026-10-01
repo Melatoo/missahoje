@@ -14,6 +14,21 @@ import { useCityPickerStore } from '../store/useCityPickerStore';
 import { useLocalizacaoStore } from '../store/useLocalizacaoStore';
 import type { CidadeSelecionada } from '../types';
 
+function syncActiveDescendant(root: HTMLDivElement | null) {
+  if (!root) return;
+  const sync = () => {
+    const input = root.querySelector('[cmdk-input]');
+    const selected = root.querySelector('[cmdk-item][aria-selected="true"]');
+    if (!input) return;
+    if (selected?.id) input.setAttribute('aria-activedescendant', selected.id);
+    else input.removeAttribute('aria-activedescendant');
+  };
+  sync();
+  const observer = new MutationObserver(sync);
+  observer.observe(root, { subtree: true, childList: true, attributes: true, attributeFilter: ['aria-selected'] });
+  return () => observer.disconnect();
+}
+
 export function CityPicker() {
   const router = useRouter();
   const open = useCityPickerStore((state) => state.open);
@@ -54,7 +69,7 @@ export function CityPicker() {
         </Button>
       </PopoverTrigger>
       <PopoverContent align="end" className="w-[calc(100vw-2rem)] max-w-sm p-0">
-        <Command label="Escolher cidade" shouldFilter={false} loop>
+        <Command ref={syncActiveDescendant} label="Escolher cidade" shouldFilter={false} loop>
           <CommandInput
             value={search}
             onValueChange={setSearch}
