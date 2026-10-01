@@ -10,7 +10,7 @@ export function cidadeLabel({ nome, estado }: Pick<CidadeSelecionada, 'nome' | '
   return `${nome} – ${estado}`;
 }
 
-export function sortCidades<T extends CidadeSelecionada>(cidades: T[]): T[] {
+function sortCidades<T extends CidadeSelecionada>(cidades: T[]): T[] {
   return [...cidades].sort((a, b) => collator.compare(a.nome, b.nome) || collator.compare(a.estado, b.estado));
 }
 

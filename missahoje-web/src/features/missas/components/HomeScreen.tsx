@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
-import { useLinkCity } from '@/features/localizacao/hooks/useLinkCity';
+import { useResolveLinkCity } from '@/features/localizacao/hooks/useResolveLinkCity';
 import { useCityPickerStore } from '@/features/localizacao/store/useCityPickerStore';
 import { useLocalizacaoStore } from '@/features/localizacao/store/useLocalizacaoStore';
 import { localClock } from '../clock';
@@ -33,8 +33,8 @@ export function HomeScreen() {
     if (!initialized) initialize(searchParams);
   }, [initialized, initialize, searchParams]);
 
-  const linkCity = useLinkCity();
-  const openCityPicker = useCityPickerStore((state) => state.setOpen);
+  const linkCity = useResolveLinkCity();
+  const openCityPicker = useCityPickerStore((state) => state.openFrom);
   const now = useNow();
   const clock = useMemo(() => localClock(now), [now]);
   const home = useHomeMasses({ cityId: city?.id ?? null, neighborhood, day, now: clock });
@@ -45,6 +45,7 @@ export function HomeScreen() {
     status: home.status,
     isEmpty: home.isEmpty,
   });
+  const retry = linkCity.status === 'error' ? linkCity.retry : home.retry;
 
   const { data } = home;
   const isToday = data.mode === 'today';
@@ -84,7 +85,7 @@ export function HomeScreen() {
       {view === 'loading' && <MassListSkeleton />}
 
       {view === 'no-city' && (
-        <HomeNotice actions={<Button onClick={() => openCityPicker(true)}>Escolher cidade</Button>}>
+        <HomeNotice actions={<Button onClick={(event) => openCityPicker(event.currentTarget)}>Escolher cidade</Button>}>
           Escolha uma cidade para ver os horários.
         </HomeNotice>
       )}
@@ -92,7 +93,7 @@ export function HomeScreen() {
       {view === 'error' && (
         <HomeNotice
           role="alert"
-          actions={<Button onClick={linkCity.status === 'error' ? linkCity.retry : home.retry}>Tentar de novo</Button>}
+          actions={<Button onClick={retry}>Tentar de novo</Button>}
         >
           Não foi possível carregar os horários. Confira sua conexão e tente de novo.
         </HomeNotice>
@@ -105,7 +106,7 @@ export function HomeScreen() {
           neighborhood={neighborhood}
           query={query}
           today={clock.weekday}
-          onChangeCity={() => openCityPicker(true)}
+          onChangeCity={openCityPicker}
         />
       )}
 
@@ -165,7 +166,7 @@ interface EmptyNoticeProps {
   neighborhood: string | null;
   query: string;
   today: Weekday;
-  onChangeCity: () => void;
+  onChangeCity: (opener: HTMLElement) => void;
 }
 
 function EmptyNotice({ data, cityName, neighborhood, query, today, onChangeCity }: EmptyNoticeProps) {
@@ -182,7 +183,7 @@ function EmptyNotice({ data, cityName, neighborhood, query, today, onChangeCity 
         actions={
           <>
             {seeAllNeighborhoods}
-            <Button variant={neighborhood ? 'outline' : 'default'} onClick={onChangeCity}>
+            <Button variant={neighborhood ? 'outline' : 'default'} onClick={(event) => onChangeCity(event.currentTarget)}>
               Trocar cidade
             </Button>
           </>

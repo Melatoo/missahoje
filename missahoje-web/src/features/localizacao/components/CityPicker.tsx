@@ -7,9 +7,9 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { hrefWithCity } from '@/features/missas/homeParams';
 import { cidadesQuery } from '../api';
 import { cidadeLabel, filterCidades } from '../cidades';
+import { hrefWithCity } from '../cityHref';
 import { useCityPickerStore } from '../store/useCityPickerStore';
 import { useLocalizacaoStore } from '../store/useLocalizacaoStore';
 import type { CidadeSelecionada } from '../types';
@@ -33,6 +33,7 @@ export function CityPicker() {
   const router = useRouter();
   const open = useCityPickerStore((state) => state.open);
   const setOpen = useCityPickerStore((state) => state.setOpen);
+  const returnFocusTo = useCityPickerStore((state) => state.returnFocusTo);
   const initialized = useLocalizacaoStore((state) => state.initialized);
   const city = useLocalizacaoStore((state) => state.cidade);
   const selectCidade = useLocalizacaoStore((state) => state.selectCidade);
@@ -68,7 +69,15 @@ export function CityPicker() {
           <ChevronDownIcon aria-hidden className="opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent align="end" className="w-[calc(100vw-2rem)] max-w-sm p-0">
+      <PopoverContent
+        align="end"
+        className="w-[calc(100vw-2rem)] max-w-sm p-0"
+        onCloseAutoFocus={(event) => {
+          if (!returnFocusTo?.isConnected) return;
+          event.preventDefault();
+          returnFocusTo.focus();
+        }}
+      >
         <Command ref={syncActiveDescendant} label="Escolher cidade" shouldFilter={false} loop>
           <CommandInput
             value={search}

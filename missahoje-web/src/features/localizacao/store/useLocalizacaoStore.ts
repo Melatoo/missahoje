@@ -24,6 +24,7 @@ interface LocalizacaoState {
   requestPosition: () => Promise<void>;
   selectCidade: (cidade: CidadeSelecionada, origem: OrigemCidade) => void;
   resolveLink: (cidades: CidadeSelecionada[]) => void;
+  abandonLink: () => void;
 }
 
 function readCookieHeader(): string {
@@ -33,6 +34,11 @@ function readCookieHeader(): string {
 function writeCookies(cookies: string[]) {
   if (typeof document === 'undefined') return;
   for (const cookie of cookies) document.cookie = cookie;
+}
+
+function savedCityWithoutLink(): Pick<LocalizacaoState, 'cidade' | 'origemCidade' | 'link'> {
+  const { cidade, origemCidade } = readLocalizacao(readCookieHeader());
+  return { cidade, origemCidade, link: null };
 }
 
 export const useLocalizacaoStore = create<LocalizacaoState>((set, get) => ({
@@ -46,14 +52,17 @@ export const useLocalizacaoStore = create<LocalizacaoState>((set, get) => ({
   link: null,
 
   initialize: (params) => {
-    const inicial = resolveInitialLocation(params, readLocalizacao(readCookieHeader()));
+    const salva = readLocalizacao(readCookieHeader());
+    const inicial = resolveInitialLocation(params, salva);
 
     if (inicial.origem === 'url') {
+      const cidadeSalva =
+        inicial.cidadeSlug && salva.cidade ? findCidadeBySlug([salva.cidade], inicial.cidadeSlug) : null;
       set({
         initialized: true,
         coordinates: inicial.coordinates,
-        cidade: null,
-        origemCidade: null,
+        cidade: cidadeSalva,
+        origemCidade: cidadeSalva ? salva.origemCidade : null,
         link: { cidadeSlug: inicial.cidadeSlug, bairro: inicial.bairro },
       });
       return;
@@ -110,12 +119,18 @@ export const useLocalizacaoStore = create<LocalizacaoState>((set, get) => ({
 
     const encontrada = findCidadeBySlug(cidades, link.cidadeSlug);
     if (encontrada) {
-      const { id, nome, estado, slug } = encontrada;
-      set({ cidade: { id, nome, estado, slug }, origemCidade: null });
+      set({ cidade: encontrada, origemCidade: null });
       return;
     }
 
-    const salva = readLocalizacao(readCookieHeader());
-    set({ cidade: salva.cidade, origemCidade: salva.origemCidade, link: null });
+    set(savedCityWithoutLink());
+  },
+
+  abandonLink: () => {
+    const { link, cidade } = get();
+    if (!link?.cidadeSlug || cidade) return;
+
+    const salva = savedCityWithoutLink();
+    if (salva.cidade) set(salva);
   },
 }));

@@ -19,3 +19,5 @@ export type PermissionStatus = 'prompt' | 'granted' | 'denied';
 export type CidadeSelecionada = Pick<Cidade, 'id' | 'nome' | 'estado' | 'slug'>;
 
 export type OrigemCidade = 'gps' | 'ip' | 'manual';
+
+export type LinkCityStatus = 'pending' | 'error' | null;

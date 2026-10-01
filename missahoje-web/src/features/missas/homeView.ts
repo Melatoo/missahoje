@@ -1,10 +1,12 @@
+import type { LinkCityStatus } from '@/features/localizacao/types';
+
 export type FetchStatus = 'pending' | 'error' | 'success';
 
 export type HomeView = 'loading' | 'no-city' | 'error' | 'empty' | 'ready';
 
 export interface HomeViewInput {
   initialized: boolean;
-  linkCity: Exclude<FetchStatus, 'success'> | null;
+  linkCity: LinkCityStatus;
   hasCity: boolean;
   status: FetchStatus;
   isEmpty: boolean;
