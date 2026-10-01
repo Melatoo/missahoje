@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, Length, Matches } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsString, Length, Matches, Max, Min } from 'class-validator';
 
 export class CreateCidadeDto {
     @IsNotEmpty({ message: 'O nome da cidade é obrigatório.' })
@@ -16,4 +16,14 @@ export class CreateCidadeDto {
         message: 'O slug deve conter apenas letras minúsculas, números e hifens.',
     })
     slug: string;
+
+    @IsNumber({}, { message: 'A latitude do centro da cidade é obrigatória.' })
+    @Min(-90)
+    @Max(90)
+    latitude: number;
+
+    @IsNumber({}, { message: 'A longitude do centro da cidade é obrigatória.' })
+    @Min(-180)
+    @Max(180)
+    longitude: number;
 }

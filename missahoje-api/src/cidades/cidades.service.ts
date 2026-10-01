@@ -1,10 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { IsNull, Not, Repository } from 'typeorm';
 import { paginate, Pagination } from 'nestjs-typeorm-paginate';
 import { CreateCidadeDto } from './dto/create-cidade.dto';
+import { GetCidadeProximaDto } from './dto/get-cidade-proxima.dto';
 import { UpdateCidadeDto } from './dto/update-cidade.dto';
 import { Cidade } from './entities/cidade.entity';
+import { findNearest } from './nearest';
 import { PaginationDto } from '../common/dto/pagination.dto';
 
 @Injectable()
@@ -24,6 +26,17 @@ export class CidadesService {
       page: options.page || 1,
       limit: options.limit || 100,
     });
+  }
+
+  async findNearest({ lat, lng }: GetCidadeProximaDto) {
+    const cidades = await this.cidadesRepository.find({
+      where: { latitude: Not(IsNull()), longitude: Not(IsNull()) },
+    });
+    const cidade = findNearest(cidades, { lat, lng });
+    if (!cidade) {
+      throw new NotFoundException('Nenhuma cidade atendida perto dessa posição');
+    }
+    return cidade;
   }
 
   async findOne(id: string) {

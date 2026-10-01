@@ -24,6 +24,12 @@ export class Cidade {
     @Column({ type: 'varchar', nullable: false, unique: true })
     slug: string;
 
+    @Column({ type: 'double precision', nullable: true })
+    latitude: number | null;
+
+    @Column({ type: 'double precision', nullable: true })
+    longitude: number | null;
+
     @DeleteDateColumn({ name: 'deleted_at' })
     deletedAt: Date;
 

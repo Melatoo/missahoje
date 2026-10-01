@@ -87,6 +87,8 @@ async function seed() {
         nome: 'Lavras',
         estado: 'MG',
         slug: 'lavras-mg',
+        latitude: -21.2456,
+        longitude: -44.9997,
     });
 
     if (!cidade) {
