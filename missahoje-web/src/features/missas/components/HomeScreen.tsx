@@ -111,8 +111,7 @@ function TodaySchedule({ schedule }: { schedule: Schedule }) {
 
   return (
     <div className="flex flex-col gap-6">
-      {announcement && <p className="sr-only">{announcement}</p>}
-      {schedule.days.map((day) => {
+      {schedule.days.map((day, index) => {
         const headingId = `day-${day.offset}`;
         const showHeading = schedule.days.length > 1 || day.offset > 0;
         return (
@@ -127,6 +126,7 @@ function TodaySchedule({ schedule }: { schedule: Schedule }) {
               </h2>
             )}
             <ol aria-label={formatDayHeading(day.weekday, day.offset)} className="flex flex-col gap-3">
+              {index === 0 && announcement && <li className="sr-only">{announcement}</li>}
               {day.items.map((item) => (
                 <MassCard
                   key={item.mass.id}
@@ -160,7 +160,11 @@ function EmptyNotice({ data, cityName, neighborhood, query, today }: EmptyNotice
   );
 
   if (data.mode === 'today') {
-    return <HomeNotice actions={seeAllNeighborhoods}>Nenhuma missa cadastrada {where}.</HomeNotice>;
+    return (
+      <HomeNotice actions={seeAllNeighborhoods}>
+        Ainda não há horários de missa cadastrados {where}, em nenhum dia da semana.
+      </HomeNotice>
+    );
   }
 
   const nextDay = addDays(data.weekday, 1);

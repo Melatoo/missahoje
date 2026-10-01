@@ -15,12 +15,10 @@ export async function findNextDayWithMasses(
   from: Weekday,
   fetchDay: (weekday: Weekday) => Promise<HorarioMissa[]>,
 ): Promise<NextDay | null> {
-  for (let d = 1; d <= 7; d++) {
-    const weekday = addDays(from, d);
-    const masses = await fetchDay(weekday);
-    if (masses.length > 0) return { weekday, masses };
-  }
-  return null;
+  const weekdays = Array.from({ length: 7 }, (_, i) => addDays(from, i + 1));
+  const results = await Promise.all(weekdays.map((weekday) => fetchDay(weekday)));
+  const index = results.findIndex((masses) => masses.length > 0);
+  return index === -1 ? null : { weekday: weekdays[index], masses: results[index] };
 }
 
 export function mergeNextDay(today: HorarioMissa[], next: NextDay | null): HorarioMissa[] {

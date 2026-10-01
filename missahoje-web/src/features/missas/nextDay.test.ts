@@ -28,12 +28,15 @@ describe('o dia acabou?', () => {
 });
 
 describe('busca do próximo dia com missa', () => {
-  it('para no primeiro dia que tem missa', async () => {
-    const byDay: Partial<Record<Weekday, HorarioMissa[]>> = { 3: [mass('wed', 3, '19:00')] };
+  it('busca a semana de uma vez e fica com o primeiro dia que tem missa', async () => {
+    const byDay: Partial<Record<Weekday, HorarioMissa[]>> = {
+      3: [mass('wed', 3, '19:00')],
+      5: [mass('fri', 5, '19:00')],
+    };
     const fetchDay = vi.fn(async (weekday: Weekday) => byDay[weekday] ?? []);
 
     await expect(findNextDayWithMasses(1, fetchDay)).resolves.toEqual({ weekday: 3, masses: byDay[3] });
-    expect(fetchDay.mock.calls.map(([weekday]) => weekday)).toEqual([2, 3]);
+    expect(fetchDay.mock.calls.map(([weekday]) => weekday)).toEqual([2, 3, 4, 5, 6, 0, 1]);
   });
 
   it('sábado vira domingo', async () => {

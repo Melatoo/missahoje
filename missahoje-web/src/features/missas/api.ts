@@ -24,6 +24,7 @@ export function massesOfDayQuery(query: MassesOfDayQuery) {
   return queryOptions({
     queryKey: ['masses', query.cityId, query.neighborhood, query.weekday],
     queryFn: () => fetchMassesOfDay(query),
+    retry: 1,
   });
 }
 
@@ -34,5 +35,6 @@ export function nextDayWithMassesQuery(query: MassesOfDayQuery, queryClient: Que
       findNextDayWithMasses(query.weekday, (weekday) =>
         queryClient.fetchQuery(massesOfDayQuery({ ...query, weekday })),
       ),
+    retry: false,
   });
 }
