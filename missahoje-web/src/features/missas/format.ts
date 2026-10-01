@@ -1,46 +1,45 @@
-import type { Agenda } from './agenda';
-import { formatarDaquiA } from './daquiA';
-import { horarioEmMinutos } from './relogio';
+import { timeToMinutes } from './clock';
+import type { Schedule } from './schedule';
+import { formatTimeUntil } from './timeUntil';
+import { weekdayName, type Weekday } from './weekday';
 
-const DIAS = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
-
-export function formatHorario(horario: string): string {
-  const minutos = horarioEmMinutos(horario);
-  const h = Math.floor(minutos / 60);
-  const m = minutos % 60;
+export function formatTime(time: string): string {
+  const minutes = timeToMinutes(time);
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
   return m === 0 ? `${h}h` : `${h}h${String(m).padStart(2, '0')}`;
 }
 
-export function formatDayName(diaSemana: number): string {
-  return DIAS[diaSemana].toLowerCase();
+export function formatDayName(weekday: Weekday): string {
+  return weekdayName(weekday).toLowerCase();
 }
 
-export function formatDayWithArticle(diaSemana: number): string {
-  const artigo = diaSemana === 0 || diaSemana === 6 ? 'no' : 'na';
-  return `${artigo} ${formatDayName(diaSemana)}`;
+export function formatDayWithArticle(weekday: Weekday): string {
+  const article = weekday === 0 || weekday === 6 ? 'no' : 'na';
+  return `${article} ${formatDayName(weekday)}`;
 }
 
-export function formatDayHeading(diaSemana: number, deslocamento: number): string {
-  if (deslocamento === 0) return 'Hoje';
-  if (deslocamento === 1) return 'Amanhã';
-  if (deslocamento === 7) return `${DIAS[diaSemana]} que vem`;
-  return DIAS[diaSemana];
+export function formatDayHeading(weekday: Weekday, offset: number): string {
+  if (offset === 0) return 'Hoje';
+  if (offset === 1) return 'Amanhã';
+  if (offset === 7) return `${weekdayName(weekday)} que vem`;
+  return weekdayName(weekday);
 }
 
-function joinNames(nomes: string[]): string {
-  if (nomes.length <= 1) return nomes.join('');
-  return `${nomes.slice(0, -1).join(', ')} e ${nomes[nomes.length - 1]}`;
+function joinNames(names: string[]): string {
+  if (names.length <= 1) return names.join('');
+  return `${names.slice(0, -1).join(', ')} e ${names[names.length - 1]}`;
 }
 
-export function describeNextMasses(agenda: Agenda): string | null {
-  const [primeira] = agenda.proximas;
-  const dia = agenda.dias[agenda.dias.length - 1];
-  if (!primeira || !dia || agenda.minutosAteProxima === null) return null;
+export function describeNextMasses(schedule: Schedule): string | null {
+  const [first] = schedule.next;
+  const day = schedule.days[schedule.days.length - 1];
+  if (!first || !day || schedule.minutesUntilNext === null) return null;
 
-  const rotulo = agenda.proximas.length > 1 ? 'Próximas missas' : 'Próxima missa';
-  const quando = `${formatDayHeading(dia.diaSemana, dia.deslocamento).toLowerCase()} às ${formatHorario(primeira.horario)}`;
-  const onde = joinNames(agenda.proximas.map((m) => m.comunidade?.nome ?? '').filter(Boolean));
-  const daquiA = formatarDaquiA(agenda.minutosAteProxima);
+  const label = schedule.next.length > 1 ? 'Próximas missas' : 'Próxima missa';
+  const when = `${formatDayHeading(day.weekday, day.offset).toLowerCase()} às ${formatTime(first.horario)}`;
+  const where = joinNames(schedule.next.map((m) => m.comunidade?.nome ?? '').filter(Boolean));
+  const timeUntil = formatTimeUntil(schedule.minutesUntilNext);
 
-  return `${rotulo}: ${quando}${onde ? `, em ${onde}` : ''}, ${daquiA.charAt(0).toLowerCase()}${daquiA.slice(1)}.`;
+  return `${label}: ${when}${where ? `, em ${where}` : ''}, ${timeUntil.charAt(0).toLowerCase()}${timeUntil.slice(1)}.`;
 }

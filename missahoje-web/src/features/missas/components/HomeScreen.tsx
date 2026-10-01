@@ -5,13 +5,14 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { useLocalizacaoStore } from '@/features/localizacao/store/useLocalizacaoStore';
-import type { Agenda } from '../agenda';
+import { localClock } from '../clock';
 import { describeNextMasses, formatDayHeading, formatDayName, formatDayWithArticle } from '../format';
-import { hrefWithBairro, hrefWithDia, parseBairro, parseDia } from '../homeParams';
+import { hrefWithDay, hrefWithNeighborhood, parseDay, parseNeighborhood } from '../homeParams';
 import { resolveHomeView } from '../homeView';
-import { useHomeMissas, type HomeMissas } from '../hooks/useHomeMissas';
+import { useHomeMasses, type HomeMasses } from '../hooks/useHomeMasses';
 import { useNow } from '../hooks/useNow';
-import { relogioLocal } from '../relogio';
+import type { Schedule } from '../schedule';
+import { addDays, type Weekday } from '../weekday';
 import { HomeNotice } from './HomeNotice';
 import { MassCard } from './MassCard';
 import { MassListSkeleton } from './MassListSkeleton';
@@ -19,29 +20,30 @@ import { MassListSkeleton } from './MassListSkeleton';
 export function HomeScreen() {
   const searchParams = useSearchParams();
   const query = searchParams.toString();
-  const dia = parseDia(searchParams.get('dia'));
-  const bairro = parseBairro(searchParams.get('bairro'));
+  const day = parseDay(searchParams.get('dia'));
+  const neighborhood = parseNeighborhood(searchParams.get('bairro'));
 
   const initialized = useLocalizacaoStore((state) => state.initialized);
   const initialize = useLocalizacaoStore((state) => state.initialize);
-  const cidade = useLocalizacaoStore((state) => state.cidade);
+  const city = useLocalizacaoStore((state) => state.cidade);
 
   useEffect(() => {
     if (!initialized) initialize(searchParams);
   }, [initialized, initialize, searchParams]);
 
   const now = useNow();
-  const agora = useMemo(() => relogioLocal(now), [now]);
-  const home = useHomeMissas({ cidadeId: cidade?.id ?? null, bairro, dia, agora });
+  const clock = useMemo(() => localClock(now), [now]);
+  const home = useHomeMasses({ cityId: city?.id ?? null, neighborhood, day, now: clock });
   const view = resolveHomeView({
     initialized,
-    hasCidade: cidade !== null,
+    hasCity: city !== null,
     status: home.status,
     isEmpty: home.isEmpty,
   });
 
-  const isToday = home.data.mode === 'today';
-  const title = home.data.mode === 'today' ? 'Missas de hoje' : `Missas de ${formatDayName(home.data.diaSemana)}`;
+  const { data } = home;
+  const isToday = data.mode === 'today';
+  const title = isToday ? 'Missas de hoje' : `Missas de ${formatDayName(data.weekday)}`;
 
   return (
     <section aria-labelledby="missas-titulo" className="flex flex-col gap-5">
@@ -49,24 +51,24 @@ export function HomeScreen() {
         <h1 id="missas-titulo" className="text-2xl font-semibold tracking-tight">
           {title}
         </h1>
-        {cidade && (
+        {city && (
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground">
             <span>
-              {cidade.nome} – {cidade.estado}
+              {city.nome} – {city.estado}
             </span>
-            {bairro && (
+            {neighborhood && (
               <Link
-                href={hrefWithBairro(query, null)}
+                href={hrefWithNeighborhood(query, null)}
                 className="inline-flex min-h-11 items-center underline underline-offset-4"
               >
-                Bairro {bairro} · ver todos
+                Bairro {neighborhood} · ver todos
               </Link>
             )}
           </div>
         )}
         {!isToday && (
           <Link
-            href={hrefWithDia(query, null)}
+            href={hrefWithDay(query, null)}
             className="inline-flex min-h-11 w-fit items-center text-sm font-medium underline underline-offset-4"
           >
             Voltar para hoje
@@ -87,16 +89,16 @@ export function HomeScreen() {
         </HomeNotice>
       )}
 
-      {view === 'empty' && cidade && (
-        <EmptyNotice data={home.data} cidadeNome={cidade.nome} bairro={bairro} query={query} hoje={agora.diaSemana} />
+      {view === 'empty' && city && (
+        <EmptyNotice data={data} cityName={city.nome} neighborhood={neighborhood} query={query} today={clock.weekday} />
       )}
 
-      {view === 'ready' && home.data.mode === 'today' && home.data.agenda && <TodayAgenda agenda={home.data.agenda} />}
+      {view === 'ready' && isToday && data.schedule && <TodaySchedule schedule={data.schedule} />}
 
-      {view === 'ready' && home.data.mode === 'day' && home.data.missas && (
+      {view === 'ready' && !isToday && data.masses && (
         <ol aria-label={title} className="flex flex-col gap-3">
-          {home.data.missas.map((missa) => (
-            <MassCard key={missa.id} missa={missa} state="neutro" />
+          {data.masses.map((mass) => (
+            <MassCard key={mass.id} mass={mass} state="neutral" />
           ))}
         </ol>
       )}
@@ -104,33 +106,33 @@ export function HomeScreen() {
   );
 }
 
-function TodayAgenda({ agenda }: { agenda: Agenda }) {
-  const anuncio = describeNextMasses(agenda);
+function TodaySchedule({ schedule }: { schedule: Schedule }) {
+  const announcement = describeNextMasses(schedule);
 
   return (
     <div className="flex flex-col gap-6">
-      {anuncio && <p className="sr-only">{anuncio}</p>}
-      {agenda.dias.map((dia) => {
-        const headingId = `dia-${dia.deslocamento}`;
-        const showHeading = agenda.dias.length > 1 || dia.deslocamento > 0;
+      {announcement && <p className="sr-only">{announcement}</p>}
+      {schedule.days.map((day) => {
+        const headingId = `day-${day.offset}`;
+        const showHeading = schedule.days.length > 1 || day.offset > 0;
         return (
           <section
-            key={dia.deslocamento}
+            key={day.offset}
             aria-labelledby={showHeading ? headingId : undefined}
             className="flex flex-col gap-3"
           >
             {showHeading && (
               <h2 id={headingId} className="text-sm font-medium text-muted-foreground">
-                {formatDayHeading(dia.diaSemana, dia.deslocamento)}
+                {formatDayHeading(day.weekday, day.offset)}
               </h2>
             )}
-            <ol aria-label={formatDayHeading(dia.diaSemana, dia.deslocamento)} className="flex flex-col gap-3">
-              {dia.itens.map((item) => (
+            <ol aria-label={formatDayHeading(day.weekday, day.offset)} className="flex flex-col gap-3">
+              {day.items.map((item) => (
                 <MassCard
-                  key={item.missa.id}
-                  missa={item.missa}
-                  state={item.estado}
-                  minutosAte={item.estado === 'passou' ? undefined : item.minutosAte}
+                  key={item.mass.id}
+                  mass={item.mass}
+                  state={item.state}
+                  minutesUntil={item.state === 'past' ? undefined : item.minutesUntil}
                 />
               ))}
             </ol>
@@ -142,40 +144,40 @@ function TodayAgenda({ agenda }: { agenda: Agenda }) {
 }
 
 interface EmptyNoticeProps {
-  data: HomeMissas;
-  cidadeNome: string;
-  bairro: string | null;
+  data: HomeMasses;
+  cityName: string;
+  neighborhood: string | null;
   query: string;
-  hoje: number;
+  today: Weekday;
 }
 
-function EmptyNotice({ data, cidadeNome, bairro, query, hoje }: EmptyNoticeProps) {
-  const onde = bairro ? `no bairro ${bairro}, em ${cidadeNome}` : `em ${cidadeNome}`;
-  const verTodosOsBairros = bairro && (
+function EmptyNotice({ data, cityName, neighborhood, query, today }: EmptyNoticeProps) {
+  const where = neighborhood ? `no bairro ${neighborhood}, em ${cityName}` : `em ${cityName}`;
+  const seeAllNeighborhoods = neighborhood && (
     <Button asChild variant="outline">
-      <Link href={hrefWithBairro(query, null)}>Ver todos os bairros</Link>
+      <Link href={hrefWithNeighborhood(query, null)}>Ver todos os bairros</Link>
     </Button>
   );
 
   if (data.mode === 'today') {
-    return <HomeNotice actions={verTodosOsBairros}>Nenhuma missa cadastrada {onde}.</HomeNotice>;
+    return <HomeNotice actions={seeAllNeighborhoods}>Nenhuma missa cadastrada {where}.</HomeNotice>;
   }
 
-  const diaSeguinte = (data.diaSemana + 1) % 7;
+  const nextDay = addDays(data.weekday, 1);
   return (
     <HomeNotice
       actions={
         <>
-          {diaSeguinte !== hoje && (
+          {nextDay !== today && (
             <Button asChild variant="outline">
-              <Link href={hrefWithDia(query, diaSeguinte)}>Ver {formatDayName(diaSeguinte)}</Link>
+              <Link href={hrefWithDay(query, nextDay)}>Ver {formatDayName(nextDay)}</Link>
             </Button>
           )}
-          {verTodosOsBairros}
+          {seeAllNeighborhoods}
         </>
       }
     >
-      Nenhuma missa {formatDayWithArticle(data.diaSemana)} {onde}.
+      Nenhuma missa {formatDayWithArticle(data.weekday)} {where}.
     </HomeNotice>
   );
 }

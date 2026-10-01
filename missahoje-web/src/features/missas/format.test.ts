@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { montarAgenda } from './agenda';
-import { describeNextMasses, formatDayHeading, formatDayName, formatDayWithArticle, formatHorario } from './format';
+import { describeNextMasses, formatDayHeading, formatDayName, formatDayWithArticle, formatTime } from './format';
+import { buildSchedule } from './schedule';
 import type { HorarioMissa } from './types';
+import type { Weekday } from './weekday';
 
 describe('horário no card', () => {
   it.each([
@@ -9,19 +10,19 @@ describe('horário no card', () => {
     ['07:00', '7h'],
     ['07:30:00', '7h30'],
     ['00:05', '0h05'],
-  ])('%s → %s', (horario, texto) => {
-    expect(formatHorario(horario)).toBe(texto);
+  ])('%s → %s', (time, text) => {
+    expect(formatTime(time)).toBe(text);
   });
 });
 
 describe('título de cada dia da agenda', () => {
-  it.each([
+  it.each<[Weekday, number, string]>([
     [0, 0, 'Hoje'],
     [1, 1, 'Amanhã'],
     [3, 2, 'Quarta-feira'],
     [0, 7, 'Domingo que vem'],
-  ])('dia %i, deslocamento %i → %s', (diaSemana, deslocamento, texto) => {
-    expect(formatDayHeading(diaSemana, deslocamento)).toBe(texto);
+  ])('dia %i, deslocamento %i → %s', (weekday, offset, text) => {
+    expect(formatDayHeading(weekday, offset)).toBe(text);
   });
 });
 
@@ -39,30 +40,30 @@ describe('nome do dia', () => {
 });
 
 describe('anúncio da próxima missa para o leitor de tela', () => {
-  function missa(id: string, nome: string, dia_semana: number, horario: string): HorarioMissa {
+  function mass(id: string, nome: string, dia_semana: Weekday, horario: string): HorarioMissa {
     return { id, comunidade_id: id, dia_semana, horario, observacao: null, comunidade: { nome } } as HorarioMissa;
   }
 
   it('uma igreja hoje', () => {
-    const agenda = montarAgenda([missa('a', 'Matriz', 0, '19:00')], { diaSemana: 0, minutos: 18 * 60 + 35 });
+    const schedule = buildSchedule([mass('a', 'Matriz', 0, '19:00')], { weekday: 0, minutes: 18 * 60 + 35 });
 
-    expect(describeNextMasses(agenda)).toBe('Próxima missa: hoje às 19h, em Matriz, daqui a 25 min.');
+    expect(describeNextMasses(schedule)).toBe('Próxima missa: hoje às 19h, em Matriz, daqui a 25 min.');
   });
 
   it('várias igrejas no mesmo horário', () => {
-    const missas = [missa('a', 'Matriz', 0, '19:00'), missa('b', 'Rosário', 0, '19:00'), missa('c', 'Fátima', 0, '19:00')];
-    const agenda = montarAgenda(missas, { diaSemana: 0, minutos: 19 * 60 });
+    const masses = [mass('a', 'Matriz', 0, '19:00'), mass('b', 'Rosário', 0, '19:00'), mass('c', 'Fátima', 0, '19:00')];
+    const schedule = buildSchedule(masses, { weekday: 0, minutes: 19 * 60 });
 
-    expect(describeNextMasses(agenda)).toBe('Próximas missas: hoje às 19h, em Matriz, Rosário e Fátima, agora.');
+    expect(describeNextMasses(schedule)).toBe('Próximas missas: hoje às 19h, em Matriz, Rosário e Fátima, agora.');
   });
 
   it('emenda em amanhã', () => {
-    const agenda = montarAgenda([missa('a', 'Matriz', 1, '07:30')], { diaSemana: 0, minutos: 23 * 60 });
+    const schedule = buildSchedule([mass('a', 'Matriz', 1, '07:30')], { weekday: 0, minutes: 23 * 60 });
 
-    expect(describeNextMasses(agenda)).toBe('Próxima missa: amanhã às 7h30, em Matriz, daqui a 8h 30min.');
+    expect(describeNextMasses(schedule)).toBe('Próxima missa: amanhã às 7h30, em Matriz, daqui a 8h 30min.');
   });
 
   it('agenda vazia não anuncia nada', () => {
-    expect(describeNextMasses(montarAgenda([], { diaSemana: 0, minutos: 0 }))).toBeNull();
+    expect(describeNextMasses(buildSchedule([], { weekday: 0, minutes: 0 }))).toBeNull();
   });
 });

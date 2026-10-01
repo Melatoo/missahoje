@@ -1,24 +1,38 @@
-import { queryOptions } from '@tanstack/react-query';
+import { queryOptions, type QueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/axios';
 import type { PaginatedResponse } from '@/types';
+import { findNextDayWithMasses } from './nextDay';
 import type { HorarioMissa } from './types';
+import { toWeekday, type Weekday } from './weekday';
 
-export interface MissasDoDiaQuery {
-  cidadeId: string;
-  bairro: string | null;
-  diaSemana: number;
+type HorarioMissaResponse = Omit<HorarioMissa, 'dia_semana'> & { dia_semana: number };
+
+export interface MassesOfDayQuery {
+  cityId: string;
+  neighborhood: string | null;
+  weekday: Weekday;
 }
 
-export async function fetchMissasDoDia({ cidadeId, bairro, diaSemana }: MissasDoDiaQuery): Promise<HorarioMissa[]> {
-  const { data } = await api.get<PaginatedResponse<HorarioMissa>>('/missas', {
-    params: { cidadeId, dia_semana: diaSemana, bairro: bairro ?? undefined },
+export async function fetchMassesOfDay({ cityId, neighborhood, weekday }: MassesOfDayQuery): Promise<HorarioMissa[]> {
+  const { data } = await api.get<PaginatedResponse<HorarioMissaResponse>>('/missas', {
+    params: { cidadeId: cityId, dia_semana: weekday, bairro: neighborhood ?? undefined },
   });
-  return data.items;
+  return data.items.map((mass) => ({ ...mass, dia_semana: toWeekday(mass.dia_semana) }));
 }
 
-export function missasDoDiaQuery(query: MissasDoDiaQuery) {
+export function massesOfDayQuery(query: MassesOfDayQuery) {
   return queryOptions({
-    queryKey: ['missas', query.cidadeId, query.bairro, query.diaSemana],
-    queryFn: () => fetchMissasDoDia(query),
+    queryKey: ['masses', query.cityId, query.neighborhood, query.weekday],
+    queryFn: () => fetchMassesOfDay(query),
+  });
+}
+
+export function nextDayWithMassesQuery(query: MassesOfDayQuery, queryClient: QueryClient) {
+  return queryOptions({
+    queryKey: [...massesOfDayQuery(query).queryKey, 'next-day'],
+    queryFn: () =>
+      findNextDayWithMasses(query.weekday, (weekday) =>
+        queryClient.fetchQuery(massesOfDayQuery({ ...query, weekday })),
+      ),
   });
 }

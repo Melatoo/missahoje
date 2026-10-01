@@ -1,12 +1,10 @@
-const DIA_SLUGS = ['domingo', 'segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado'];
+import { parseWeekdaySlug, weekdaySlug, type Weekday } from './weekday';
 
-export function parseDia(value: string | null): number | null {
-  if (!value) return null;
-  const index = DIA_SLUGS.indexOf(value.trim().toLowerCase());
-  return index === -1 ? null : index;
+export function parseDay(value: string | null): Weekday | null {
+  return value ? parseWeekdaySlug(value) : null;
 }
 
-export function parseBairro(value: string | null): string | null {
+export function parseNeighborhood(value: string | null): string | null {
   return value?.trim() || null;
 }
 
@@ -18,10 +16,10 @@ function hrefWith(current: string, name: string, value: string | null): string {
   return query ? `/?${query}` : '/';
 }
 
-export function hrefWithDia(current: string, dia: number | null): string {
-  return hrefWith(current, 'dia', dia === null ? null : DIA_SLUGS[dia]);
+export function hrefWithDay(current: string, day: Weekday | null): string {
+  return hrefWith(current, 'dia', day === null ? null : weekdaySlug(day));
 }
 
-export function hrefWithBairro(current: string, bairro: string | null): string {
-  return hrefWith(current, 'bairro', bairro);
+export function hrefWithNeighborhood(current: string, neighborhood: string | null): string {
+  return hrefWith(current, 'bairro', neighborhood);
 }

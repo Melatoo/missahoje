@@ -1,72 +1,73 @@
 import { describe, expect, it, vi } from 'vitest';
-import { findNextDayWithMissas, isDayOver, mergeNextDay } from './nextDay';
+import { findNextDayWithMasses, isDayOver, mergeNextDay } from './nextDay';
 import type { HorarioMissa } from './types';
+import type { Weekday } from './weekday';
 
-function missa(id: string, dia_semana: number, horario: string): HorarioMissa {
+function mass(id: string, dia_semana: Weekday, horario: string): HorarioMissa {
   return { id, comunidade_id: 'c1', dia_semana, horario, observacao: null } as HorarioMissa;
 }
 
 describe('o dia acabou?', () => {
-  const domingo = [missa('7h', 0, '07:00:00'), missa('19h', 0, '19:00:00')];
+  const sunday = [mass('7h', 0, '07:00:00'), mass('19h', 0, '19:00:00')];
 
   it('não, enquanto sobra missa', () => {
-    expect(isDayOver(domingo, { diaSemana: 0, minutos: 18 * 60 })).toBe(false);
+    expect(isDayOver(sunday, { weekday: 0, minutes: 18 * 60 })).toBe(false);
   });
 
   it('não, se a última começa exatamente agora', () => {
-    expect(isDayOver(domingo, { diaSemana: 0, minutos: 19 * 60 })).toBe(false);
+    expect(isDayOver(sunday, { weekday: 0, minutes: 19 * 60 })).toBe(false);
   });
 
   it('sim, depois da última', () => {
-    expect(isDayOver(domingo, { diaSemana: 0, minutos: 19 * 60 + 1 })).toBe(true);
+    expect(isDayOver(sunday, { weekday: 0, minutes: 19 * 60 + 1 })).toBe(true);
   });
 
   it('sim, se o dia não tem missa', () => {
-    expect(isDayOver([], { diaSemana: 0, minutos: 0 })).toBe(true);
+    expect(isDayOver([], { weekday: 0, minutes: 0 })).toBe(true);
   });
 });
 
 describe('busca do próximo dia com missa', () => {
   it('para no primeiro dia que tem missa', async () => {
-    const porDia: Record<number, HorarioMissa[]> = { 3: [missa('qua', 3, '19:00')] };
-    const fetchDay = vi.fn(async (dia: number) => porDia[dia] ?? []);
+    const byDay: Partial<Record<Weekday, HorarioMissa[]>> = { 3: [mass('wed', 3, '19:00')] };
+    const fetchDay = vi.fn(async (weekday: Weekday) => byDay[weekday] ?? []);
 
-    await expect(findNextDayWithMissas(1, fetchDay)).resolves.toEqual({ diaSemana: 3, missas: porDia[3] });
-    expect(fetchDay.mock.calls.map(([dia]) => dia)).toEqual([2, 3]);
+    await expect(findNextDayWithMasses(1, fetchDay)).resolves.toEqual({ weekday: 3, masses: byDay[3] });
+    expect(fetchDay.mock.calls.map(([weekday]) => weekday)).toEqual([2, 3]);
   });
 
   it('sábado vira domingo', async () => {
-    const fetchDay = vi.fn(async (dia: number) => (dia === 0 ? [missa('dom', 0, '07:00')] : []));
+    const fetchDay = vi.fn(async (weekday: Weekday) => (weekday === 0 ? [mass('sun', 0, '07:00')] : []));
 
-    await expect(findNextDayWithMissas(6, fetchDay)).resolves.toMatchObject({ diaSemana: 0 });
+    await expect(findNextDayWithMasses(6, fetchDay)).resolves.toMatchObject({ weekday: 0 });
   });
 
   it('dá a volta na semana e chega no mesmo dia', async () => {
-    const fetchDay = vi.fn(async (dia: number) => (dia === 0 ? [missa('dom', 0, '07:00')] : []));
+    const fetchDay = vi.fn(async (weekday: Weekday) => (weekday === 0 ? [mass('sun', 0, '07:00')] : []));
 
-    await expect(findNextDayWithMissas(0, fetchDay)).resolves.toMatchObject({ diaSemana: 0 });
+    await expect(findNextDayWithMasses(0, fetchDay)).resolves.toMatchObject({ weekday: 0 });
     expect(fetchDay).toHaveBeenCalledTimes(7);
   });
 
   it('semana sem missa nenhuma devolve null', async () => {
-    await expect(findNextDayWithMissas(0, async () => [])).resolves.toBeNull();
+    await expect(findNextDayWithMasses(0, async () => [])).resolves.toBeNull();
   });
 });
 
 describe('junta hoje com o próximo dia', () => {
-  const hoje = [missa('dom7h', 0, '07:00')];
+  const today = [mass('sun7h', 0, '07:00')];
 
   it('soma as missas do próximo dia', () => {
-    const seg = [missa('seg7h', 1, '07:00')];
+    const monday = [mass('mon7h', 1, '07:00')];
 
-    expect(mergeNextDay(hoje, { diaSemana: 1, missas: seg }).map((m) => m.id)).toEqual(['dom7h', 'seg7h']);
+    expect(mergeNextDay(today, { weekday: 1, masses: monday }).map((m) => m.id)).toEqual(['sun7h', 'mon7h']);
   });
 
   it('não duplica quando o próximo dia é o mesmo da semana que vem', () => {
-    expect(mergeNextDay(hoje, { diaSemana: 0, missas: hoje })).toEqual(hoje);
+    expect(mergeNextDay(today, { weekday: 0, masses: today })).toEqual(today);
   });
 
   it('sem próximo dia, fica só hoje', () => {
-    expect(mergeNextDay(hoje, null)).toEqual(hoje);
+    expect(mergeNextDay(today, null)).toEqual(today);
   });
 });

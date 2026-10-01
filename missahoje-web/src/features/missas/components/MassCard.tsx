@@ -1,48 +1,49 @@
 import { cn } from '@/lib/utils';
-import { formatarDaquiA } from '../daquiA';
-import { formatHorario } from '../format';
+import { formatTime } from '../format';
+import type { ScheduleItem } from '../schedule';
+import { formatTimeUntil } from '../timeUntil';
 import type { HorarioMissa } from '../types';
 
-export type MassCardState = 'passou' | 'proximo' | 'futuro' | 'neutro';
+export type MassCardState = ScheduleItem['state'] | 'neutral';
 
 interface MassCardProps {
-  missa: HorarioMissa;
+  mass: HorarioMissa;
   state: MassCardState;
-  minutosAte?: number;
+  minutesUntil?: number;
 }
 
-export function MassCard({ missa, state, minutosAte }: MassCardProps) {
-  const comunidade = missa.comunidade;
-  const passou = state === 'passou';
-  const proximo = state === 'proximo';
+export function MassCard({ mass, state, minutesUntil }: MassCardProps) {
+  const community = mass.comunidade;
+  const isPast = state === 'past';
+  const isNext = state === 'next';
 
   return (
     <li
       data-state={state}
       className={cn(
         'flex min-h-11 items-start gap-4 rounded-2xl bg-surface p-4',
-        passou && 'opacity-40',
-        proximo && 'bg-background ring-2 ring-brand',
+        isPast && 'opacity-40',
+        isNext && 'bg-background ring-2 ring-brand',
       )}
     >
       <time
-        dateTime={missa.horario.slice(0, 5)}
-        className={cn('w-16 shrink-0 text-2xl font-semibold tabular-nums tracking-tight', passou && 'line-through')}
+        dateTime={mass.horario.slice(0, 5)}
+        className={cn('w-16 shrink-0 text-2xl font-semibold tabular-nums tracking-tight', isPast && 'line-through')}
       >
-        {formatHorario(missa.horario)}
+        {formatTime(mass.horario)}
       </time>
 
       <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-        {proximo && minutosAte !== undefined && (
-          <p className="text-sm font-medium text-brand">{formatarDaquiA(minutosAte)}</p>
+        {isNext && minutesUntil !== undefined && (
+          <p className="text-sm font-medium text-brand">{formatTimeUntil(minutesUntil)}</p>
         )}
-        <p className="font-medium leading-snug">{comunidade?.nome}</p>
-        {comunidade?.bairro && <p className="text-sm text-muted-foreground">{comunidade.bairro}</p>}
-        {missa.observacao && <p className="text-sm text-muted-foreground">{missa.observacao}</p>}
-        {passou && <span className="sr-only">Já aconteceu.</span>}
+        <p className="font-medium leading-snug">{community?.nome}</p>
+        {community?.bairro && <p className="text-sm text-muted-foreground">{community.bairro}</p>}
+        {mass.observacao && <p className="text-sm text-muted-foreground">{mass.observacao}</p>}
+        {isPast && <span className="sr-only">Já aconteceu.</span>}
       </div>
 
-      <span data-slot="distancia" className="shrink-0 text-sm text-muted-foreground tabular-nums" />
+      <span data-slot="distance" className="shrink-0 text-sm text-muted-foreground tabular-nums" />
     </li>
   );
 }
