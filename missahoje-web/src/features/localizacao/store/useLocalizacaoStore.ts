@@ -1,9 +1,16 @@
 import { create } from 'zustand';
 import { findCidadeBySlug } from '../cidades';
-import { getCurrentPosition } from '../geolocation';
+import { getCurrentPosition, isGeolocationAvailable } from '../geolocation';
 import { cidadeCookie, coordinatesCookies, readLocalizacao } from '../persistence';
 import { resolveInitialLocation, type SearchParamsLike } from '../resolveInitialLocation';
-import type { CidadeSelecionada, Coordinates, OrigemCidade, PermissionStatus } from '../types';
+import type {
+  CidadeSelecionada,
+  Coordinates,
+  Locating,
+  LocationFeedback,
+  OrigemCidade,
+  PermissionStatus,
+} from '../types';
 
 export interface LinkCompartilhado {
   cidadeSlug: string | null;
@@ -12,16 +19,20 @@ export interface LinkCompartilhado {
 
 interface LocalizacaoState {
   initialized: boolean;
+  geolocationAvailable: boolean;
   coordinates: Coordinates | null;
   permissionStatus: PermissionStatus;
-  positionUnavailable: boolean;
-  isLocating: boolean;
+  locating: Locating | null;
+  locationFeedback: LocationFeedback | null;
   cidade: CidadeSelecionada | null;
   origemCidade: OrigemCidade | null;
   link: LinkCompartilhado | null;
 
   initialize: (params: SearchParamsLike) => void;
   requestPosition: () => Promise<void>;
+  syncPermission: (status: PermissionStatus) => void;
+  applyNearestCity: (cidade: CidadeSelecionada | null) => boolean;
+  failNearestCity: () => void;
   selectCidade: (cidade: CidadeSelecionada, origem: OrigemCidade) => void;
   resolveLink: (cidades: CidadeSelecionada[]) => void;
   abandonLink: () => void;
@@ -41,50 +52,21 @@ function savedCityWithoutLink(): Pick<LocalizacaoState, 'cidade' | 'origemCidade
   return { cidade, origemCidade, link: null };
 }
 
-export const useLocalizacaoStore = create<LocalizacaoState>((set, get) => ({
-  initialized: false,
-  coordinates: null,
-  permissionStatus: 'prompt',
-  positionUnavailable: false,
-  isLocating: false,
-  cidade: null,
-  origemCidade: null,
-  link: null,
+function followsPosition(state: LocalizacaoState): boolean {
+  if (!state.initialized || !state.geolocationAvailable) return false;
+  if (state.origemCidade === 'gps') return true;
+  return state.cidade === null && state.link === null;
+}
 
-  initialize: (params) => {
-    const salva = readLocalizacao(readCookieHeader());
-    const inicial = resolveInitialLocation(params, salva);
+function explicitFeedback(locating: Locating | null, feedback: LocationFeedback) {
+  return locating?.explicit ? { locationFeedback: feedback } : {};
+}
 
-    if (inicial.origem === 'url') {
-      const cidadeSalva =
-        inicial.cidadeSlug && salva.cidade ? findCidadeBySlug([salva.cidade], inicial.cidadeSlug) : null;
-      set({
-        initialized: true,
-        coordinates: inicial.coordinates,
-        cidade: cidadeSalva,
-        origemCidade: cidadeSalva ? salva.origemCidade : null,
-        link: { cidadeSlug: inicial.cidadeSlug, bairro: inicial.bairro },
-      });
-      return;
-    }
-
-    if (inicial.origem === 'cookie') {
-      set({
-        initialized: true,
-        coordinates: inicial.coordinates,
-        cidade: inicial.cidade,
-        origemCidade: inicial.origemCidade,
-        link: null,
-      });
-      return;
-    }
-
-    set({ initialized: true, link: null });
-  },
-
-  requestPosition: async () => {
-    if (get().isLocating) return;
-    set({ isLocating: true });
+export const useLocalizacaoStore = create<LocalizacaoState>((set, get) => {
+  const locate = async (explicit: boolean) => {
+    if (get().locating) return;
+    const locating: Locating = { explicit, startedAt: Date.now(), coordinates: null };
+    set({ locating, ...(explicit ? { locationFeedback: null } : {}) });
 
     const result = await getCurrentPosition();
 
@@ -93,44 +75,118 @@ export const useLocalizacaoStore = create<LocalizacaoState>((set, get) => ({
       set({
         coordinates: result.coordinates,
         permissionStatus: 'granted',
-        positionUnavailable: false,
-        isLocating: false,
-        link: null,
+        locating: { ...locating, coordinates: result.coordinates },
+        ...(explicit ? { link: null } : {}),
       });
       return;
     }
 
     if (result.status === 'denied') {
-      set({ permissionStatus: 'denied', isLocating: false });
+      set({ permissionStatus: 'denied', locating: null, ...explicitFeedback(locating, 'denied') });
       return;
     }
 
-    set({ positionUnavailable: true, isLocating: false });
-  },
+    set({ locating: null, ...explicitFeedback(locating, 'unavailable') });
+  };
 
-  selectCidade: (cidade, origem) => {
-    writeCookies([cidadeCookie(cidade, origem)]);
-    set({ cidade, origemCidade: origem, link: null });
-  },
+  return {
+    initialized: false,
+    geolocationAvailable: false,
+    coordinates: null,
+    permissionStatus: 'prompt',
+    locating: null,
+    locationFeedback: null,
+    cidade: null,
+    origemCidade: null,
+    link: null,
 
-  resolveLink: (cidades) => {
-    const { link, cidade } = get();
-    if (!link?.cidadeSlug || cidade) return;
+    initialize: (params) => {
+      const salva = readLocalizacao(readCookieHeader());
+      const inicial = resolveInitialLocation(params, salva);
+      const geolocationAvailable = isGeolocationAvailable();
 
-    const encontrada = findCidadeBySlug(cidades, link.cidadeSlug);
-    if (encontrada) {
-      set({ cidade: encontrada, origemCidade: null });
-      return;
-    }
+      if (inicial.origem === 'url') {
+        const cidadeSalva =
+          inicial.cidadeSlug && salva.cidade ? findCidadeBySlug([salva.cidade], inicial.cidadeSlug) : null;
+        set({
+          initialized: true,
+          geolocationAvailable,
+          coordinates: inicial.coordinates,
+          cidade: cidadeSalva,
+          origemCidade: cidadeSalva ? salva.origemCidade : null,
+          link: { cidadeSlug: inicial.cidadeSlug, bairro: inicial.bairro },
+        });
+        return;
+      }
 
-    set(savedCityWithoutLink());
-  },
+      if (inicial.origem === 'cookie') {
+        set({
+          initialized: true,
+          geolocationAvailable,
+          coordinates: inicial.coordinates,
+          cidade: inicial.cidade,
+          origemCidade: inicial.origemCidade,
+          link: null,
+        });
+        return;
+      }
 
-  abandonLink: () => {
-    const { link, cidade } = get();
-    if (!link?.cidadeSlug || cidade) return;
+      set({ initialized: true, geolocationAvailable, link: null });
+    },
 
-    const salva = savedCityWithoutLink();
-    if (salva.cidade) set(salva);
-  },
-}));
+    requestPosition: () => locate(true),
+
+    syncPermission: (status) => {
+      const previous = get().permissionStatus;
+      set({ permissionStatus: status });
+      if (status === 'granted' && previous !== 'granted' && followsPosition(get())) void locate(false);
+    },
+
+    applyNearestCity: (cidade) => {
+      const { locating, cidade: atual, selectCidade } = get();
+      if (!locating?.coordinates) return false;
+
+      if (!cidade) {
+        set({ locating: null, ...explicitFeedback(locating, 'not-found') });
+        return false;
+      }
+
+      const changed = atual?.id !== cidade.id;
+      if (changed || locating.explicit) selectCidade(cidade, 'gps');
+      set({ locating: null });
+      return changed;
+    },
+
+    failNearestCity: () => {
+      const { locating } = get();
+      if (!locating?.coordinates) return;
+      set({ locating: null, ...explicitFeedback(locating, 'error') });
+    },
+
+    selectCidade: (cidade, origem) => {
+      writeCookies([cidadeCookie(cidade, origem)]);
+      set({ cidade, origemCidade: origem, link: null, locationFeedback: null });
+    },
+
+    resolveLink: (cidades) => {
+      const { link, cidade } = get();
+      if (!link?.cidadeSlug || cidade) return;
+
+      const encontrada = findCidadeBySlug(cidades, link.cidadeSlug);
+      if (encontrada) {
+        set({ cidade: encontrada, origemCidade: null });
+        return;
+      }
+
+      set(savedCityWithoutLink());
+    },
+
+    abandonLink: () => {
+      const { link, cidade } = get();
+      if (!link?.cidadeSlug || cidade) return;
+
+      const salva = savedCityWithoutLink();
+      if (salva.cidade) set(salva);
+    },
+  };
+});

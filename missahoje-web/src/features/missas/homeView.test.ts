@@ -1,7 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import { resolveHomeView } from './homeView';
 
-const ready = { initialized: true, linkCity: null, hasCity: true, status: 'success', isEmpty: false } as const;
+const ready = {
+  initialized: true,
+  linkCity: null,
+  hasCity: true,
+  locatingInBackground: false,
+  status: 'success',
+  isEmpty: false,
+} as const;
 
 describe('qual estado a home mostra', () => {
   it('antes de ler URL e cookie, carrega', () => {
@@ -18,6 +25,10 @@ describe('qual estado a home mostra', () => {
 
   it('sem cidade, pede para escolher uma', () => {
     expect(resolveHomeView({ ...ready, hasCity: false, status: 'pending' })).toBe('no-city');
+  });
+
+  it('sem cidade mas com a permissão já concedida, carrega enquanto o GPS responde', () => {
+    expect(resolveHomeView({ ...ready, hasCity: false, locatingInBackground: true, status: 'pending' })).toBe('loading');
   });
 
   it('buscando, carrega', () => {

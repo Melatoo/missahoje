@@ -1,5 +1,5 @@
 import { truncateCoordinates } from './coordinates';
-import type { Coordinates } from './types';
+import type { Coordinates, PermissionStatus } from './types';
 
 export const POSITION_OPTIONS: PositionOptions = {
   enableHighAccuracy: false,
@@ -11,6 +11,38 @@ export type PositionResult =
   | { status: 'granted'; coordinates: Coordinates }
   | { status: 'denied' }
   | { status: 'unavailable' };
+
+export function isGeolocationAvailable(scope: typeof globalThis = globalThis): boolean {
+  return scope.isSecureContext !== false && Boolean(scope.navigator?.geolocation);
+}
+
+export function watchPermission(
+  listener: (status: PermissionStatus) => void,
+  permissions: Permissions | undefined = globalThis.navigator?.permissions,
+): () => void {
+  if (!permissions?.query) return () => {};
+
+  let active = true;
+  let permission: globalThis.PermissionStatus | null = null;
+  const notify = () => {
+    if (active && permission) listener(permission.state);
+  };
+
+  permissions
+    .query({ name: 'geolocation' })
+    .then((result) => {
+      if (!active) return;
+      permission = result;
+      notify();
+      result.addEventListener('change', notify);
+    })
+    .catch(() => {});
+
+  return () => {
+    active = false;
+    permission?.removeEventListener('change', notify);
+  };
+}
 
 export function getCurrentPosition(geolocation: Geolocation | undefined = globalThis.navigator?.geolocation): Promise<PositionResult> {
   if (!geolocation) return Promise.resolve({ status: 'unavailable' });
