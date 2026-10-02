@@ -4,7 +4,22 @@ import * as crypto from 'crypto';
 
 const API_URL = 'http://localhost:3001';
 
+// Credenciais do admin vêm do ambiente ou do .env, nunca do código
+try {
+    process.loadEnvFile();
+} catch {
+    // sem .env: usa só as variáveis já definidas no ambiente
+}
+
+const emailAdmin = process.env.ADMIN_EMAIL;
+const senhaAdmin = process.env.ADMIN_SENHA;
+
 async function seed() {
+    if (!emailAdmin || !senhaAdmin) {
+        console.error('❌ Defina ADMIN_EMAIL e ADMIN_SENHA no ambiente ou no .env antes de rodar o seed.');
+        process.exit(1);
+    }
+
     console.log('🌱 Iniciando Seed de Lavras/MG...');
 
     // 1. Conectar ao Banco de Dados para garantir o usuário Admin
@@ -15,9 +30,6 @@ async function seed() {
     try {
         await client.connect();
         console.log('✅ Conectado ao PostgreSQL');
-
-        const emailAdmin = 'admin@missahoje.com.br';
-        const senhaAdmin = 'Admin123!';
 
         // Verifica se o usuário já existe
         const res = await client.query('SELECT id FROM usuarios WHERE email = $1', [emailAdmin]);
@@ -48,7 +60,7 @@ async function seed() {
     const loginRes = await fetch(`${API_URL}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: 'admin@missahoje.com.br', senha: 'Admin123!' }),
+        body: JSON.stringify({ email: emailAdmin, senha: senhaAdmin }),
     });
 
     if (!loginRes.ok) {
