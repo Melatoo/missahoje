@@ -58,6 +58,18 @@ describe('estado da permissão', () => {
     expect(listener).toHaveBeenCalledTimes(1);
   });
 
+  it('navegador que não reconhece a permissão de geolocalização não quebra', () => {
+    const listener = vi.fn();
+    const permissions = {
+      query: () => {
+        throw new TypeError('geolocation is not a valid permission name');
+      },
+    } as unknown as Permissions;
+
+    expect(() => watchPermission(listener, permissions)()).not.toThrow();
+    expect(listener).not.toHaveBeenCalled();
+  });
+
   it('navegador sem a Permissions API não avisa nada', () => {
     const listener = vi.fn();
 

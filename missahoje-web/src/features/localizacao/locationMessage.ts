@@ -11,12 +11,11 @@ const MESSAGES: Record<LocationFeedback, string> = {
 interface LocationMessageInput {
   feedback: LocationFeedback | null;
   permissionStatus: PermissionStatus;
-  hasCity: boolean;
 }
 
-export function locationMessage({ feedback, permissionStatus, hasCity }: LocationMessageInput): string | null {
+export function locationMessage({ feedback, permissionStatus }: LocationMessageInput): string | null {
   if (feedback) return MESSAGES[feedback];
-  if (permissionStatus === 'denied' && !hasCity) return MESSAGES.denied;
+  if (permissionStatus === 'denied') return MESSAGES.denied;
   return null;
 }
 

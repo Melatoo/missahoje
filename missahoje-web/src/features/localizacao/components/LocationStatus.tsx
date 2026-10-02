@@ -5,11 +5,7 @@ import { useLocalizacaoStore } from '../store/useLocalizacaoStore';
 
 export function LocationStatus() {
   const message = useLocalizacaoStore((state) =>
-    locationMessage({
-      feedback: state.locationFeedback,
-      permissionStatus: state.permissionStatus,
-      hasCity: state.cidade !== null,
-    }),
+    locationMessage({ feedback: state.locationFeedback, permissionStatus: state.permissionStatus }),
   );
 
   return (

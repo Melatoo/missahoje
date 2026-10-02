@@ -28,8 +28,14 @@ export function watchPermission(
     if (active && permission) listener(permission.state);
   };
 
-  permissions
-    .query({ name: 'geolocation' })
+  let query: Promise<globalThis.PermissionStatus>;
+  try {
+    query = permissions.query({ name: 'geolocation' });
+  } catch {
+    return () => {};
+  }
+
+  query
     .then((result) => {
       if (!active) return;
       permission = result;

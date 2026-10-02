@@ -1,4 +1,4 @@
-import { queryOptions } from '@tanstack/react-query';
+import { queryOptions, skipToken } from '@tanstack/react-query';
 import { isAxiosError } from 'axios';
 import { api } from '@/lib/axios';
 import type { PaginatedResponse } from '@/types';
@@ -28,8 +28,7 @@ export async function fetchCidadeProxima({ lat, lng }: Coordinates): Promise<Cid
 export function cidadeProximaQuery(coordinates: Coordinates | null) {
   return queryOptions({
     queryKey: ['cities', 'nearest', coordinates?.lat, coordinates?.lng],
-    queryFn: () => fetchCidadeProxima(coordinates!),
-    enabled: coordinates !== null,
+    queryFn: coordinates ? () => fetchCidadeProxima(coordinates) : skipToken,
     staleTime: 60 * 60 * 1000,
     retry: 1,
   });

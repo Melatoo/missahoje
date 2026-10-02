@@ -202,15 +202,48 @@ describe('cidade pela posição', () => {
     expect(jar.cookie).toContain(encodeURIComponent('"origem":"gps"'));
   });
 
-  it('o clique que confirma a mesma cidade passa a origem para GPS sem trocar a cidade', async () => {
+  it('o clique que confirma a mesma cidade passa a origem para GPS e aplica a cidade', async () => {
     vi.stubGlobal('document', cookieJar([cidadeCookie(lavras, 'manual')]));
     useLocalizacaoStore.getState().initialize(new URLSearchParams());
     await locateExplicitly();
 
-    const changed = useLocalizacaoStore.getState().applyNearestCity(lavras);
+    const applied = useLocalizacaoStore.getState().applyNearestCity(lavras);
 
-    expect(changed).toBe(false);
+    expect(applied).toBe(true);
     expect(useLocalizacaoStore.getState()).toMatchObject({ cidade: lavras, origemCidade: 'gps' });
+  });
+
+  it('escolha no seletor durante a busca da cidade vence o resultado do GPS', async () => {
+    vi.stubGlobal('document', cookieJar());
+    useLocalizacaoStore.getState().initialize(new URLSearchParams());
+    await locateExplicitly();
+
+    useLocalizacaoStore.getState().selectCidade(lavras, 'manual');
+    const applied = useLocalizacaoStore.getState().applyNearestCity(ijaci);
+
+    expect(applied).toBe(false);
+    expect(useLocalizacaoStore.getState()).toMatchObject({ cidade: lavras, origemCidade: 'manual', locating: null });
+  });
+
+  it('escolha no seletor enquanto o navegador ainda busca a posição cancela a busca', async () => {
+    vi.stubGlobal('document', cookieJar());
+    let resolvePosition: (position: GeolocationPosition) => void = () => {};
+    vi.stubGlobal('navigator', {
+      geolocation: { getCurrentPosition: (success: PositionCallback) => { resolvePosition = success; } },
+    });
+    useLocalizacaoStore.getState().initialize(new URLSearchParams());
+
+    const pending = useLocalizacaoStore.getState().requestPosition();
+    useLocalizacaoStore.getState().selectCidade(lavras, 'manual');
+    resolvePosition({ coords: { latitude: -21.245, longitude: -44.999 } } as GeolocationPosition);
+    await pending;
+
+    expect(useLocalizacaoStore.getState()).toMatchObject({
+      cidade: lavras,
+      origemCidade: 'manual',
+      locating: null,
+      permissionStatus: 'granted',
+    });
   });
 
   it('fora das cidades atendidas, mantém a cidade e avisa', async () => {
@@ -297,6 +330,15 @@ describe('permissão já concedida em visita anterior', () => {
     useLocalizacaoStore.getState().applyNearestCity(null);
 
     expect(useLocalizacaoStore.getState()).toMatchObject({ cidade: lavras, locating: null, locationFeedback: null });
+  });
+
+  it('em segundo plano, confirmar a mesma cidade não mexe em nada', async () => {
+    openWith([cidadeCookie(lavras, 'gps')]);
+    useLocalizacaoStore.getState().syncPermission('granted');
+    await vi.waitFor(() => expect(useLocalizacaoStore.getState().locating?.coordinates).not.toBeNull());
+
+    expect(useLocalizacaoStore.getState().applyNearestCity(lavras)).toBe(false);
+    expect(useLocalizacaoStore.getState()).toMatchObject({ cidade: lavras, locating: null });
   });
 
   it('não passa por cima de uma cidade escolhida no seletor', () => {

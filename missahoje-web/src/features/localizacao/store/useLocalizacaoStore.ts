@@ -69,24 +69,27 @@ export const useLocalizacaoStore = create<LocalizacaoState>((set, get) => {
     set({ locating, ...(explicit ? { locationFeedback: null } : {}) });
 
     const result = await getCurrentPosition();
+    const current = get().locating === locating;
 
     if (result.status === 'granted') {
       writeCookies(coordinatesCookies(result.coordinates));
-      set({
-        coordinates: result.coordinates,
-        permissionStatus: 'granted',
-        locating: { ...locating, coordinates: result.coordinates },
-        ...(explicit ? { link: null } : {}),
-      });
+      set({ coordinates: result.coordinates, permissionStatus: 'granted' });
+      if (current) {
+        set({
+          locating: { ...locating, coordinates: result.coordinates },
+          ...(explicit ? { link: null } : {}),
+        });
+      }
       return;
     }
 
     if (result.status === 'denied') {
-      set({ permissionStatus: 'denied', locating: null, ...explicitFeedback(locating, 'denied') });
+      set({ permissionStatus: 'denied' });
+      if (current) set({ locating: null, ...explicitFeedback(locating, 'denied') });
       return;
     }
 
-    set({ locating: null, ...explicitFeedback(locating, 'unavailable') });
+    if (current) set({ locating: null, ...explicitFeedback(locating, 'unavailable') });
   };
 
   return {
@@ -151,10 +154,10 @@ export const useLocalizacaoStore = create<LocalizacaoState>((set, get) => {
         return false;
       }
 
-      const changed = atual?.id !== cidade.id;
-      if (changed || locating.explicit) selectCidade(cidade, 'gps');
+      const applied = locating.explicit || atual?.id !== cidade.id;
+      if (applied) selectCidade(cidade, 'gps');
       set({ locating: null });
-      return changed;
+      return applied;
     },
 
     failNearestCity: () => {
@@ -165,7 +168,7 @@ export const useLocalizacaoStore = create<LocalizacaoState>((set, get) => {
 
     selectCidade: (cidade, origem) => {
       writeCookies([cidadeCookie(cidade, origem)]);
-      set({ cidade, origemCidade: origem, link: null, locationFeedback: null });
+      set({ cidade, origemCidade: origem, link: null, locating: null, locationFeedback: null });
     },
 
     resolveLink: (cidades) => {
