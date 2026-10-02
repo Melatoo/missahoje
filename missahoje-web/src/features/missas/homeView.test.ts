@@ -1,11 +1,19 @@
 import { describe, expect, it } from 'vitest';
 import { resolveHomeView } from './homeView';
 
-const ready = { initialized: true, hasCity: true, status: 'success', isEmpty: false } as const;
+const ready = { initialized: true, linkCity: null, hasCity: true, status: 'success', isEmpty: false } as const;
 
 describe('qual estado a home mostra', () => {
   it('antes de ler URL e cookie, carrega', () => {
     expect(resolveHomeView({ ...ready, initialized: false, hasCity: false })).toBe('loading');
+  });
+
+  it('resolvendo a cidade do link compartilhado, carrega em vez de pedir cidade', () => {
+    expect(resolveHomeView({ ...ready, hasCity: false, linkCity: 'pending', status: 'pending' })).toBe('loading');
+  });
+
+  it('falha ao resolver a cidade do link é erro', () => {
+    expect(resolveHomeView({ ...ready, hasCity: false, linkCity: 'error', status: 'pending' })).toBe('error');
   });
 
   it('sem cidade, pede para escolher uma', () => {

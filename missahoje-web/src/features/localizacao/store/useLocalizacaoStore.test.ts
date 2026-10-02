@@ -79,6 +79,18 @@ describe('inicialização da localização', () => {
       link: { cidadeSlug: 'belo-horizonte', bairro: 'savassi' },
     });
   });
+
+  it('link da mesma cidade do cookie já começa resolvido, sem esperar a lista de cidades', () => {
+    vi.stubGlobal('document', cookieJar([cidadeCookie(lavras, 'manual')]));
+
+    useLocalizacaoStore.getState().initialize(new URLSearchParams('cidade=Lavras&dia=sexta'));
+
+    expect(useLocalizacaoStore.getState()).toMatchObject({
+      cidade: lavras,
+      origemCidade: 'manual',
+      link: { cidadeSlug: 'Lavras', bairro: null },
+    });
+  });
 });
 
 describe('posição do usuário', () => {
@@ -150,5 +162,76 @@ describe('cidade selecionada', () => {
     useLocalizacaoStore.getState().initialize(new URLSearchParams());
 
     expect(useLocalizacaoStore.getState()).toMatchObject({ cidade: lavras, origemCidade: 'manual' });
+  });
+});
+
+describe('cidade do link compartilhado', () => {
+  const bh = { id: 'c2', nome: 'Belo Horizonte', estado: 'MG', slug: 'belo-horizonte' };
+
+  it('resolve o slug do link sem trocar a cidade salva do visitante', () => {
+    const jar = cookieJar([cidadeCookie(lavras, 'manual')]);
+    vi.stubGlobal('document', jar);
+    useLocalizacaoStore.getState().initialize(new URLSearchParams('cidade=belo-horizonte'));
+
+    useLocalizacaoStore.getState().resolveLink([lavras, bh]);
+
+    expect(useLocalizacaoStore.getState()).toMatchObject({
+      cidade: bh,
+      link: { cidadeSlug: 'belo-horizonte', bairro: null },
+    });
+    expect(jar.writes).toEqual([]);
+  });
+
+  it('slug desconhecido volta para a cidade salva em cookie e encerra o modo link', () => {
+    vi.stubGlobal('document', cookieJar([cidadeCookie(lavras, 'manual')]));
+    useLocalizacaoStore.getState().initialize(new URLSearchParams('cidade=atlantida'));
+
+    useLocalizacaoStore.getState().resolveLink([lavras, bh]);
+
+    expect(useLocalizacaoStore.getState()).toMatchObject({ cidade: lavras, origemCidade: 'manual', link: null });
+  });
+
+  it('slug desconhecido sem cidade salva deixa o visitante escolher', () => {
+    vi.stubGlobal('document', cookieJar());
+    useLocalizacaoStore.getState().initialize(new URLSearchParams('cidade=atlantida'));
+
+    useLocalizacaoStore.getState().resolveLink([lavras, bh]);
+
+    expect(useLocalizacaoStore.getState()).toMatchObject({ cidade: null, link: null });
+  });
+
+  it('sem a lista de cidades, abandonar o link volta para a cidade salva em cookie', () => {
+    const jar = cookieJar([cidadeCookie(lavras, 'manual')]);
+    vi.stubGlobal('document', jar);
+    useLocalizacaoStore.getState().initialize(new URLSearchParams('cidade=belo-horizonte'));
+
+    useLocalizacaoStore.getState().abandonLink();
+
+    expect(useLocalizacaoStore.getState()).toMatchObject({ cidade: lavras, origemCidade: 'manual', link: null });
+    expect(jar.writes).toEqual([]);
+  });
+
+  it('sem cidade salva, abandonar o link mantém o modo link para tentar de novo', () => {
+    vi.stubGlobal('document', cookieJar());
+    useLocalizacaoStore.getState().initialize(new URLSearchParams('cidade=belo-horizonte'));
+
+    useLocalizacaoStore.getState().abandonLink();
+
+    expect(useLocalizacaoStore.getState()).toMatchObject({
+      cidade: null,
+      link: { cidadeSlug: 'belo-horizonte', bairro: null },
+    });
+  });
+
+  it('escolher uma cidade no seletor encerra o modo link e salva a escolha', () => {
+    const jar = cookieJar();
+    vi.stubGlobal('document', jar);
+    useLocalizacaoStore.getState().initialize(new URLSearchParams('cidade=belo-horizonte'));
+    useLocalizacaoStore.getState().resolveLink([lavras, bh]);
+
+    useLocalizacaoStore.getState().selectCidade(lavras, 'manual');
+
+    expect(useLocalizacaoStore.getState()).toMatchObject({ cidade: lavras, origemCidade: 'manual', link: null });
+    expect(jar.cookie).toContain('cidade=');
   });
 });

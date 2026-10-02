@@ -4,6 +4,8 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
+import { useResolveLinkCity } from '@/features/localizacao/hooks/useResolveLinkCity';
+import { useCityPickerStore } from '@/features/localizacao/store/useCityPickerStore';
 import { useLocalizacaoStore } from '@/features/localizacao/store/useLocalizacaoStore';
 import { localClock } from '../clock';
 import { describeNextMasses, formatDayHeading, formatDayName, formatDayWithArticle } from '../format';
@@ -31,15 +33,19 @@ export function HomeScreen() {
     if (!initialized) initialize(searchParams);
   }, [initialized, initialize, searchParams]);
 
+  const linkCity = useResolveLinkCity();
+  const openCityPicker = useCityPickerStore((state) => state.openFrom);
   const now = useNow();
   const clock = useMemo(() => localClock(now), [now]);
   const home = useHomeMasses({ cityId: city?.id ?? null, neighborhood, day, now: clock });
   const view = resolveHomeView({
     initialized,
+    linkCity: linkCity.status,
     hasCity: city !== null,
     status: home.status,
     isEmpty: home.isEmpty,
   });
+  const retry = linkCity.status === 'error' ? linkCity.retry : home.retry;
 
   const { data } = home;
   const isToday = data.mode === 'today';
@@ -78,19 +84,30 @@ export function HomeScreen() {
 
       {view === 'loading' && <MassListSkeleton />}
 
-      {view === 'no-city' && <HomeNotice>Escolha uma cidade para ver os horários.</HomeNotice>}
+      {view === 'no-city' && (
+        <HomeNotice actions={<Button onClick={(event) => openCityPicker(event.currentTarget)}>Escolher cidade</Button>}>
+          Escolha uma cidade para ver os horários.
+        </HomeNotice>
+      )}
 
       {view === 'error' && (
         <HomeNotice
           role="alert"
-          actions={<Button onClick={home.retry}>Tentar de novo</Button>}
+          actions={<Button onClick={retry}>Tentar de novo</Button>}
         >
           Não foi possível carregar os horários. Confira sua conexão e tente de novo.
         </HomeNotice>
       )}
 
       {view === 'empty' && city && (
-        <EmptyNotice data={data} cityName={city.nome} neighborhood={neighborhood} query={query} today={clock.weekday} />
+        <EmptyNotice
+          data={data}
+          cityName={city.nome}
+          neighborhood={neighborhood}
+          query={query}
+          today={clock.weekday}
+          onChangeCity={openCityPicker}
+        />
       )}
 
       {view === 'ready' && isToday && data.schedule && <TodaySchedule schedule={data.schedule} />}
@@ -149,9 +166,10 @@ interface EmptyNoticeProps {
   neighborhood: string | null;
   query: string;
   today: Weekday;
+  onChangeCity: (opener: HTMLElement) => void;
 }
 
-function EmptyNotice({ data, cityName, neighborhood, query, today }: EmptyNoticeProps) {
+function EmptyNotice({ data, cityName, neighborhood, query, today, onChangeCity }: EmptyNoticeProps) {
   const where = neighborhood ? `no bairro ${neighborhood}, em ${cityName}` : `em ${cityName}`;
   const seeAllNeighborhoods = neighborhood && (
     <Button asChild variant="outline">
@@ -161,7 +179,16 @@ function EmptyNotice({ data, cityName, neighborhood, query, today }: EmptyNotice
 
   if (data.mode === 'today') {
     return (
-      <HomeNotice actions={seeAllNeighborhoods}>
+      <HomeNotice
+        actions={
+          <>
+            {seeAllNeighborhoods}
+            <Button variant={neighborhood ? 'outline' : 'default'} onClick={(event) => onChangeCity(event.currentTarget)}>
+              Trocar cidade
+            </Button>
+          </>
+        }
+      >
         Ainda não há horários de missa cadastrados {where}, em nenhum dia da semana.
       </HomeNotice>
     );

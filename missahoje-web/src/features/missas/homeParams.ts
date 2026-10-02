@@ -1,3 +1,4 @@
+import { homeHref } from '../../lib/homeHref';
 import { parseWeekdaySlug, weekdaySlug, type Weekday } from './weekday';
 
 export function parseDay(value: string | null): Weekday | null {
@@ -12,8 +13,7 @@ function hrefWith(current: string, name: string, value: string | null): string {
   const params = new URLSearchParams(current);
   if (value === null) params.delete(name);
   else params.set(name, value);
-  const query = params.toString();
-  return query ? `/?${query}` : '/';
+  return homeHref(params);
 }
 
 export function hrefWithDay(current: string, day: Weekday | null): string {
