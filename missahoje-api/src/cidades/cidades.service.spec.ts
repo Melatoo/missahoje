@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { NotFoundException } from '@nestjs/common';
+import { IsNull, Not } from 'typeorm';
 import { CidadesService } from './cidades.service';
 import { Cidade } from './entities/cidade.entity';
 import * as paginateModule from 'nestjs-typeorm-paginate';
@@ -15,6 +16,7 @@ describe('CidadesService', () => {
   const mockCidadesRepository = {
     create: jest.fn(),
     save: jest.fn(),
+    find: jest.fn(),
     findOne: jest.fn(),
     preload: jest.fn(),
     softRemove: jest.fn(),
@@ -41,7 +43,7 @@ describe('CidadesService', () => {
 
   describe('create', () => {
     it('deve criar uma nova cidade', async () => {
-      const dto = { nome: 'Lavras', estado: 'MG', slug: 'lavras-mg' };
+      const dto = { nome: 'Lavras', estado: 'MG', slug: 'lavras-mg', latitude: -21.2456, longitude: -44.9997 };
       const cidadeCriada = { id: '123', ...dto };
 
       mockCidadesRepository.create.mockReturnValue(cidadeCriada);
@@ -72,6 +74,27 @@ describe('CidadesService', () => {
         page: 1,
         limit: 10,
       });
+    });
+  });
+
+  describe('findNearest', () => {
+    const lavras = { id: '123', nome: 'Lavras', estado: 'MG', latitude: -21.2456, longitude: -44.9997 };
+
+    it('busca só cidades com centro cadastrado e devolve a mais próxima', async () => {
+      mockCidadesRepository.find.mockResolvedValue([lavras]);
+
+      const resultado = await service.findNearest({ lat: -21.245, lng: -44.999 });
+
+      expect(resultado).toEqual(lavras);
+      expect(mockCidadesRepository.find).toHaveBeenCalledWith({
+        where: { latitude: Not(IsNull()), longitude: Not(IsNull()) },
+      });
+    });
+
+    it('deve lançar um NotFoundException se nenhuma cidade estiver perto', async () => {
+      mockCidadesRepository.find.mockResolvedValue([lavras]);
+
+      await expect(service.findNearest({ lat: -23.55, lng: -46.633 })).rejects.toThrow(NotFoundException);
     });
   });
 

@@ -4,7 +4,11 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
+import { LocationStatus } from '@/features/localizacao/components/LocationStatus';
+import { UseLocationButton } from '@/features/localizacao/components/UseLocationButton';
+import { useGpsLocation } from '@/features/localizacao/hooks/useGpsLocation';
 import { useResolveLinkCity } from '@/features/localizacao/hooks/useResolveLinkCity';
+import { canOfferLocation } from '@/features/localizacao/locationMessage';
 import { useCityPickerStore } from '@/features/localizacao/store/useCityPickerStore';
 import { useLocalizacaoStore } from '@/features/localizacao/store/useLocalizacaoStore';
 import { localClock } from '../clock';
@@ -28,11 +32,15 @@ export function HomeScreen() {
   const initialized = useLocalizacaoStore((state) => state.initialized);
   const initialize = useLocalizacaoStore((state) => state.initialize);
   const city = useLocalizacaoStore((state) => state.cidade);
+  const cityFromGps = useLocalizacaoStore((state) => state.origemCidade === 'gps');
+  const locatingInBackground = useLocalizacaoStore((state) => state.locating?.explicit === false);
+  const canLocate = useLocalizacaoStore((state) => canOfferLocation(state.geolocationAvailable, state.permissionStatus));
 
   useEffect(() => {
     if (!initialized) initialize(searchParams);
   }, [initialized, initialize, searchParams]);
 
+  useGpsLocation();
   const linkCity = useResolveLinkCity();
   const openCityPicker = useCityPickerStore((state) => state.openFrom);
   const now = useNow();
@@ -42,6 +50,7 @@ export function HomeScreen() {
     initialized,
     linkCity: linkCity.status,
     hasCity: city !== null,
+    locatingInBackground,
     status: home.status,
     isEmpty: home.isEmpty,
   });
@@ -61,7 +70,9 @@ export function HomeScreen() {
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground">
             <span>
               {city.nome} – {city.estado}
+              {cityFromGps && ' · pela sua localização'}
             </span>
+            {!cityFromGps && <UseLocationButton variant="link" className="px-0 text-foreground" />}
             {neighborhood && (
               <Link
                 href={hrefWithNeighborhood(query, null)}
@@ -80,13 +91,28 @@ export function HomeScreen() {
             Voltar para hoje
           </Link>
         )}
+        <LocationStatus />
       </header>
 
       {view === 'loading' && <MassListSkeleton />}
 
       {view === 'no-city' && (
-        <HomeNotice actions={<Button onClick={(event) => openCityPicker(event.currentTarget)}>Escolher cidade</Button>}>
-          Escolha uma cidade para ver os horários.
+        <HomeNotice
+          actions={
+            <>
+              <UseLocationButton />
+              <Button
+                variant={canLocate ? 'outline' : 'default'}
+                onClick={(event) => openCityPicker(event.currentTarget)}
+              >
+                Escolher cidade
+              </Button>
+            </>
+          }
+        >
+          {canLocate
+            ? 'Use sua localização ou escolha uma cidade para ver os horários.'
+            : 'Escolha uma cidade para ver os horários.'}
         </HomeNotice>
       )}
 

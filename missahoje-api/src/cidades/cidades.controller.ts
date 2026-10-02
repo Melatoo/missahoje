@@ -15,6 +15,7 @@ import { CacheInterceptor } from '@nestjs/cache-manager';
 import { ClearCacheInterceptor } from '../common/interceptors/clear-cache.interceptor';
 import { CidadesService } from './cidades.service';
 import { CreateCidadeDto } from './dto/create-cidade.dto';
+import { GetCidadeProximaDto } from './dto/get-cidade-proxima.dto';
 import { UpdateCidadeDto } from './dto/update-cidade.dto';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -41,6 +42,12 @@ export class CidadesController {
   @Get()
   findAll(@Query() options: PaginationDto) {
     return this.cidadesService.findAll(options);
+  }
+
+  @ApiOperation({ summary: 'Busca a cidade atendida mais próxima de uma posição' })
+  @Get('proxima')
+  findNearest(@Query() position: GetCidadeProximaDto) {
+    return this.cidadesService.findNearest(position);
   }
 
   @ApiOperation({ summary: 'Busca uma cidade pelo ID' })

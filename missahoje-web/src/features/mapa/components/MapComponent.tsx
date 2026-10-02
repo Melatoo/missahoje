@@ -18,8 +18,7 @@ const MapClient = dynamic(() => import('./MapClient'), {
 });
 
 export function MapComponent() {
-  const requestPosition = useLocalizacaoStore((state) => state.requestPosition);
-  const isLocating = useLocalizacaoStore((state) => state.isLocating);
+  const isLocating = useLocalizacaoStore((state) => state.locating !== null);
   const coordinates = useLocalizacaoStore((state) => state.coordinates);
   const setCenter = useMapStore((state) => state.setCenter);
   const setZoom = useMapStore((state) => state.setZoom);
@@ -28,8 +27,7 @@ export function MapComponent() {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
-    requestPosition();
-  }, [requestPosition]);
+  }, []);
 
   useEffect(() => {
     if (!coordinates) return;
