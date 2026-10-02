@@ -4,8 +4,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { CacheModule } from '@nestjs/cache-manager';
 import { redisStore } from 'cache-manager-redis-store';
 import { ThrottlerModule } from '@nestjs/throttler';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { MissasModule } from './missas/missas.module';
 import { UsuariosModule } from './usuarios/usuarios.module';
 import { ParoquiaModule } from './paroquias/paroquia.module';
@@ -55,7 +53,5 @@ import { CidadesModule } from './cidades/cidades.module';
         AuthModule,
         CidadesModule,
     ],
-    controllers: [AppController],
-    providers: [AppService],
 })
 export class AppModule {}
