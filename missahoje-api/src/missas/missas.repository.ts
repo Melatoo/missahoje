@@ -12,7 +12,9 @@ export class MissasRepository {
         private readonly repository: Repository<HorarioMissa>,
     ) {}
 
-    async findWithFilters(query: GetMissasDto): Promise<Pagination<HorarioMissa>> {
+    async findWithFilters(
+        query: GetMissasDto,
+    ): Promise<Pagination<HorarioMissa>> {
         const qb = this.repository
             .createQueryBuilder('horario')
             .leftJoinAndSelect('horario.comunidade', 'comunidade')
@@ -20,7 +22,9 @@ export class MissasRepository {
             .leftJoinAndSelect('comunidade.cidade', 'cidade');
 
         if (query.dia_semana !== undefined) {
-            qb.andWhere('horario.dia_semana = :dia_semana', { dia_semana: query.dia_semana });
+            qb.andWhere('horario.dia_semana = :dia_semana', {
+                dia_semana: query.dia_semana,
+            });
         }
 
         if (query.bairro) {
@@ -30,7 +34,9 @@ export class MissasRepository {
         }
 
         if (query.cidadeId) {
-            qb.andWhere('comunidade.cidade_id = :cidadeId', { cidadeId: query.cidadeId });
+            qb.andWhere('comunidade.cidade_id = :cidadeId', {
+                cidadeId: query.cidadeId,
+            });
         }
 
         return paginate<HorarioMissa>(qb, {

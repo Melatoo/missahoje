@@ -1,4 +1,10 @@
-import { Injectable, NestInterceptor, ExecutionContext, CallHandler, Inject } from '@nestjs/common';
+import {
+    Injectable,
+    NestInterceptor,
+    ExecutionContext,
+    CallHandler,
+    Inject,
+} from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import type { Cache } from 'cache-manager';
 import { Observable } from 'rxjs';
@@ -13,7 +19,9 @@ export class ClearCacheInterceptor implements NestInterceptor {
             tap({
                 next: async () => {
                     const req = context.switchToHttp().getRequest();
-                    if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method)) {
+                    if (
+                        ['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method)
+                    ) {
                         await this.cacheManager.clear();
                     }
                 },

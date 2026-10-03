@@ -39,10 +39,7 @@ export class UsuariosController {
 
     @ApiOperation({ summary: 'Lista todos os usuários paginados' })
     @Get()
-    findAll(
-        @Query() options: PaginationDto,
-        @Query('email') email?: string,
-    ) {
+    findAll(@Query() options: PaginationDto, @Query('email') email?: string) {
         if (email) {
             return this.usuariosService.findByEmail(email);
         }

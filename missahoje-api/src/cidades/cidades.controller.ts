@@ -1,14 +1,14 @@
 import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  UseGuards,
-  UseInterceptors,
-  Query,
+    Controller,
+    Get,
+    Post,
+    Body,
+    Patch,
+    Param,
+    Delete,
+    UseGuards,
+    UseInterceptors,
+    Query,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { CacheInterceptor } from '@nestjs/cache-manager';
@@ -27,50 +27,52 @@ import { PaginationDto } from '../common/dto/pagination.dto';
 @Controller('cidades')
 @UseInterceptors(CacheInterceptor, ClearCacheInterceptor)
 export class CidadesController {
-  constructor(private readonly cidadesService: CidadesService) {}
+    constructor(private readonly cidadesService: CidadesService) {}
 
-  @ApiOperation({ summary: 'Cria uma nova cidade' })
-  @ApiBearerAuth()
-  @Post()
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
-  create(@Body() createCidadeDto: CreateCidadeDto) {
-    return this.cidadesService.create(createCidadeDto);
-  }
+    @ApiOperation({ summary: 'Cria uma nova cidade' })
+    @ApiBearerAuth()
+    @Post()
+    @UseGuards(AuthGuard, RolesGuard)
+    @Roles(UserRole.ADMIN)
+    create(@Body() createCidadeDto: CreateCidadeDto) {
+        return this.cidadesService.create(createCidadeDto);
+    }
 
-  @ApiOperation({ summary: 'Lista todas as cidades paginadas' })
-  @Get()
-  findAll(@Query() options: PaginationDto) {
-    return this.cidadesService.findAll(options);
-  }
+    @ApiOperation({ summary: 'Lista todas as cidades paginadas' })
+    @Get()
+    findAll(@Query() options: PaginationDto) {
+        return this.cidadesService.findAll(options);
+    }
 
-  @ApiOperation({ summary: 'Busca a cidade atendida mais próxima de uma posição' })
-  @Get('proxima')
-  findNearest(@Query() position: GetCidadeProximaDto) {
-    return this.cidadesService.findNearest(position);
-  }
+    @ApiOperation({
+        summary: 'Busca a cidade atendida mais próxima de uma posição',
+    })
+    @Get('proxima')
+    findNearest(@Query() position: GetCidadeProximaDto) {
+        return this.cidadesService.findNearest(position);
+    }
 
-  @ApiOperation({ summary: 'Busca uma cidade pelo ID' })
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.cidadesService.findOne(id);
-  }
+    @ApiOperation({ summary: 'Busca uma cidade pelo ID' })
+    @Get(':id')
+    findOne(@Param('id') id: string) {
+        return this.cidadesService.findOne(id);
+    }
 
-  @ApiOperation({ summary: 'Atualiza uma cidade' })
-  @ApiBearerAuth()
-  @Patch(':id')
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
-  update(@Param('id') id: string, @Body() updateCidadeDto: UpdateCidadeDto) {
-    return this.cidadesService.update(id, updateCidadeDto);
-  }
+    @ApiOperation({ summary: 'Atualiza uma cidade' })
+    @ApiBearerAuth()
+    @Patch(':id')
+    @UseGuards(AuthGuard, RolesGuard)
+    @Roles(UserRole.ADMIN)
+    update(@Param('id') id: string, @Body() updateCidadeDto: UpdateCidadeDto) {
+        return this.cidadesService.update(id, updateCidadeDto);
+    }
 
-  @ApiOperation({ summary: 'Remove uma cidade' })
-  @ApiBearerAuth()
-  @Delete(':id')
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
-  remove(@Param('id') id: string) {
-    return this.cidadesService.remove(id);
-  }
+    @ApiOperation({ summary: 'Remove uma cidade' })
+    @ApiBearerAuth()
+    @Delete(':id')
+    @UseGuards(AuthGuard, RolesGuard)
+    @Roles(UserRole.ADMIN)
+    remove(@Param('id') id: string) {
+        return this.cidadesService.remove(id);
+    }
 }

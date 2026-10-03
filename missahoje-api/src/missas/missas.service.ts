@@ -8,9 +8,7 @@ import { MissasRepository } from './missas.repository';
 
 @Injectable()
 export class MissasService {
-    constructor(
-        private readonly missasRepository: MissasRepository,
-    ) {}
+    constructor(private readonly missasRepository: MissasRepository) {}
 
     async findAll(query: GetMissasDto): Promise<Pagination<HorarioMissa>> {
         return this.missasRepository.findWithFilters(query);
