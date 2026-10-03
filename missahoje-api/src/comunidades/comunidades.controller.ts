@@ -4,6 +4,7 @@ import {
     Delete,
     Get,
     Param,
+    ParseUUIDPipe,
     Post,
     Put,
     Query,
@@ -49,7 +50,7 @@ export class ComunidadesController {
 
     @ApiOperation({ summary: 'Busca uma comunidade pelo ID' })
     @Get(':id')
-    findOne(@Param('id') id: string) {
+    findOne(@Param('id', ParseUUIDPipe) id: string) {
         return this.comunidadesService.findOne(id);
     }
 
