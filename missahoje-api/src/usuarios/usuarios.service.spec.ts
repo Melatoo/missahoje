@@ -66,7 +66,7 @@ describe('UsuariosService', () => {
             mockUsuariosRepository.create.mockReturnValue(usuarioCriado);
             mockUsuariosRepository.save.mockResolvedValue(usuarioCriado);
 
-            const resultado = await service.create(dto as any);
+            const resultado = await service.create(dto);
 
             expect(bcryptjs.genSalt).toHaveBeenCalled();
             expect(bcryptjs.hash).toHaveBeenCalledWith('123', 'salt');
@@ -86,7 +86,7 @@ describe('UsuariosService', () => {
                 email: 'existente@teste.com',
             });
 
-            await expect(service.create(dto as any)).rejects.toThrow(
+            await expect(service.create(dto)).rejects.toThrow(
                 ConflictException,
             );
             expect(mockUsuariosRepository.save).not.toHaveBeenCalled();

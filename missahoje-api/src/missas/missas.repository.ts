@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, DeepPartial } from 'typeorm';
+import { Repository, DeepPartial, FindOneOptions } from 'typeorm';
 import { paginate, Pagination } from 'nestjs-typeorm-paginate';
 import { HorarioMissa } from './entities/horario-missa.entity';
 import { GetMissasDto } from './dto/get-missas.dto';
@@ -53,11 +53,15 @@ export class MissasRepository {
         return this.repository.save(data);
     }
 
-    async findOne(options: any): Promise<HorarioMissa | null> {
+    async findOne(
+        options: FindOneOptions<HorarioMissa>,
+    ): Promise<HorarioMissa | null> {
         return this.repository.findOne(options);
     }
 
-    async preload(data: any): Promise<HorarioMissa | undefined> {
+    async preload(
+        data: DeepPartial<HorarioMissa>,
+    ): Promise<HorarioMissa | undefined> {
         return this.repository.preload(data);
     }
 

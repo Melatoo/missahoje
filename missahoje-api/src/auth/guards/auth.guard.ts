@@ -7,6 +7,7 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { Request } from 'express';
+import { JwtPayload } from '../auth.service';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -16,7 +17,9 @@ export class AuthGuard implements CanActivate {
     ) {}
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
-        const request = context.switchToHttp().getRequest();
+        const request = context
+            .switchToHttp()
+            .getRequest<Request & { user?: JwtPayload }>();
         const token = this.extractTokenFromHeader(request);
 
         if (!token) {
@@ -24,11 +27,14 @@ export class AuthGuard implements CanActivate {
         }
 
         try {
-            const payload = await this.jwtService.verifyAsync(token, {
-                secret: this.configService.get<string>('JWT_SECRET'),
-            });
+            const payload = await this.jwtService.verifyAsync<JwtPayload>(
+                token,
+                {
+                    secret: this.configService.get<string>('JWT_SECRET'),
+                },
+            );
             // Anexa o payload do token ao objeto da requisição para acesso posterior
-            request['user'] = payload;
+            request.user = payload;
         } catch {
             throw new UnauthorizedException('Token inválido ou expirado');
         }

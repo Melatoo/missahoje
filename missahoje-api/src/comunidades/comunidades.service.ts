@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Comunidade } from './entities/comunidade.entity';
-import { Repository } from 'typeorm';
+import { FindOptionsWhere, Repository } from 'typeorm';
 import { paginate, Pagination } from 'nestjs-typeorm-paginate';
 import { CreateComunidadeDto } from './dto/create-comunidade.dto';
 import { UpdateComunidadeDto } from './dto/update-comunidade.dto';
@@ -25,7 +25,7 @@ export class ComunidadesService {
         cidadeId?: string,
         nome?: string,
     ): Promise<Pagination<Comunidade>> {
-        const where: any = {};
+        const where: FindOptionsWhere<Comunidade> = {};
         if (cidadeId) where.cidade_id = cidadeId;
         if (nome) where.nome = nome;
 

@@ -126,7 +126,7 @@ describe('MissasRepository', () => {
         });
 
         it('deve delegar o save', async () => {
-            const data = { id: '1', horario: '10:00' } as any;
+            const data = { id: '1', horario: '10:00' } as HorarioMissa;
             await repository.save(data);
             expect(mockTypeOrmRepository.save).toHaveBeenCalledWith(data);
         });
@@ -145,7 +145,7 @@ describe('MissasRepository', () => {
         });
 
         it('deve delegar o softRemove', async () => {
-            const data = { id: '1' } as any;
+            const data = { id: '1' } as HorarioMissa;
             await repository.softRemove(data);
             expect(mockTypeOrmRepository.softRemove).toHaveBeenCalledWith(data);
         });

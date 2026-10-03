@@ -42,7 +42,7 @@ describe('MissasService', () => {
             mockMissasRepository.create.mockReturnValue(missaCriada);
             mockMissasRepository.save.mockResolvedValue(missaCriada);
 
-            const resultado = await service.create(dto as any);
+            const resultado = await service.create(dto);
 
             expect(resultado).toEqual(missaCriada);
             expect(mockMissasRepository.create).toHaveBeenCalledWith(dto);

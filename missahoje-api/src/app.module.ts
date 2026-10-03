@@ -39,7 +39,7 @@ import { CidadesModule } from './cidades/cidades.module';
         CacheModule.registerAsync({
             isGlobal: true,
             imports: [ConfigModule],
-            useFactory: async (configService: ConfigService) => ({
+            useFactory: (configService: ConfigService) => ({
                 store: redisStore as any,
                 host: configService.get<string>('REDIS_HOST'),
                 port: configService.get<number>('REDIS_PORT'),
