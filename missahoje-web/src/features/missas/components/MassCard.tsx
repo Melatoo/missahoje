@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { igrejaHref } from '@/features/comunidades/igrejaHref';
 import { cn } from '@/lib/utils';
 import { formatTime } from '../format';
 import type { ScheduleItem } from '../schedule';
@@ -40,7 +41,7 @@ export function MassCard({ mass, state, minutesUntil }: MassCardProps) {
         )}
         {community && (
           <Link
-            href={`/igreja/${mass.comunidade_id}`}
+            href={igrejaHref(community)}
             className="font-medium leading-snug outline-none after:absolute after:inset-0 after:rounded-2xl focus-visible:after:ring-2 focus-visible:after:ring-ring"
           >
             {community.nome}

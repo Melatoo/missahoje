@@ -12,7 +12,10 @@ function serverApiUrl(): string {
 
 // null quando a comunidade não existe (404) ou o id não é um UUID (400)
 export async function fetchComunidade(id: string): Promise<Comunidade | null> {
-  const response = await fetch(`${serverApiUrl()}/comunidades/${encodeURIComponent(id)}`);
+  // Mesmo limite do cliente axios: API travada não prende a renderização
+  const response = await fetch(`${serverApiUrl()}/comunidades/${encodeURIComponent(id)}`, {
+    signal: AbortSignal.timeout(10_000),
+  });
   if (response.status === 400 || response.status === 404) return null;
   if (!response.ok) throw new Error(`GET /comunidades/${id} respondeu ${response.status}`);
 
