@@ -5,8 +5,8 @@ import { CidadesController } from './cidades.controller';
 import { Cidade } from './entities/cidade.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Cidade])],
-  controllers: [CidadesController],
-  providers: [CidadesService],
+    imports: [TypeOrmModule.forFeature([Cidade])],
+    controllers: [CidadesController],
+    providers: [CidadesService],
 })
 export class CidadesModule {}

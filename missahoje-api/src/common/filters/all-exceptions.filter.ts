@@ -6,6 +6,7 @@ import {
     HttpStatus,
     Logger,
 } from '@nestjs/common';
+import { Request, Response } from 'express';
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
@@ -13,10 +14,10 @@ export class AllExceptionsFilter implements ExceptionFilter {
 
     catch(exception: unknown, host: ArgumentsHost) {
         const ctx = host.switchToHttp();
-        const response = ctx.getResponse();
-        const request = ctx.getRequest();
+        const response = ctx.getResponse<Response>();
+        const request = ctx.getRequest<Request>();
 
-        const status =
+        const status: HttpStatus =
             exception instanceof HttpException
                 ? exception.getStatus()
                 : HttpStatus.INTERNAL_SERVER_ERROR;
@@ -37,7 +38,10 @@ export class AllExceptionsFilter implements ExceptionFilter {
         const finalMessage =
             status === HttpStatus.INTERNAL_SERVER_ERROR
                 ? 'Erro Interno no Servidor. Tente novamente mais tarde.'
-                : (message as any)?.message || message;
+                : (typeof message === 'object' &&
+                      'message' in message &&
+                      message.message) ||
+                  message;
 
         response.status(status).json({
             statusCode: status,

@@ -1,5 +1,6 @@
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+import { JwtPayload } from '../auth.service';
 import { ROLES_KEY } from '../decorators/roles.decorator';
 
 @Injectable()
@@ -16,7 +17,9 @@ export class RolesGuard implements CanActivate {
             return true; // Se a rota não exige perfis, permite o acesso livremente
         }
 
-        const { user } = context.switchToHttp().getRequest();
+        const { user } = context
+            .switchToHttp()
+            .getRequest<{ user?: JwtPayload }>();
 
         // Verifica se o usuário existe e se o 'role' dele está entre os exigidos
         return requiredRoles.some((role) => user?.role === role);

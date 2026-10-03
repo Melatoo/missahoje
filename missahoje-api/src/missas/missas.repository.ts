@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, DeepPartial } from 'typeorm';
+import { Repository, DeepPartial, FindOneOptions } from 'typeorm';
 import { paginate, Pagination } from 'nestjs-typeorm-paginate';
 import { HorarioMissa } from './entities/horario-missa.entity';
 import { GetMissasDto } from './dto/get-missas.dto';
@@ -12,7 +12,9 @@ export class MissasRepository {
         private readonly repository: Repository<HorarioMissa>,
     ) {}
 
-    async findWithFilters(query: GetMissasDto): Promise<Pagination<HorarioMissa>> {
+    async findWithFilters(
+        query: GetMissasDto,
+    ): Promise<Pagination<HorarioMissa>> {
         const qb = this.repository
             .createQueryBuilder('horario')
             .leftJoinAndSelect('horario.comunidade', 'comunidade')
@@ -20,7 +22,9 @@ export class MissasRepository {
             .leftJoinAndSelect('comunidade.cidade', 'cidade');
 
         if (query.dia_semana !== undefined) {
-            qb.andWhere('horario.dia_semana = :dia_semana', { dia_semana: query.dia_semana });
+            qb.andWhere('horario.dia_semana = :dia_semana', {
+                dia_semana: query.dia_semana,
+            });
         }
 
         if (query.bairro) {
@@ -30,7 +34,9 @@ export class MissasRepository {
         }
 
         if (query.cidadeId) {
-            qb.andWhere('comunidade.cidade_id = :cidadeId', { cidadeId: query.cidadeId });
+            qb.andWhere('comunidade.cidade_id = :cidadeId', {
+                cidadeId: query.cidadeId,
+            });
         }
 
         return paginate<HorarioMissa>(qb, {
@@ -47,11 +53,15 @@ export class MissasRepository {
         return this.repository.save(data);
     }
 
-    async findOne(options: any): Promise<HorarioMissa | null> {
+    async findOne(
+        options: FindOneOptions<HorarioMissa>,
+    ): Promise<HorarioMissa | null> {
         return this.repository.findOne(options);
     }
 
-    async preload(data: any): Promise<HorarioMissa | undefined> {
+    async preload(
+        data: DeepPartial<HorarioMissa>,
+    ): Promise<HorarioMissa | undefined> {
         return this.repository.preload(data);
     }
 

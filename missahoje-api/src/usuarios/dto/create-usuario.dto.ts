@@ -15,7 +15,9 @@ export class CreateUsuarioDto {
 
     @IsNotEmpty({ message: 'O email é obrigatório.' })
     @IsEmail({}, { message: 'Forneça um email válido.' })
-    @Transform(({ value }) => value?.trim().toLowerCase())
+    @Transform(({ value }: { value: unknown }) =>
+        typeof value === 'string' ? value.trim().toLowerCase() : value,
+    )
     email: string;
 
     @IsNotEmpty({ message: 'A senha é obrigatória.' })

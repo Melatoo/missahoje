@@ -11,57 +11,59 @@ import { PaginationDto } from '../common/dto/pagination.dto';
 
 @Injectable()
 export class CidadesService {
-  constructor(
-    @InjectRepository(Cidade)
-    private readonly cidadesRepository: Repository<Cidade>,
-  ) {}
+    constructor(
+        @InjectRepository(Cidade)
+        private readonly cidadesRepository: Repository<Cidade>,
+    ) {}
 
-  async create(createCidadeDto: CreateCidadeDto) {
-    const cidade = this.cidadesRepository.create(createCidadeDto);
-    return await this.cidadesRepository.save(cidade);
-  }
-
-  async findAll(options: PaginationDto): Promise<Pagination<Cidade>> {
-    return paginate<Cidade>(this.cidadesRepository, {
-      page: options.page || 1,
-      limit: options.limit || 100,
-    });
-  }
-
-  async findNearest({ lat, lng }: GetCidadeProximaDto) {
-    const cidades = await this.cidadesRepository.find({
-      where: { latitude: Not(IsNull()), longitude: Not(IsNull()) },
-    });
-    const cidade = findNearest(cidades, { lat, lng });
-    if (!cidade) {
-      throw new NotFoundException('Nenhuma cidade atendida perto dessa posição');
-    }
-    return cidade;
-  }
-
-  async findOne(id: string) {
-    const cidade = await this.cidadesRepository.findOne({ where: { id } });
-    if (!cidade) {
-      throw new NotFoundException('Cidade não encontrada');
-    }
-    return cidade;
-  }
-
-  async update(id: string, updateCidadeDto: UpdateCidadeDto) {
-    const cidade = await this.cidadesRepository.preload({
-      id,
-      ...updateCidadeDto,
-    });
-
-    if (!cidade) {
-      throw new NotFoundException('Cidade não encontrada');
+    async create(createCidadeDto: CreateCidadeDto) {
+        const cidade = this.cidadesRepository.create(createCidadeDto);
+        return await this.cidadesRepository.save(cidade);
     }
 
-    return await this.cidadesRepository.save(cidade);
-  }
+    async findAll(options: PaginationDto): Promise<Pagination<Cidade>> {
+        return paginate<Cidade>(this.cidadesRepository, {
+            page: options.page || 1,
+            limit: options.limit || 100,
+        });
+    }
 
-  async remove(id: string) {
-    const cidade = await this.findOne(id);
-    return await this.cidadesRepository.softRemove(cidade);
-  }
+    async findNearest({ lat, lng }: GetCidadeProximaDto) {
+        const cidades = await this.cidadesRepository.find({
+            where: { latitude: Not(IsNull()), longitude: Not(IsNull()) },
+        });
+        const cidade = findNearest(cidades, { lat, lng });
+        if (!cidade) {
+            throw new NotFoundException(
+                'Nenhuma cidade atendida perto dessa posição',
+            );
+        }
+        return cidade;
+    }
+
+    async findOne(id: string) {
+        const cidade = await this.cidadesRepository.findOne({ where: { id } });
+        if (!cidade) {
+            throw new NotFoundException('Cidade não encontrada');
+        }
+        return cidade;
+    }
+
+    async update(id: string, updateCidadeDto: UpdateCidadeDto) {
+        const cidade = await this.cidadesRepository.preload({
+            id,
+            ...updateCidadeDto,
+        });
+
+        if (!cidade) {
+            throw new NotFoundException('Cidade não encontrada');
+        }
+
+        return await this.cidadesRepository.save(cidade);
+    }
+
+    async remove(id: string) {
+        const cidade = await this.findOne(id);
+        return await this.cidadesRepository.softRemove(cidade);
+    }
 }

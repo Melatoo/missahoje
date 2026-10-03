@@ -39,15 +39,9 @@ export class Cidade {
     @UpdateDateColumn({ name: 'updated_at' })
     updatedAt: Date;
 
-    @OneToMany(
-        () => Comunidade,
-        (comunidade: Comunidade) => comunidade.cidade,
-    )
+    @OneToMany(() => Comunidade, (comunidade: Comunidade) => comunidade.cidade)
     comunidades: Comunidade[];
 
-    @OneToMany(
-        () => Usuario,
-        (usuario: Usuario) => usuario.cidade,
-    )
+    @OneToMany(() => Usuario, (usuario: Usuario) => usuario.cidade)
     usuarios: Usuario[];
 }
