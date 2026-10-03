@@ -5,6 +5,9 @@ export interface Clock {
   minutes: number;
 }
 
+// Fuso das cidades atendidas; o servidor costuma rodar em UTC
+export const APP_TIME_ZONE = 'America/Sao_Paulo';
+
 const WEEKDAYS: Record<string, Weekday> = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 };
 
 export function localClock(now: Date, timeZone?: string): Clock {
