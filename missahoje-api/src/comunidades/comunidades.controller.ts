@@ -4,6 +4,7 @@ import {
     Delete,
     Get,
     Param,
+    ParseUUIDPipe,
     Post,
     Put,
     Query,
@@ -49,7 +50,7 @@ export class ComunidadesController {
 
     @ApiOperation({ summary: 'Busca uma comunidade pelo ID' })
     @Get(':id')
-    findOne(@Param('id') id: string) {
+    findOne(@Param('id', ParseUUIDPipe) id: string) {
         return this.comunidadesService.findOne(id);
     }
 
@@ -59,7 +60,7 @@ export class ComunidadesController {
     @UseGuards(AuthGuard, RolesGuard)
     @Roles(UserRole.ADMIN)
     update(
-        @Param('id') id: string,
+        @Param('id', ParseUUIDPipe) id: string,
         @Body() updateComunidadeDto: UpdateComunidadeDto,
     ) {
         return this.comunidadesService.update(id, updateComunidadeDto);
@@ -70,7 +71,7 @@ export class ComunidadesController {
     @Delete(':id')
     @UseGuards(AuthGuard, RolesGuard)
     @Roles(UserRole.ADMIN)
-    remove(@Param('id') id: string) {
+    remove(@Param('id', ParseUUIDPipe) id: string) {
         return this.comunidadesService.remove(id);
     }
 }

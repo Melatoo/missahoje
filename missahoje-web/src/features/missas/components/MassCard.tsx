@@ -1,3 +1,5 @@
+import Link from 'next/link';
+import { igrejaHref } from '@/features/comunidades/igrejaHref';
 import { cn } from '@/lib/utils';
 import { formatTime } from '../format';
 import type { ScheduleItem } from '../schedule';
@@ -21,7 +23,7 @@ export function MassCard({ mass, state, minutesUntil }: MassCardProps) {
     <li
       data-state={state}
       className={cn(
-        'flex min-h-11 items-start gap-4 rounded-2xl bg-surface p-4',
+        'relative flex min-h-11 items-start gap-4 rounded-2xl bg-surface p-4',
         isPast && 'opacity-40',
         isNext && 'bg-background ring-2 ring-brand',
       )}
@@ -37,7 +39,14 @@ export function MassCard({ mass, state, minutesUntil }: MassCardProps) {
         {isNext && minutesUntil !== undefined && (
           <p className="text-sm font-medium text-brand">{formatTimeUntil(minutesUntil)}</p>
         )}
-        <p className="font-medium leading-snug">{community?.nome}</p>
+        {community && (
+          <Link
+            href={igrejaHref(community)}
+            className="font-medium leading-snug outline-none after:absolute after:inset-0 after:rounded-2xl focus-visible:after:ring-2 focus-visible:after:ring-ring"
+          >
+            {community.nome}
+          </Link>
+        )}
         {community?.bairro && <p className="text-sm text-muted-foreground">{community.bairro}</p>}
         {mass.observacao && <p className="text-sm text-muted-foreground">{mass.observacao}</p>}
         {isPast && <span className="sr-only">Já aconteceu.</span>}
