@@ -3,6 +3,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { NotFoundException } from '@nestjs/common';
 import { ComunidadesService } from './comunidades.service';
 import { Comunidade } from './entities/comunidade.entity';
+import { CreateComunidadeDto } from './dto/create-comunidade.dto';
 import * as paginateModule from 'nestjs-typeorm-paginate';
 
 jest.mock('nestjs-typeorm-paginate', () => ({
@@ -51,7 +52,7 @@ describe('ComunidadesService', () => {
             mockComunidadesRepository.create.mockReturnValue(comunidadeCriada);
             mockComunidadesRepository.save.mockResolvedValue(comunidadeCriada);
 
-            const resultado = await service.create(dto as any);
+            const resultado = await service.create(dto as CreateComunidadeDto);
 
             expect(resultado).toEqual(comunidadeCriada);
             expect(mockComunidadesRepository.create).toHaveBeenCalledWith(dto);

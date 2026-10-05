@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UnauthorizedException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UsuariosService } from '../usuarios/usuarios.service';
+import { Usuario } from '../usuarios/entities/usuario.entity';
 import { JwtService } from '@nestjs/jwt';
 
 describe('AuthService', () => {
@@ -107,7 +108,9 @@ describe('AuthService', () => {
             const usuario = { id: '1', email: 'test@test.com', role: 'USER' };
             mockJwtService.signAsync.mockResolvedValue('token-jwt-aqui');
 
-            const resultado = await service.signIn(usuario as any);
+            const resultado = await service.signIn(
+                usuario as Omit<Usuario, 'senha'>,
+            );
 
             expect(resultado).toEqual({ access_token: 'token-jwt-aqui' });
             expect(mockJwtService.signAsync).toHaveBeenCalledWith({
