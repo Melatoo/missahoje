@@ -9,7 +9,6 @@ on:
 permissions:
   contents: read
 
-# Um push novo na mesma PR cancela a execução anterior.
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
