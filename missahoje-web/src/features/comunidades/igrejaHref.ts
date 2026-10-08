@@ -1,6 +1,6 @@
 import type { Comunidade } from './types';
 
-type IgrejaLink = Pick<Comunidade, 'id' | 'nome'> & { cidade?: { nome: string } };
+type IgrejaLink = Pick<Comunidade, 'id' | 'nome'> & { cidade?: { nome: string } | null };
 
 function slugify(text: string): string {
   return text

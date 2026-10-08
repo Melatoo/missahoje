@@ -1,12 +1,12 @@
 import { timeToMinutes, type Clock } from './clock';
-import type { HorarioMissa } from './types';
+import type { HorarioMissa, HorarioMissaComComunidade } from './types';
 import { addDays, type Weekday } from './weekday';
 
 const MINUTES_PER_DAY = 24 * 60;
 
 export type ScheduleItem =
-  | { mass: HorarioMissa; state: 'past' }
-  | { mass: HorarioMissa; state: 'next' | 'upcoming'; minutesUntil: number };
+  | { mass: HorarioMissaComComunidade; state: 'past' }
+  | { mass: HorarioMissaComComunidade; state: 'next' | 'upcoming'; minutesUntil: number };
 
 export interface ScheduleDay {
   weekday: Weekday;
@@ -16,17 +16,17 @@ export interface ScheduleDay {
 
 export interface Schedule {
   days: ScheduleDay[];
-  next: HorarioMissa[];
+  next: HorarioMissaComComunidade[];
   minutesUntilNext: number | null;
 }
 
-export function massesOfDay(masses: HorarioMissa[], weekday: Weekday): HorarioMissa[] {
+export function massesOfDay<Mass extends HorarioMissa>(masses: Mass[], weekday: Weekday): Mass[] {
   return masses
     .filter((m) => m.dia_semana === weekday)
     .sort((a, b) => timeToMinutes(a.horario) - timeToMinutes(b.horario));
 }
 
-export function buildSchedule(masses: HorarioMissa[], now: Clock): Schedule {
+export function buildSchedule(masses: HorarioMissaComComunidade[], now: Clock): Schedule {
   const today = massesOfDay(masses, now.weekday);
   const upcomingToday = today.filter((m) => timeToMinutes(m.horario) >= now.minutes);
 
@@ -38,7 +38,7 @@ export function buildSchedule(masses: HorarioMissa[], now: Clock): Schedule {
 
   if (target.masses.length === 0) return { days: [], next: [], minutesUntilNext: null };
 
-  const minutesUntil = (m: HorarioMissa) =>
+  const minutesUntil = (m: HorarioMissaComComunidade) =>
     target.offset * MINUTES_PER_DAY + timeToMinutes(m.horario) - now.minutes;
   const minutesUntilNext = minutesUntil(target.masses[0]);
   const next = target.masses.filter((m) => minutesUntil(m) === minutesUntilNext);

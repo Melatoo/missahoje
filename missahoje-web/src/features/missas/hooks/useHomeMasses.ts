@@ -6,7 +6,7 @@ import type { Clock } from '../clock';
 import type { FetchStatus } from '../homeView';
 import { isDayOver, mergeNextDay } from '../nextDay';
 import { buildSchedule, massesOfDay, type Schedule } from '../schedule';
-import type { HorarioMissa } from '../types';
+import type { HorarioMissaComComunidade } from '../types';
 import type { Weekday } from '../weekday';
 
 interface UseHomeMassesInput {
@@ -18,7 +18,7 @@ interface UseHomeMassesInput {
 
 export type HomeMasses =
   | { mode: 'today'; schedule: Schedule | null }
-  | { mode: 'day'; weekday: Weekday; masses: HorarioMissa[] | null };
+  | { mode: 'day'; weekday: Weekday; masses: HorarioMissaComComunidade[] | null };
 
 export interface UseHomeMassesResult {
   status: FetchStatus;

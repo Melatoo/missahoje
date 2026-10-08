@@ -1,20 +1,20 @@
 import { describe, expect, it } from 'vitest';
 import { buildSchedule } from './schedule';
-import type { HorarioMissa } from './types';
+import type { HorarioMissaComComunidade } from './types';
 import type { Weekday } from './weekday';
 
 const SUN = 0;
 const MON = 1;
 const SAT = 6;
 
-function mass(id: string, dia_semana: Weekday, horario: string): HorarioMissa {
+function mass(id: string, dia_semana: Weekday, horario: string): HorarioMissaComComunidade {
   return {
     id,
     comunidade_id: 'c1',
     dia_semana,
     horario,
     observacao: null,
-  } as HorarioMissa;
+  } as HorarioMissaComComunidade;
 }
 
 const h = (hour: number, minute = 0) => hour * 60 + minute;

@@ -13,14 +13,14 @@ interface ChurchDetailProps {
 
 export function ChurchDetail({ comunidade, today }: ChurchDetailProps) {
   const { paroquia, cidade } = comunidade;
-  const days = buildWeekSchedule(comunidade.horarios_missa ?? [], today);
+  const days = buildWeekSchedule(comunidade.horarios_missa, today);
   const directions = comunidade.link_google_maps ? externalLink(comunidade.link_google_maps) : null;
 
   return (
     <article aria-labelledby="igreja-titulo" className="flex flex-col gap-8">
       <header className="flex flex-col gap-3">
         <div className="flex flex-col gap-1">
-          {paroquia && <p className="text-sm text-muted-foreground">{paroquia.nome}</p>}
+          <p className="text-sm text-muted-foreground">{paroquia.nome}</p>
           <h1 id="igreja-titulo" className="text-2xl font-semibold tracking-tight">
             {comunidade.nome}
           </h1>
@@ -50,7 +50,7 @@ export function ChurchDetail({ comunidade, today }: ChurchDetailProps) {
         )}
       </section>
 
-      {paroquia && (paroquia.telefone || paroquia.siteOuRedeSocial) && (
+      {(paroquia.telefone || paroquia.siteOuRedeSocial) && (
         <section aria-labelledby="contato-titulo" className="flex flex-col gap-3">
           <h2 id="contato-titulo" className="text-lg font-semibold">
             Contato da paróquia

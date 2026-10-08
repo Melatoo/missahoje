@@ -1,18 +1,9 @@
-export interface PaginationMeta {
-  itemCount: number;
-  totalItems: number;
-  totalPages: number;
-  currentPage: number;
-  itemsPerPage: number;
-}
+import type { components, paths } from './api';
 
-export interface PaginatedResponse<T> {
-  items: T[];
-  meta: PaginationMeta;
-}
+export type Schemas = components['schemas'];
 
-export interface Timestamps {
-  createdAt: string;
-  updatedAt: string;
-  deletedAt: string | null;
-}
+type JsonBody<Operation> = Operation extends { responses: { 200: { content: { 'application/json': infer Body } } } }
+  ? Body
+  : never;
+
+export type GetResponse<Path extends keyof paths> = JsonBody<paths[Path]['get']>;

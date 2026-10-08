@@ -1,4 +1,6 @@
-export type Weekday = 0 | 1 | 2 | 3 | 4 | 5 | 6;
+import type { Schemas } from '@/types';
+
+export type Weekday = Schemas['HorarioMissaDto']['dia_semana'];
 
 const NAMES = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
 const SLUGS = ['domingo', 'segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado'];

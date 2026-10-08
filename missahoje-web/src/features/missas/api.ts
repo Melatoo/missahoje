@@ -1,11 +1,9 @@
 import { queryOptions, type QueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/axios';
-import type { PaginatedResponse } from '@/types';
+import type { GetResponse } from '@/types';
 import { findNextDayWithMasses } from './nextDay';
-import type { HorarioMissa } from './types';
-import { toWeekday, type Weekday } from './weekday';
-
-type HorarioMissaResponse = Omit<HorarioMissa, 'dia_semana'> & { dia_semana: number };
+import type { HorarioMissaComComunidade } from './types';
+import type { Weekday } from './weekday';
 
 export interface MassesOfDayQuery {
   cityId: string;
@@ -13,11 +11,11 @@ export interface MassesOfDayQuery {
   weekday: Weekday;
 }
 
-export async function fetchMassesOfDay({ cityId, neighborhood, weekday }: MassesOfDayQuery): Promise<HorarioMissa[]> {
-  const { data } = await api.get<PaginatedResponse<HorarioMissaResponse>>('/missas', {
+export async function fetchMassesOfDay({ cityId, neighborhood, weekday }: MassesOfDayQuery): Promise<HorarioMissaComComunidade[]> {
+  const { data } = await api.get<GetResponse<'/missas'>>('/missas', {
     params: { cidadeId: cityId, dia_semana: weekday, bairro: neighborhood ?? undefined },
   });
-  return data.items.map((mass) => ({ ...mass, dia_semana: toWeekday(mass.dia_semana) }));
+  return data.items;
 }
 
 export function massesOfDayQuery(query: MassesOfDayQuery) {
