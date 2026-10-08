@@ -38,7 +38,7 @@ export function describeNextMasses(schedule: Schedule): string | null {
 
   const label = schedule.next.length > 1 ? 'Próximas missas' : 'Próxima missa';
   const when = `${formatDayHeading(day.weekday, day.offset).toLowerCase()} às ${formatTime(first.horario)}`;
-  const where = joinNames(schedule.next.map((m) => m.comunidade.nome ?? '').filter(Boolean));
+  const where = joinNames(schedule.next.map((m) => m.comunidade.nome));
   const timeUntil = formatTimeUntil(schedule.minutesUntilNext);
 
   return `${label}: ${when}${where ? `, em ${where}` : ''}, ${timeUntil.charAt(0).toLowerCase()}${timeUntil.slice(1)}.`;

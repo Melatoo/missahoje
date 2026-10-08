@@ -1,10 +1,19 @@
 import { describe, expect, it, vi } from 'vitest';
 import { findNextDayWithMasses, isDayOver, mergeNextDay } from './nextDay';
-import type { HorarioMissaComComunidade } from './types';
+import type { HorarioMissa } from './types';
 import type { Weekday } from './weekday';
 
-function mass(id: string, dia_semana: Weekday, horario: string): HorarioMissaComComunidade {
-  return { id, comunidade_id: 'c1', dia_semana, horario, observacao: null } as HorarioMissaComComunidade;
+function mass(id: string, dia_semana: Weekday, horario: string): HorarioMissa {
+  return {
+    id,
+    comunidade_id: 'c1',
+    dia_semana,
+    horario,
+    observacao: null,
+    createdAt: '2026-01-01T00:00:00.000Z',
+    updatedAt: '2026-01-01T00:00:00.000Z',
+    deletedAt: null,
+  };
 }
 
 describe('o dia acabou?', () => {
@@ -29,7 +38,7 @@ describe('o dia acabou?', () => {
 
 describe('busca do próximo dia com missa', () => {
   it('busca a semana de uma vez e fica com o primeiro dia que tem missa', async () => {
-    const byDay: Partial<Record<Weekday, HorarioMissaComComunidade[]>> = {
+    const byDay: Partial<Record<Weekday, HorarioMissa[]>> = {
       3: [mass('wed', 3, '19:00')],
       5: [mass('fri', 5, '19:00')],
     };

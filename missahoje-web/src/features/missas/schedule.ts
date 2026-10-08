@@ -4,19 +4,19 @@ import { addDays, type Weekday } from './weekday';
 
 const MINUTES_PER_DAY = 24 * 60;
 
-export type ScheduleItem =
-  | { mass: HorarioMissaComComunidade; state: 'past' }
-  | { mass: HorarioMissaComComunidade; state: 'next' | 'upcoming'; minutesUntil: number };
+export type ScheduleItem<Mass extends HorarioMissa = HorarioMissaComComunidade> =
+  | { mass: Mass; state: 'past' }
+  | { mass: Mass; state: 'next' | 'upcoming'; minutesUntil: number };
 
-export interface ScheduleDay {
+export interface ScheduleDay<Mass extends HorarioMissa = HorarioMissaComComunidade> {
   weekday: Weekday;
   offset: number;
-  items: ScheduleItem[];
+  items: ScheduleItem<Mass>[];
 }
 
-export interface Schedule {
-  days: ScheduleDay[];
-  next: HorarioMissaComComunidade[];
+export interface Schedule<Mass extends HorarioMissa = HorarioMissaComComunidade> {
+  days: ScheduleDay<Mass>[];
+  next: Mass[];
   minutesUntilNext: number | null;
 }
 
@@ -26,7 +26,7 @@ export function massesOfDay<Mass extends HorarioMissa>(masses: Mass[], weekday: 
     .sort((a, b) => timeToMinutes(a.horario) - timeToMinutes(b.horario));
 }
 
-export function buildSchedule(masses: HorarioMissaComComunidade[], now: Clock): Schedule {
+export function buildSchedule<Mass extends HorarioMissa>(masses: Mass[], now: Clock): Schedule<Mass> {
   const today = massesOfDay(masses, now.weekday);
   const upcomingToday = today.filter((m) => timeToMinutes(m.horario) >= now.minutes);
 
@@ -38,19 +38,19 @@ export function buildSchedule(masses: HorarioMissaComComunidade[], now: Clock): 
 
   if (target.masses.length === 0) return { days: [], next: [], minutesUntilNext: null };
 
-  const minutesUntil = (m: HorarioMissaComComunidade) =>
+  const minutesUntil = (m: Mass) =>
     target.offset * MINUTES_PER_DAY + timeToMinutes(m.horario) - now.minutes;
   const minutesUntilNext = minutesUntil(target.masses[0]);
   const next = target.masses.filter((m) => minutesUntil(m) === minutesUntilNext);
 
-  const targetItems: ScheduleItem[] = target.masses.map((mass) => ({
+  const targetItems: ScheduleItem<Mass>[] = target.masses.map((mass) => ({
     mass,
     state: minutesUntil(mass) === minutesUntilNext ? 'next' : 'upcoming',
     minutesUntil: minutesUntil(mass),
   }));
 
   if (target.offset === 0) {
-    const past: ScheduleItem[] = today
+    const past: ScheduleItem<Mass>[] = today
       .filter((m) => !upcomingToday.includes(m))
       .map((mass) => ({ mass, state: 'past' }));
     return {
@@ -60,7 +60,7 @@ export function buildSchedule(masses: HorarioMissaComComunidade[], now: Clock): 
     };
   }
 
-  const days: ScheduleDay[] = [];
+  const days: ScheduleDay<Mass>[] = [];
   if (today.length > 0) {
     days.push({
       weekday: now.weekday,

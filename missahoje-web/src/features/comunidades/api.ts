@@ -15,6 +15,5 @@ export async function fetchComunidade(id: string): Promise<Comunidade | null> {
   if (response.status === 400 || response.status === 404) return null;
   if (!response.ok) throw new Error(`GET /comunidades/${id} respondeu ${response.status}`);
 
-  const data: GetResponse<'/comunidades/{id}'> = await response.json();
-  return data;
+  return (await response.json()) as GetResponse<'/comunidades/{id}'>;
 }
