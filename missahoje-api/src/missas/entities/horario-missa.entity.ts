@@ -25,10 +25,10 @@ export class HorarioMissa {
     horario: string;
 
     @Column({ type: 'varchar', nullable: true })
-    observacao: string;
+    observacao: string | null;
 
     @DeleteDateColumn({ name: 'deleted_at' })
-    deletedAt: Date;
+    deletedAt: Date | null;
 
     @CreateDateColumn({ name: 'created_at' })
     createdAt: Date;

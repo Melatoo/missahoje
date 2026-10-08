@@ -22,7 +22,7 @@ export class Comunidade {
     paroquia_id: string;
 
     @Column({ type: 'uuid', nullable: true })
-    cidade_id: string;
+    cidade_id: string | null;
 
     @Column({ type: 'varchar', nullable: false })
     nome: string;
@@ -34,10 +34,10 @@ export class Comunidade {
     bairro: string;
 
     @Column({ type: 'text', nullable: true })
-    link_google_maps: string;
+    link_google_maps: string | null;
 
     @DeleteDateColumn({ name: 'deleted_at' })
-    deletedAt: Date;
+    deletedAt: Date | null;
 
     @CreateDateColumn({ name: 'created_at' })
     createdAt: Date;
@@ -51,7 +51,7 @@ export class Comunidade {
 
     @ManyToOne(() => Cidade, (cidade) => cidade.comunidades)
     @JoinColumn({ name: 'cidade_id' })
-    cidade: Cidade;
+    cidade: Cidade | null;
 
     @OneToMany(() => HorarioMissa, (horarioMissa) => horarioMissa.comunidade)
     horarios_missa: HorarioMissa[];
