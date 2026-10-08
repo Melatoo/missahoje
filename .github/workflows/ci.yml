@@ -28,6 +28,10 @@ jobs:
           cache: npm
           cache-dependency-path: missahoje-web/package-lock.json
       - run: npm ci
+      - name: Tipos da API atualizados
+        run: |
+          npm run types:api
+          git diff --exit-code -- src/types/api.ts
       - run: npm run lint
       - run: npx tsc --noEmit
       - run: npm test
@@ -47,6 +51,10 @@ jobs:
           cache: npm
           cache-dependency-path: missahoje-api/package-lock.json
       - run: npm ci
+      - name: Contrato OpenAPI atualizado
+        run: |
+          npm run openapi
+          git diff --exit-code -- openapi.json
       - run: npm run lint
       - run: npm test
       - run: npm run build
