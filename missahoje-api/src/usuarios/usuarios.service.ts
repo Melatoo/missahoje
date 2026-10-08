@@ -34,11 +34,18 @@ export class UsuariosService {
         return await this.usuariosRepository.save(usuario);
     }
 
-    async findAll(options: PaginationDto): Promise<Pagination<Usuario>> {
-        return paginate<Usuario>(this.usuariosRepository, {
-            page: options.page || 1,
-            limit: options.limit || 100,
-        });
+    async findAll(
+        options: PaginationDto,
+        email?: string,
+    ): Promise<Pagination<Usuario>> {
+        return paginate<Usuario>(
+            this.usuariosRepository,
+            {
+                page: options.page || 1,
+                limit: options.limit || 100,
+            },
+            { where: email ? { email } : {} },
+        );
     }
 
     async findOne(id: string) {

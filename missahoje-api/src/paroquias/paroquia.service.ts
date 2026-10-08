@@ -46,7 +46,7 @@ export class ParoquiaService {
     async findOne(id: string) {
         const paroquia = await this.paroquiaRepository.findOne({
             where: { id },
-            relations: ['comunidades'],
+            relations: ['comunidades', 'comunidades.cidade'],
         });
         if (!paroquia) {
             throw new NotFoundException('Paróquia não encontrada');

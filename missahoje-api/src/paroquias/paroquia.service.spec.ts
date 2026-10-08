@@ -140,7 +140,7 @@ describe('ParoquiaService', () => {
             expect(resultado).toEqual(paroquiaEsperada);
             expect(mockParoquiaRepository.findOne).toHaveBeenCalledWith({
                 where: { id: '123' },
-                relations: ['comunidades'],
+                relations: ['comunidades', 'comunidades.cidade'],
             });
         });
 

@@ -22,7 +22,11 @@ export class MissasService {
     async findOne(id: string) {
         const missa = await this.missasRepository.findOne({
             where: { id },
-            relations: ['comunidade', 'comunidade.paroquia'],
+            relations: [
+                'comunidade',
+                'comunidade.paroquia',
+                'comunidade.cidade',
+            ],
         });
         if (!missa) {
             throw new NotFoundException('Horário de missa não encontrado');

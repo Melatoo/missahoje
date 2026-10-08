@@ -107,6 +107,22 @@ describe('UsuariosService', () => {
             expect(paginateModule.paginate).toHaveBeenCalledWith(
                 mockUsuariosRepository,
                 { page: 1, limit: 10 },
+                { where: {} },
+            );
+        });
+
+        it('deve filtrar pelo email quando informado', async () => {
+            const paginationDto = { page: 1, limit: 10 };
+            (paginateModule.paginate as jest.Mock).mockResolvedValue({
+                items: [],
+                meta: {},
+            });
+
+            await service.findAll(paginationDto, 'teste@teste.com');
+            expect(paginateModule.paginate).toHaveBeenCalledWith(
+                mockUsuariosRepository,
+                { page: 1, limit: 10 },
+                { where: { email: 'teste@teste.com' } },
             );
         });
     });

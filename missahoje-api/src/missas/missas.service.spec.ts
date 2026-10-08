@@ -78,7 +78,11 @@ describe('MissasService', () => {
             expect(resultado).toEqual(missaEsperada);
             expect(mockMissasRepository.findOne).toHaveBeenCalledWith({
                 where: { id: '123' },
-                relations: ['comunidade', 'comunidade.paroquia'],
+                relations: [
+                    'comunidade',
+                    'comunidade.paroquia',
+                    'comunidade.cidade',
+                ],
             });
         });
 
