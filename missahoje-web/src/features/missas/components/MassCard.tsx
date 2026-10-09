@@ -4,12 +4,12 @@ import { cn } from '@/lib/utils';
 import { formatTime } from '../format';
 import type { ScheduleItem } from '../schedule';
 import { formatTimeUntil } from '../timeUntil';
-import type { HorarioMissa } from '../types';
+import type { HorarioMissaComComunidade } from '../types';
 
 export type MassCardState = ScheduleItem['state'] | 'neutral';
 
 interface MassCardProps {
-  mass: HorarioMissa;
+  mass: HorarioMissaComComunidade;
   state: MassCardState;
   minutesUntil?: number;
 }
@@ -39,15 +39,13 @@ export function MassCard({ mass, state, minutesUntil }: MassCardProps) {
         {isNext && minutesUntil !== undefined && (
           <p className="text-sm font-medium text-brand">{formatTimeUntil(minutesUntil)}</p>
         )}
-        {community && (
-          <Link
-            href={igrejaHref(community)}
-            className="font-medium leading-snug outline-none after:absolute after:inset-0 after:rounded-2xl focus-visible:after:ring-2 focus-visible:after:ring-ring"
-          >
-            {community.nome}
-          </Link>
-        )}
-        {community?.bairro && <p className="text-sm text-muted-foreground">{community.bairro}</p>}
+        <Link
+          href={igrejaHref(community)}
+          className="font-medium leading-snug outline-none after:absolute after:inset-0 after:rounded-2xl focus-visible:after:ring-2 focus-visible:after:ring-ring"
+        >
+          {community.nome}
+        </Link>
+        {community.bairro && <p className="text-sm text-muted-foreground">{community.bairro}</p>}
         {mass.observacao && <p className="text-sm text-muted-foreground">{mass.observacao}</p>}
         {isPast && <span className="sr-only">Já aconteceu.</span>}
       </div>

@@ -14,7 +14,10 @@ function mass(id: string, dia_semana: Weekday, horario: string): HorarioMissa {
     dia_semana,
     horario,
     observacao: null,
-  } as HorarioMissa;
+    createdAt: '2026-01-01T00:00:00.000Z',
+    updatedAt: '2026-01-01T00:00:00.000Z',
+    deletedAt: null,
+  };
 }
 
 const h = (hour: number, minute = 0) => hour * 60 + minute;

@@ -12,10 +12,13 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { CacheInterceptor } from '@nestjs/cache-manager';
+import { Pagination } from 'nestjs-typeorm-paginate';
 import { ClearCacheInterceptor } from '../common/interceptors/clear-cache.interceptor';
+import { ApiPaginatedResponse } from '../common/decorators/api-paginated-response.decorator';
 import { UsuariosService } from './usuarios.service';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { UpdateUsuarioDto } from './dto/update-usuario.dto';
+import { UsuarioDto } from './dto/usuario.dto';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -33,23 +36,23 @@ export class UsuariosController {
 
     @ApiOperation({ summary: 'Cria um novo usuário' })
     @Post()
-    create(@Body() createUsuarioDto: CreateUsuarioDto) {
+    create(@Body() createUsuarioDto: CreateUsuarioDto): Promise<UsuarioDto> {
         return this.usuariosService.create(createUsuarioDto);
     }
 
     @ApiOperation({ summary: 'Lista todos os usuários paginados' })
+    @ApiPaginatedResponse(UsuarioDto)
     @Get()
-    findAll(@Query() options: PaginationDto, @Query('email') email?: string) {
-        if (email) {
-            return this.usuariosService.findByEmail(email);
-        }
-
-        return this.usuariosService.findAll(options);
+    findAll(
+        @Query() options: PaginationDto,
+        @Query('email') email?: string,
+    ): Promise<Pagination<UsuarioDto>> {
+        return this.usuariosService.findAll(options, email);
     }
 
     @ApiOperation({ summary: 'Busca um usuário pelo ID' })
     @Get(':id')
-    findOne(@Param('id') id: string) {
+    findOne(@Param('id') id: string): Promise<UsuarioDto> {
         return this.usuariosService.findOne(id);
     }
 
@@ -58,13 +61,13 @@ export class UsuariosController {
     update(
         @Param('id') id: string,
         @Body() updateUsuarioDto: UpdateUsuarioDto,
-    ) {
+    ): Promise<UsuarioDto> {
         return this.usuariosService.update(id, updateUsuarioDto);
     }
 
     @ApiOperation({ summary: 'Remove um usuário' })
     @Delete(':id')
-    remove(@Param('id') id: string) {
+    remove(@Param('id') id: string): Promise<UsuarioDto> {
         return this.usuariosService.remove(id);
     }
 }

@@ -4,7 +4,16 @@ import type { HorarioMissa } from './types';
 import type { Weekday } from './weekday';
 
 function mass(id: string, dia_semana: Weekday, horario: string): HorarioMissa {
-  return { id, comunidade_id: 'c1', dia_semana, horario, observacao: null } as HorarioMissa;
+  return {
+    id,
+    comunidade_id: 'c1',
+    dia_semana,
+    horario,
+    observacao: null,
+    createdAt: '2026-01-01T00:00:00.000Z',
+    updatedAt: '2026-01-01T00:00:00.000Z',
+    deletedAt: null,
+  };
 }
 
 describe('o dia acabou?', () => {

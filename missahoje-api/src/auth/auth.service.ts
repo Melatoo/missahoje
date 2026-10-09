@@ -3,11 +3,8 @@ import { UsuariosService } from '../usuarios/usuarios.service';
 import { JwtService } from '@nestjs/jwt';
 import { Usuario } from 'src/usuarios/entities/usuario.entity';
 
+import { AccessTokenDto } from './dto/access-token.dto';
 import { LoginDto } from './dto/login.dto';
-
-export type AuthOutput = {
-    access_token: string;
-};
 
 export type JwtPayload = {
     sub: string;
@@ -38,7 +35,7 @@ export class AuthService {
     /**
      * Orquestra o fluxo de autenticação recebendo email e senha.
      */
-    async authenticate(input: LoginDto): Promise<AuthOutput> {
+    async authenticate(input: LoginDto): Promise<AccessTokenDto> {
         const usuario = await this.validateUser(input);
 
         if (!usuario) {
@@ -51,7 +48,7 @@ export class AuthService {
     /**
      * Gera o token JWT para um usuário válido.
      */
-    async signIn(user: Omit<Usuario, 'senha'>): Promise<AuthOutput> {
+    async signIn(user: Omit<Usuario, 'senha'>): Promise<AccessTokenDto> {
         const payload: JwtPayload = {
             sub: user.id,
             email: user.email,

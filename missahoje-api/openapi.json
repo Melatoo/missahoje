@@ -1,0 +1,1950 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/missas": {
+      "post": {
+        "operationId": "MissasController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateMissaDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HorarioMissaDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Cria uma nova missa",
+        "tags": [
+          "Missas"
+        ]
+      },
+      "get": {
+        "operationId": "MissasController_findAll",
+        "parameters": [
+          {
+            "name": "dia_semana",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 0,
+              "maximum": 6,
+              "type": "number"
+            }
+          },
+          {
+            "name": "bairro",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "cidadeId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 100,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "items",
+                    "meta"
+                  ],
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/HorarioMissaComComunidadeDto"
+                      }
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/PaginationMetaDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Lista todas as missas paginadas",
+        "tags": [
+          "Missas"
+        ]
+      }
+    },
+    "/missas/{id}": {
+      "get": {
+        "operationId": "MissasController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HorarioMissaComComunidadeDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Busca uma missa pelo ID",
+        "tags": [
+          "Missas"
+        ]
+      },
+      "put": {
+        "operationId": "MissasController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateMissaDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HorarioMissaDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Atualiza uma missa",
+        "tags": [
+          "Missas"
+        ]
+      },
+      "delete": {
+        "operationId": "MissasController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HorarioMissaDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Remove uma missa",
+        "tags": [
+          "Missas"
+        ]
+      }
+    },
+    "/usuarios": {
+      "post": {
+        "operationId": "UsuariosController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUsuarioDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UsuarioDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Cria um novo usuário",
+        "tags": [
+          "Usuários"
+        ]
+      },
+      "get": {
+        "operationId": "UsuariosController_findAll",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 100,
+              "type": "number"
+            }
+          },
+          {
+            "name": "email",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "items",
+                    "meta"
+                  ],
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/UsuarioDto"
+                      }
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/PaginationMetaDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Lista todos os usuários paginados",
+        "tags": [
+          "Usuários"
+        ]
+      }
+    },
+    "/usuarios/{id}": {
+      "get": {
+        "operationId": "UsuariosController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UsuarioDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Busca um usuário pelo ID",
+        "tags": [
+          "Usuários"
+        ]
+      },
+      "put": {
+        "operationId": "UsuariosController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUsuarioDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UsuarioDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Atualiza um usuário",
+        "tags": [
+          "Usuários"
+        ]
+      },
+      "delete": {
+        "operationId": "UsuariosController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UsuarioDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Remove um usuário",
+        "tags": [
+          "Usuários"
+        ]
+      }
+    },
+    "/paroquias": {
+      "post": {
+        "operationId": "ParoquiaController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateParoquiaDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ParoquiaDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Cria uma nova paróquia",
+        "tags": [
+          "Paróquias"
+        ]
+      },
+      "get": {
+        "operationId": "ParoquiaController_findAll",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 100,
+              "type": "number"
+            }
+          },
+          {
+            "name": "cidadeId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "nome",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "items",
+                    "meta"
+                  ],
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/ParoquiaComComunidadesDto"
+                      }
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/PaginationMetaDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Lista todas as paróquias paginadas",
+        "tags": [
+          "Paróquias"
+        ]
+      }
+    },
+    "/paroquias/{id}": {
+      "get": {
+        "operationId": "ParoquiaController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ParoquiaComComunidadesDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Busca uma paróquia pelo ID",
+        "tags": [
+          "Paróquias"
+        ]
+      },
+      "put": {
+        "operationId": "ParoquiaController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateParoquiaDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ParoquiaDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Atualiza uma paróquia",
+        "tags": [
+          "Paróquias"
+        ]
+      },
+      "delete": {
+        "operationId": "ParoquiaController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ParoquiaDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Remove uma paróquia",
+        "tags": [
+          "Paróquias"
+        ]
+      }
+    },
+    "/comunidades": {
+      "post": {
+        "operationId": "ComunidadesController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateComunidadeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ComunidadeDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Cria uma nova comunidade",
+        "tags": [
+          "Comunidades"
+        ]
+      },
+      "get": {
+        "operationId": "ComunidadesController_findAll",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 100,
+              "type": "number"
+            }
+          },
+          {
+            "name": "cidadeId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "nome",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "items",
+                    "meta"
+                  ],
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/ComunidadeDetalheDto"
+                      }
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/PaginationMetaDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Lista todas as comunidades paginadas",
+        "tags": [
+          "Comunidades"
+        ]
+      }
+    },
+    "/comunidades/{id}": {
+      "get": {
+        "operationId": "ComunidadesController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ComunidadeDetalheDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Busca uma comunidade pelo ID",
+        "tags": [
+          "Comunidades"
+        ]
+      },
+      "put": {
+        "operationId": "ComunidadesController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateComunidadeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ComunidadeDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Atualiza uma comunidade",
+        "tags": [
+          "Comunidades"
+        ]
+      },
+      "delete": {
+        "operationId": "ComunidadesController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ComunidadeDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Remove uma comunidade",
+        "tags": [
+          "Comunidades"
+        ]
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "operationId": "AuthController_login",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccessTokenDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Autentica o usuário e retorna o token JWT",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/cidades": {
+      "post": {
+        "operationId": "CidadesController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCidadeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CidadeDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Cria uma nova cidade",
+        "tags": [
+          "Cidades"
+        ]
+      },
+      "get": {
+        "operationId": "CidadesController_findAll",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 100,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "items",
+                    "meta"
+                  ],
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/CidadeDto"
+                      }
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/PaginationMetaDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Lista todas as cidades paginadas",
+        "tags": [
+          "Cidades"
+        ]
+      }
+    },
+    "/cidades/proxima": {
+      "get": {
+        "operationId": "CidadesController_findNearest",
+        "parameters": [
+          {
+            "name": "lat",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "minimum": -90,
+              "maximum": 90,
+              "type": "number"
+            }
+          },
+          {
+            "name": "lng",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "minimum": -180,
+              "maximum": 180,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CidadeDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Busca a cidade atendida mais próxima de uma posição",
+        "tags": [
+          "Cidades"
+        ]
+      }
+    },
+    "/cidades/{id}": {
+      "get": {
+        "operationId": "CidadesController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CidadeDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Busca uma cidade pelo ID",
+        "tags": [
+          "Cidades"
+        ]
+      },
+      "patch": {
+        "operationId": "CidadesController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCidadeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CidadeDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Atualiza uma cidade",
+        "tags": [
+          "Cidades"
+        ]
+      },
+      "delete": {
+        "operationId": "CidadesController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CidadeDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Remove uma cidade",
+        "tags": [
+          "Cidades"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "API Missa Hoje",
+    "description": "Documentação da API do projeto Missa Hoje",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      }
+    },
+    "schemas": {
+      "CreateMissaDto": {
+        "type": "object",
+        "properties": {
+          "comunidade_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "dia_semana": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 6
+          },
+          "horario": {
+            "type": "string",
+            "pattern": "^([01]\\d|2[0-3]):([0-5]\\d)(:([0-5]\\d))?$"
+          },
+          "observacao": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "comunidade_id",
+          "dia_semana",
+          "horario"
+        ]
+      },
+      "HorarioMissaDto": {
+        "type": "object",
+        "properties": {
+          "dia_semana": {
+            "type": "integer",
+            "enum": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6
+            ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "comunidade_id": {
+            "type": "string"
+          },
+          "horario": {
+            "type": "string"
+          },
+          "observacao": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "deletedAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "dia_semana",
+          "id",
+          "comunidade_id",
+          "horario",
+          "observacao",
+          "createdAt",
+          "updatedAt",
+          "deletedAt"
+        ]
+      },
+      "PaginationMetaDto": {
+        "type": "object",
+        "properties": {
+          "itemCount": {
+            "type": "number"
+          },
+          "totalItems": {
+            "type": "number"
+          },
+          "itemsPerPage": {
+            "type": "number"
+          },
+          "totalPages": {
+            "type": "number"
+          },
+          "currentPage": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "itemCount",
+          "totalItems",
+          "itemsPerPage",
+          "totalPages",
+          "currentPage"
+        ]
+      },
+      "ParoquiaDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "nome": {
+            "type": "string"
+          },
+          "telefone": {
+            "type": "string",
+            "nullable": true
+          },
+          "siteOuRedeSocial": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "deletedAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "nome",
+          "telefone",
+          "siteOuRedeSocial",
+          "createdAt",
+          "updatedAt",
+          "deletedAt"
+        ]
+      },
+      "CidadeDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "nome": {
+            "type": "string"
+          },
+          "estado": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "latitude": {
+            "type": "number",
+            "nullable": true
+          },
+          "longitude": {
+            "type": "number",
+            "nullable": true
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "deletedAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "nome",
+          "estado",
+          "slug",
+          "latitude",
+          "longitude",
+          "createdAt",
+          "updatedAt",
+          "deletedAt"
+        ]
+      },
+      "ComunidadeComParoquiaECidadeDto": {
+        "type": "object",
+        "properties": {
+          "paroquia": {
+            "$ref": "#/components/schemas/ParoquiaDto"
+          },
+          "cidade": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CidadeDto"
+              }
+            ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "paroquia_id": {
+            "type": "string"
+          },
+          "cidade_id": {
+            "type": "string",
+            "nullable": true
+          },
+          "nome": {
+            "type": "string"
+          },
+          "endereco": {
+            "type": "string"
+          },
+          "bairro": {
+            "type": "string"
+          },
+          "link_google_maps": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "deletedAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "paroquia",
+          "cidade",
+          "id",
+          "paroquia_id",
+          "cidade_id",
+          "nome",
+          "endereco",
+          "bairro",
+          "link_google_maps",
+          "createdAt",
+          "updatedAt",
+          "deletedAt"
+        ]
+      },
+      "HorarioMissaComComunidadeDto": {
+        "type": "object",
+        "properties": {
+          "dia_semana": {
+            "type": "integer",
+            "enum": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6
+            ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "comunidade_id": {
+            "type": "string"
+          },
+          "horario": {
+            "type": "string"
+          },
+          "observacao": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "deletedAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "comunidade": {
+            "$ref": "#/components/schemas/ComunidadeComParoquiaECidadeDto"
+          }
+        },
+        "required": [
+          "dia_semana",
+          "id",
+          "comunidade_id",
+          "horario",
+          "observacao",
+          "createdAt",
+          "updatedAt",
+          "deletedAt",
+          "comunidade"
+        ]
+      },
+      "UpdateMissaDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateUsuarioDto": {
+        "type": "object",
+        "properties": {
+          "nome": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "senha": {
+            "type": "string"
+          },
+          "cidade_id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "nome",
+          "email",
+          "senha"
+        ]
+      },
+      "UsuarioDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "nome": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "role": {
+            "enum": [
+              "admin",
+              "user"
+            ],
+            "type": "string"
+          },
+          "cidade_id": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "deletedAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "nome",
+          "email",
+          "role",
+          "cidade_id",
+          "createdAt",
+          "updatedAt",
+          "deletedAt"
+        ]
+      },
+      "UpdateUsuarioDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateParoquiaDto": {
+        "type": "object",
+        "properties": {
+          "nome": {
+            "type": "string"
+          },
+          "telefone": {
+            "type": "string"
+          },
+          "siteOuRedeSocial": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "nome"
+        ]
+      },
+      "ComunidadeComCidadeDto": {
+        "type": "object",
+        "properties": {
+          "cidade": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CidadeDto"
+              }
+            ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "paroquia_id": {
+            "type": "string"
+          },
+          "cidade_id": {
+            "type": "string",
+            "nullable": true
+          },
+          "nome": {
+            "type": "string"
+          },
+          "endereco": {
+            "type": "string"
+          },
+          "bairro": {
+            "type": "string"
+          },
+          "link_google_maps": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "deletedAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "cidade",
+          "id",
+          "paroquia_id",
+          "cidade_id",
+          "nome",
+          "endereco",
+          "bairro",
+          "link_google_maps",
+          "createdAt",
+          "updatedAt",
+          "deletedAt"
+        ]
+      },
+      "ParoquiaComComunidadesDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "nome": {
+            "type": "string"
+          },
+          "telefone": {
+            "type": "string",
+            "nullable": true
+          },
+          "siteOuRedeSocial": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "deletedAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "comunidades": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ComunidadeComCidadeDto"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "nome",
+          "telefone",
+          "siteOuRedeSocial",
+          "createdAt",
+          "updatedAt",
+          "deletedAt",
+          "comunidades"
+        ]
+      },
+      "UpdateParoquiaDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateComunidadeDto": {
+        "type": "object",
+        "properties": {
+          "nome": {
+            "type": "string"
+          },
+          "endereco": {
+            "type": "string"
+          },
+          "bairro": {
+            "type": "string"
+          },
+          "paroquia_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "link_google_maps": {
+            "type": "string"
+          },
+          "cidade_id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "nome",
+          "endereco",
+          "bairro",
+          "paroquia_id"
+        ]
+      },
+      "ComunidadeDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "paroquia_id": {
+            "type": "string"
+          },
+          "cidade_id": {
+            "type": "string",
+            "nullable": true
+          },
+          "nome": {
+            "type": "string"
+          },
+          "endereco": {
+            "type": "string"
+          },
+          "bairro": {
+            "type": "string"
+          },
+          "link_google_maps": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "deletedAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "paroquia_id",
+          "cidade_id",
+          "nome",
+          "endereco",
+          "bairro",
+          "link_google_maps",
+          "createdAt",
+          "updatedAt",
+          "deletedAt"
+        ]
+      },
+      "ComunidadeDetalheDto": {
+        "type": "object",
+        "properties": {
+          "paroquia": {
+            "$ref": "#/components/schemas/ParoquiaDto"
+          },
+          "cidade": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CidadeDto"
+              }
+            ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "paroquia_id": {
+            "type": "string"
+          },
+          "cidade_id": {
+            "type": "string",
+            "nullable": true
+          },
+          "nome": {
+            "type": "string"
+          },
+          "endereco": {
+            "type": "string"
+          },
+          "bairro": {
+            "type": "string"
+          },
+          "link_google_maps": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "deletedAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "horarios_missa": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HorarioMissaDto"
+            }
+          }
+        },
+        "required": [
+          "paroquia",
+          "cidade",
+          "id",
+          "paroquia_id",
+          "cidade_id",
+          "nome",
+          "endereco",
+          "bairro",
+          "link_google_maps",
+          "createdAt",
+          "updatedAt",
+          "deletedAt",
+          "horarios_missa"
+        ]
+      },
+      "UpdateComunidadeDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "LoginDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "senha": {
+            "type": "string",
+            "minLength": 6
+          }
+        },
+        "required": [
+          "email",
+          "senha"
+        ]
+      },
+      "AccessTokenDto": {
+        "type": "object",
+        "properties": {
+          "access_token": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "access_token"
+        ]
+      },
+      "CreateCidadeDto": {
+        "type": "object",
+        "properties": {
+          "nome": {
+            "type": "string"
+          },
+          "estado": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 2
+          },
+          "slug": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+          },
+          "latitude": {
+            "type": "number",
+            "minimum": -90,
+            "maximum": 90
+          },
+          "longitude": {
+            "type": "number",
+            "minimum": -180,
+            "maximum": 180
+          }
+        },
+        "required": [
+          "nome",
+          "estado",
+          "slug",
+          "latitude",
+          "longitude"
+        ]
+      },
+      "UpdateCidadeDto": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  }
+}

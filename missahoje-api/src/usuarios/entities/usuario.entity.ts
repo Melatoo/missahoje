@@ -40,7 +40,7 @@ export class Usuario {
     role: UserRole;
 
     @DeleteDateColumn({ name: 'deleted_at' })
-    deletedAt: Date;
+    deletedAt: Date | null;
 
     @CreateDateColumn({ name: 'created_at' })
     createdAt: Date;
@@ -49,9 +49,9 @@ export class Usuario {
     updatedAt: Date;
 
     @Column({ type: 'uuid', nullable: true })
-    cidade_id: string;
+    cidade_id: string | null;
 
     @ManyToOne(() => Cidade, (cidade) => cidade.usuarios)
     @JoinColumn({ name: 'cidade_id' })
-    cidade: Cidade;
+    cidade: Cidade | null;
 }

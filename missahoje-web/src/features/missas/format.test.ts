@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { describeNextMasses, formatDayHeading, formatDayName, formatDayWithArticle, formatTime } from './format';
 import { buildSchedule } from './schedule';
-import type { HorarioMissa } from './types';
+import type { HorarioMissaComComunidade } from './types';
 import type { Weekday } from './weekday';
 
 describe('horário no card', () => {
@@ -40,8 +40,8 @@ describe('nome do dia', () => {
 });
 
 describe('anúncio da próxima missa para o leitor de tela', () => {
-  function mass(id: string, nome: string, dia_semana: Weekday, horario: string): HorarioMissa {
-    return { id, comunidade_id: id, dia_semana, horario, observacao: null, comunidade: { nome } } as HorarioMissa;
+  function mass(id: string, nome: string, dia_semana: Weekday, horario: string): HorarioMissaComComunidade {
+    return { id, comunidade_id: id, dia_semana, horario, observacao: null, comunidade: { nome } } as HorarioMissaComComunidade;
   }
 
   it('uma igreja hoje', () => {

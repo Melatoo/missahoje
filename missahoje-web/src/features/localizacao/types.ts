@@ -1,13 +1,6 @@
-import type { Timestamps } from '@/types';
-import type { Comunidade } from '@/features/comunidades/types';
+import type { Schemas } from '@/types';
 
-export interface Cidade extends Timestamps {
-  id: string;
-  nome: string;
-  estado: string;
-  slug: string;
-  comunidades?: Comunidade[];
-}
+export type Cidade = Schemas['CidadeDto'];
 
 export interface Coordinates {
   lat: number;

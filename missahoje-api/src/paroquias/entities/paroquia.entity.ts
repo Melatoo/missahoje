@@ -18,13 +18,13 @@ export class Paroquia {
     nome: string;
 
     @Column({ type: 'varchar', nullable: true })
-    telefone: string;
+    telefone: string | null;
 
     @Column({ name: 'site_ou_rede_social', type: 'varchar', nullable: true })
-    siteOuRedeSocial: string;
+    siteOuRedeSocial: string | null;
 
     @DeleteDateColumn({ name: 'deleted_at' })
-    deletedAt: Date;
+    deletedAt: Date | null;
 
     @CreateDateColumn({ name: 'created_at' })
     createdAt: Date;

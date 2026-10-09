@@ -1,9 +1,5 @@
-import type { HorarioMissa } from '@/features/missas/types';
-import { toWeekday } from '@/features/missas/weekday';
+import type { GetResponse } from '@/types';
 import type { Comunidade } from './types';
-
-type HorarioMissaResponse = Omit<HorarioMissa, 'dia_semana'> & { dia_semana: number };
-type ComunidadeResponse = Omit<Comunidade, 'horarios_missa'> & { horarios_missa?: HorarioMissaResponse[] };
 
 // Chamado no servidor: dentro do Docker a API não está em localhost, por isso o SSR_API_URL
 function serverApiUrl(): string {
@@ -19,9 +15,5 @@ export async function fetchComunidade(id: string): Promise<Comunidade | null> {
   if (response.status === 400 || response.status === 404) return null;
   if (!response.ok) throw new Error(`GET /comunidades/${id} respondeu ${response.status}`);
 
-  const data: ComunidadeResponse = await response.json();
-  return {
-    ...data,
-    horarios_missa: data.horarios_missa?.map((mass) => ({ ...mass, dia_semana: toWeekday(mass.dia_semana) })),
-  };
+  return (await response.json()) as GetResponse<'/comunidades/{id}'>;
 }
