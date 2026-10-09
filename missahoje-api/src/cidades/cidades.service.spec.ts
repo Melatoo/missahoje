@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { NotFoundException } from '@nestjs/common';
-import { IsNull, Not } from 'typeorm';
+import { Brackets, IsNull, Not } from 'typeorm';
 import { CidadesService } from './cidades.service';
 import { Cidade } from './entities/cidade.entity';
 import * as paginateModule from 'nestjs-typeorm-paginate';
@@ -20,6 +20,12 @@ describe('CidadesService', () => {
         findOne: jest.fn(),
         preload: jest.fn(),
         softRemove: jest.fn(),
+        createQueryBuilder: jest.fn(),
+    };
+
+    const mockQueryBuilder = {
+        orderBy: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
     };
 
     beforeEach(async () => {
@@ -66,33 +72,66 @@ describe('CidadesService', () => {
     });
 
     describe('findAll', () => {
-        it('deve retornar uma lista paginada de cidades', async () => {
-            const paginationDto = { page: 1, limit: 10 };
-            const paginatedResult = {
-                items: [{ id: '123', nome: 'Lavras', estado: 'MG' }],
-                meta: {
-                    totalItems: 1,
-                    itemCount: 1,
-                    itemsPerPage: 10,
-                    totalPages: 1,
-                    currentPage: 1,
-                },
-            };
+        const paginatedResult = {
+            items: [{ id: '123', nome: 'Lavras', estado: 'MG' }],
+            meta: {
+                totalItems: 1,
+                itemCount: 1,
+                itemsPerPage: 10,
+                totalPages: 1,
+                currentPage: 1,
+            },
+        };
 
+        beforeEach(() => {
+            mockCidadesRepository.createQueryBuilder.mockReturnValue(
+                mockQueryBuilder,
+            );
             (paginateModule.paginate as jest.Mock).mockResolvedValue(
                 paginatedResult,
             );
+        });
 
-            const resultado = await service.findAll(paginationDto);
+        it('deve retornar uma lista paginada de cidades em ordem alfabética', async () => {
+            const resultado = await service.findAll({ page: 1, limit: 10 });
 
             expect(resultado).toEqual(paginatedResult);
-            expect(paginateModule.paginate).toHaveBeenCalledWith(
-                mockCidadesRepository,
-                {
-                    page: 1,
-                    limit: 10,
-                },
+            expect(mockQueryBuilder.orderBy).toHaveBeenCalledWith(
+                'cidade.nome',
+                'ASC',
             );
+            expect(mockQueryBuilder.andWhere).not.toHaveBeenCalled();
+            expect(paginateModule.paginate).toHaveBeenCalledWith(
+                mockQueryBuilder,
+                { page: 1, limit: 10 },
+            );
+        });
+
+        it('filtra por nome e slug sem acento nem caixa', async () => {
+            await service.findAll({ nome: '  São João ' });
+
+            expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
+                expect.any(Brackets),
+                expect.objectContaining({
+                    nome: '%sao joao%',
+                    slug: '%sao-joao%',
+                }),
+            );
+        });
+
+        it('escapa os curingas do LIKE no termo buscado', async () => {
+            await service.findAll({ nome: '100%' });
+
+            expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
+                expect.any(Brackets),
+                expect.objectContaining({ nome: '%100\\%%' }),
+            );
+        });
+
+        it('ignora nome só de espaços', async () => {
+            await service.findAll({ nome: '   ' });
+
+            expect(mockQueryBuilder.andWhere).not.toHaveBeenCalled();
         });
     });
 

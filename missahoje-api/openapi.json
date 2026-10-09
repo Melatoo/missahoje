@@ -980,6 +980,15 @@
               "default": 100,
               "type": "number"
             }
+          },
+          {
+            "name": "nome",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maxLength": 100,
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -1009,7 +1018,7 @@
             }
           }
         },
-        "summary": "Lista todas as cidades paginadas",
+        "summary": "Lista as cidades paginadas, com busca opcional por nome",
         "tags": [
           "Cidades"
         ]
