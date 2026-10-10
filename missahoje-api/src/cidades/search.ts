@@ -1,7 +1,9 @@
-// Letras acentuadas do português (minúsculas) e suas versões sem acento,
+// Letras acentuadas do português (minúsculas e maiúsculas) e suas versões sem acento,
 // na mesma ordem: alimentam o translate() do Postgres, que tira o acento
 // do nome sem depender da extensão unaccent.
-export const ACENTUADAS = 'áàâãäéèêëíìîïóòôõöúùûüçñ';
+const MINUSCULAS_ACENTUADAS = 'áàâãäéèêëíìîïóòôõöúùûüçñ';
+export const ACENTUADAS =
+    MINUSCULAS_ACENTUADAS + MINUSCULAS_ACENTUADAS.toUpperCase();
 export const SEM_ACENTO = removeAccents(ACENTUADAS);
 
 function removeAccents(text: string): string {

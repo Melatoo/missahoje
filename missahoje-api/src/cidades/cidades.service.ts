@@ -33,7 +33,7 @@ export class CidadesService {
                 new Brackets((where) => {
                     where
                         .where(
-                            'translate(lower(cidade.nome), :acentuadas, :semAcento) LIKE :nome',
+                            'lower(translate(cidade.nome, :acentuadas, :semAcento)) LIKE :nome',
                         )
                         .orWhere('cidade.slug LIKE :slug');
                 }),

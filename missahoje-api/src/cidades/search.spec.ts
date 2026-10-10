@@ -27,6 +27,7 @@ describe('escapeLike', () => {
 describe('ACENTUADAS e SEM_ACENTO', () => {
     it('casam letra a letra, como o translate() do Postgres exige', () => {
         expect(SEM_ACENTO).toHaveLength(ACENTUADAS.length);
-        expect(SEM_ACENTO).toMatch(/^[a-z]+$/);
+        expect(SEM_ACENTO).toMatch(/^[a-zA-Z]+$/);
+        expect(ACENTUADAS).toContain('Á');
     });
 });
