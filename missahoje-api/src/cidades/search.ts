@@ -1,6 +1,5 @@
-// Letras acentuadas do português (minúsculas e maiúsculas) e suas versões sem acento,
-// na mesma ordem: alimentam o translate() do Postgres, que tira o acento
-// do nome sem depender da extensão unaccent.
+import { Brackets, ObjectLiteral, SelectQueryBuilder } from 'typeorm';
+
 const MINUSCULAS_ACENTUADAS = 'áàâãäéèêëíìîïóòôõöúùûüçñ';
 export const ACENTUADAS =
     MINUSCULAS_ACENTUADAS + MINUSCULAS_ACENTUADAS.toUpperCase();
@@ -14,6 +13,37 @@ export function normalizeSearch(term: string): string {
     return removeAccents(term).toLowerCase().trim().replace(/\s+/g, ' ');
 }
 
+export function toSlug(term: string): string {
+    return normalizeSearch(term).replace(/ /g, '-');
+}
+
 export function escapeLike(term: string): string {
     return term.replace(/[\\%_]/g, '\\$&');
+}
+
+export function filterByNome<T extends ObjectLiteral>(
+    qb: SelectQueryBuilder<T>,
+    nome = '',
+): SelectQueryBuilder<T> {
+    const termo = normalizeSearch(nome);
+    if (!termo) {
+        return qb;
+    }
+
+    const { alias } = qb;
+    return qb.andWhere(
+        new Brackets((where) => {
+            where
+                .where(
+                    `lower(translate(${alias}.nome, :acentuadas, :semAcento)) LIKE :nome`,
+                )
+                .orWhere(`${alias}.slug LIKE :slug`);
+        }),
+        {
+            acentuadas: ACENTUADAS,
+            semAcento: SEM_ACENTO,
+            nome: `%${escapeLike(termo)}%`,
+            slug: `%${escapeLike(toSlug(termo))}%`,
+        },
+    );
 }

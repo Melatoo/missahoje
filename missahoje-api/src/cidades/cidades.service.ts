@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Brackets, IsNull, Not, Repository } from 'typeorm';
+import { IsNull, Not, Repository } from 'typeorm';
 import { paginate, Pagination } from 'nestjs-typeorm-paginate';
 import { CreateCidadeDto } from './dto/create-cidade.dto';
 import { GetCidadeProximaDto } from './dto/get-cidade-proxima.dto';
@@ -8,7 +8,7 @@ import { GetCidadesDto } from './dto/get-cidades.dto';
 import { UpdateCidadeDto } from './dto/update-cidade.dto';
 import { Cidade } from './entities/cidade.entity';
 import { findNearest } from './nearest';
-import { ACENTUADAS, escapeLike, normalizeSearch, SEM_ACENTO } from './search';
+import { filterByNome } from './search';
 
 @Injectable()
 export class CidadesService {
@@ -23,28 +23,12 @@ export class CidadesService {
     }
 
     async findAll(query: GetCidadesDto): Promise<Pagination<Cidade>> {
-        const qb = this.cidadesRepository
-            .createQueryBuilder('cidade')
-            .orderBy('cidade.nome', 'ASC');
-
-        const termo = normalizeSearch(query.nome ?? '');
-        if (termo) {
-            qb.andWhere(
-                new Brackets((where) => {
-                    where
-                        .where(
-                            'lower(translate(cidade.nome, :acentuadas, :semAcento)) LIKE :nome',
-                        )
-                        .orWhere('cidade.slug LIKE :slug');
-                }),
-                {
-                    acentuadas: ACENTUADAS,
-                    semAcento: SEM_ACENTO,
-                    nome: `%${escapeLike(termo)}%`,
-                    slug: `%${escapeLike(termo.replace(/ /g, '-'))}%`,
-                },
-            );
-        }
+        const qb = filterByNome(
+            this.cidadesRepository
+                .createQueryBuilder('cidade')
+                .orderBy('cidade.nome', 'ASC'),
+            query.nome,
+        );
 
         return paginate<Cidade>(qb, {
             page: query.page || 1,

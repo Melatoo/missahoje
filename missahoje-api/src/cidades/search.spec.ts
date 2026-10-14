@@ -1,4 +1,10 @@
-import { ACENTUADAS, escapeLike, normalizeSearch, SEM_ACENTO } from './search';
+import {
+    ACENTUADAS,
+    escapeLike,
+    normalizeSearch,
+    SEM_ACENTO,
+    toSlug,
+} from './search';
 
 describe('normalizeSearch', () => {
     it('ignora acento e caixa', () => {
@@ -11,6 +17,12 @@ describe('normalizeSearch', () => {
 
     it('termo só de espaços vira vazio', () => {
         expect(normalizeSearch('   ')).toBe('');
+    });
+});
+
+describe('toSlug', () => {
+    it('troca espaços por hífen no termo normalizado', () => {
+        expect(toSlug(' São  João del Rei ')).toBe('sao-joao-del-rei');
     });
 });
 

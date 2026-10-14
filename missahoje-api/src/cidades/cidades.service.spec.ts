@@ -24,6 +24,7 @@ describe('CidadesService', () => {
     };
 
     const mockQueryBuilder = {
+        alias: 'cidade',
         orderBy: jest.fn().mockReturnThis(),
         andWhere: jest.fn().mockReturnThis(),
     };
