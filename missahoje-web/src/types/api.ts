@@ -176,7 +176,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Lista todas as cidades paginadas */
+        /** Lista as cidades paginadas, com busca opcional por nome */
         get: operations["CidadesController_findAll"];
         put?: never;
         /** Cria uma nova cidade */
@@ -937,6 +937,7 @@ export interface operations {
             query?: {
                 page?: number;
                 limit?: number;
+                nome?: string;
             };
             header?: never;
             path?: never;

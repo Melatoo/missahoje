@@ -18,13 +18,13 @@ import { ApiPaginatedResponse } from '../common/decorators/api-paginated-respons
 import { CidadesService } from './cidades.service';
 import { CreateCidadeDto } from './dto/create-cidade.dto';
 import { GetCidadeProximaDto } from './dto/get-cidade-proxima.dto';
+import { GetCidadesDto } from './dto/get-cidades.dto';
 import { UpdateCidadeDto } from './dto/update-cidade.dto';
 import { CidadeDto } from './dto/cidade.dto';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRole } from '../usuarios/entities/usuario.entity';
-import { PaginationDto } from '../common/dto/pagination.dto';
 
 @ApiTags('Cidades')
 @Controller('cidades')
@@ -41,11 +41,13 @@ export class CidadesController {
         return this.cidadesService.create(createCidadeDto);
     }
 
-    @ApiOperation({ summary: 'Lista todas as cidades paginadas' })
+    @ApiOperation({
+        summary: 'Lista as cidades paginadas, com busca opcional por nome',
+    })
     @ApiPaginatedResponse(CidadeDto)
     @Get()
-    findAll(@Query() options: PaginationDto): Promise<Pagination<CidadeDto>> {
-        return this.cidadesService.findAll(options);
+    findAll(@Query() query: GetCidadesDto): Promise<Pagination<CidadeDto>> {
+        return this.cidadesService.findAll(query);
     }
 
     @ApiOperation({

@@ -4,10 +4,11 @@ import { IsNull, Not, Repository } from 'typeorm';
 import { paginate, Pagination } from 'nestjs-typeorm-paginate';
 import { CreateCidadeDto } from './dto/create-cidade.dto';
 import { GetCidadeProximaDto } from './dto/get-cidade-proxima.dto';
+import { GetCidadesDto } from './dto/get-cidades.dto';
 import { UpdateCidadeDto } from './dto/update-cidade.dto';
 import { Cidade } from './entities/cidade.entity';
 import { findNearest } from './nearest';
-import { PaginationDto } from '../common/dto/pagination.dto';
+import { filterByNome } from './search';
 
 @Injectable()
 export class CidadesService {
@@ -21,10 +22,17 @@ export class CidadesService {
         return await this.cidadesRepository.save(cidade);
     }
 
-    async findAll(options: PaginationDto): Promise<Pagination<Cidade>> {
-        return paginate<Cidade>(this.cidadesRepository, {
-            page: options.page || 1,
-            limit: options.limit || 100,
+    async findAll(query: GetCidadesDto): Promise<Pagination<Cidade>> {
+        const qb = filterByNome(
+            this.cidadesRepository
+                .createQueryBuilder('cidade')
+                .orderBy('cidade.nome', 'ASC'),
+            query.nome,
+        );
+
+        return paginate<Cidade>(qb, {
+            page: query.page || 1,
+            limit: query.limit || 100,
         });
     }
 
