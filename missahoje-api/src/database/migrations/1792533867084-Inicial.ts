@@ -4,6 +4,7 @@ export class Inicial1792533867084 implements MigrationInterface {
     name = 'Inicial1792533867084';
 
     public async up(queryRunner: QueryRunner): Promise<void> {
+        await queryRunner.query(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`);
         await queryRunner.query(
             `CREATE TABLE "paroquias" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "nome" character varying NOT NULL, "telefone" character varying, "site_ou_rede_social" character varying, "deleted_at" TIMESTAMP, "created_at" TIMESTAMP NOT NULL DEFAULT now(), "updated_at" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_56e8b2c21546de1e473ff5b7635" PRIMARY KEY ("id"))`,
         );

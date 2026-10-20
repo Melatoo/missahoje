@@ -25,6 +25,10 @@ describe('typeOrmOptions', () => {
         expect(typeOrmOptions(() => undefined)).toMatchObject({ port: 5432 });
     });
 
+    it('usa a porta padrão do Postgres quando DB_PORT está vazia', () => {
+        expect(typeOrmOptions(() => '')).toMatchObject({ port: 5432 });
+    });
+
     it('nunca sincroniza o schema sozinho', () => {
         expect(typeOrmOptions(() => undefined).synchronize).toBe(false);
     });
