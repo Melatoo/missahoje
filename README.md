@@ -3,7 +3,6 @@
 ![Status](https://img.shields.io/badge/status-em%20desenvolvimento-orange)
 ![NestJS](https://img.shields.io/badge/NestJS-E0234E?logo=nestjs&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?logo=postgresql&logoColor=white)
-![Redis](https://img.shields.io/badge/Redis-DC382D?logo=redis&logoColor=white)
 
 Este é o repositório central do projeto **Missas Lavras** (também conhecido como **Missa Hoje**), um sistema concebido para listar e organizar os horários de missas nas paróquias e comunidades da cidade de Lavras/MG.
 
@@ -11,7 +10,7 @@ Este é o repositório central do projeto **Missas Lavras** (também conhecido c
 
 O projeto contém o backend e o frontend separados em diretórios. A documentação detalhada de arquitetura encontra-se dentro de seus respectivos diretórios:
 
-- ⚙️ **[`missahoje-api/`](./missahoje-api/)**: Backend desenvolvido em NestJS com integração ao PostgreSQL e Redis.
+- ⚙️ **[`missahoje-api/`](./missahoje-api/)**: Backend desenvolvido em NestJS com integração ao PostgreSQL.
   - 📖 *Nota: Consulte as documentações locais dentro desta pasta para detalhes da API.*
 - 💻 **[`missahoje-web/`](./missahoje-web/)**: Frontend da aplicação web.
 
@@ -20,18 +19,18 @@ O projeto contém o backend e o frontend separados em diretórios. A documentaç
 - Listagem de paróquias e comunidades.
 - Consulta de horários de missas atualizados.
 - Arquitetura escalável baseada em NestJS.
-- Cache em memória com Redis para alta performance.
+- Cache em memória das respostas da API.
 
 ## 🛠️ Tecnologias Utilizadas
 
 - **Backend:** Node.js, NestJS, TypeScript
 - **Banco de Dados:** PostgreSQL
-- **Cache:** Redis
+- **Cache:** em memória (`@nestjs/cache-manager`)
 - **Infraestrutura:** Docker e Docker Compose
 
 ## 🚀 Como Executar Localmente
 
-O ecossistema do projeto foi desenhado para rodar facilmente via **Docker**. Tudo o que a API precisa (banco de dados, cache e o próprio servidor Node) está configurado no `docker-compose.yml`. Não é necessário ter o Node.js instalado na sua máquina host.
+O ecossistema do projeto foi desenhado para rodar facilmente via **Docker**. Tudo o que a API precisa (banco de dados e o próprio servidor Node) está configurado no `docker-compose.yml`. Não é necessário ter o Node.js instalado na sua máquina host.
 
 ### Pré-requisitos
 - [Docker](https://www.docker.com/products/docker-desktop) instalado e rodando.
@@ -43,7 +42,7 @@ O ecossistema do projeto foi desenhado para rodar facilmente via **Docker**. Tud
    cd missahoje-api
    ```
 
-2. Suba todos os serviços (API, PostgreSQL e Redis) com um único comando:
+2. Suba todos os serviços (API e PostgreSQL) com um único comando:
    ```bash
    docker-compose up
    ```
