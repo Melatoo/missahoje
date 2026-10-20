@@ -1,14 +1,13 @@
 import { Client } from 'pg';
 import * as bcrypt from 'bcryptjs';
 import * as crypto from 'crypto';
+import { existsSync } from 'fs';
 
 const API_URL = 'http://localhost:3001';
 
 // Credenciais do admin vêm do ambiente ou do .env, nunca do código
-try {
+if (existsSync('.env')) {
     process.loadEnvFile();
-} catch {
-    // sem .env: usa só as variáveis já definidas no ambiente
 }
 
 const emailAdmin = process.env.ADMIN_EMAIL;
