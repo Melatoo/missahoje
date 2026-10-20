@@ -53,6 +53,20 @@ O ecossistema do projeto foi desenhado para rodar facilmente via **Docker**. Tud
 
 > **Dica:** O container da API utiliza volumes para mapear o seu código local. Ele roda em *watch mode*, portanto, qualquer alteração que você fizer nos arquivos da pasta `src/` refletirá imediatamente no container sem precisar reiniciá-lo!
 
+### Migrations do banco
+
+O schema é versionado em `missahoje-api/src/database/migrations` e a API aplica as migrations pendentes sozinha ao subir. O TypeORM não altera mais o schema a partir das entidades.
+
+Ao mudar uma entidade, gere a migration correspondente (com o banco rodando e as variáveis `DB_*` do `.env.example` definidas):
+
+```bash
+npm run migration:generate -- src/database/migrations/NomeDaMudanca
+npm run migration:run
+npm run migration:revert   # desfaz a última
+```
+
+> **Banco local antigo:** um banco criado antes das migrations já tem as tabelas, e a migration inicial falha ao tentar criá-las. Recrie o volume com `docker-compose down -v` e rode o seed de novo.
+
 ## 🤝 Como Contribuir
 
 Fique à vontade para sugerir melhorias, abrir issues relatando bugs ou enviar pull requests. Toda ajuda é bem-vinda para tornar as informações das paróquias mais acessíveis.

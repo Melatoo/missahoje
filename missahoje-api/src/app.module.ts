@@ -10,6 +10,7 @@ import { ComunidadesModule } from './comunidades/comunidades.module';
 import { AuthModule } from './auth/auth.module';
 import { CidadesModule } from './cidades/cidades.module';
 import { cacheConfig } from './common/config/cache.config';
+import { typeOrmOptions } from './database/typeorm.config';
 
 @Module({
     imports: [
@@ -25,14 +26,8 @@ import { cacheConfig } from './common/config/cache.config';
         TypeOrmModule.forRootAsync({
             imports: [ConfigModule],
             useFactory: (configService: ConfigService) => ({
-                type: 'postgres',
-                host: configService.get<string>('DB_HOST'),
-                port: configService.get<number>('DB_PORT'),
-                username: configService.get<string>('DB_USER'),
-                password: configService.get<string>('DB_PASS'),
-                database: configService.get<string>('DB_NAME'),
-                autoLoadEntities: true,
-                synchronize: true,
+                ...typeOrmOptions((nome) => configService.get<string>(nome)),
+                migrationsRun: true,
             }),
             inject: [ConfigService],
         }),
