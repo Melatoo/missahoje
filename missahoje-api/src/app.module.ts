@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CacheModule } from '@nestjs/cache-manager';
-import { redisStore } from 'cache-manager-redis-store';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { MissasModule } from './missas/missas.module';
 import { UsuariosModule } from './usuarios/usuarios.module';
@@ -10,6 +9,7 @@ import { ParoquiaModule } from './paroquias/paroquia.module';
 import { ComunidadesModule } from './comunidades/comunidades.module';
 import { AuthModule } from './auth/auth.module';
 import { CidadesModule } from './cidades/cidades.module';
+import { cacheConfig } from './common/config/cache.config';
 
 @Module({
     imports: [
@@ -36,16 +36,7 @@ import { CidadesModule } from './cidades/cidades.module';
             }),
             inject: [ConfigService],
         }),
-        CacheModule.registerAsync({
-            isGlobal: true,
-            imports: [ConfigModule],
-            useFactory: (configService: ConfigService) => ({
-                store: redisStore as any,
-                host: configService.get<string>('REDIS_HOST'),
-                port: configService.get<number>('REDIS_PORT'),
-            }),
-            inject: [ConfigService],
-        }),
+        CacheModule.register(cacheConfig),
         MissasModule,
         UsuariosModule,
         ParoquiaModule,
