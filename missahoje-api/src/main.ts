@@ -1,16 +1,19 @@
 import { NestFactory, Reflector } from '@nestjs/core';
 import { ValidationPipe, ClassSerializerInterceptor } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { AppModule } from './app.module';
 import helmet from 'helmet';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 import { SwaggerModule } from '@nestjs/swagger';
 import { createOpenApiDocument } from './openapi/document';
+import { corsOptions } from './common/config/cors.config';
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
 
     app.use(helmet());
-    app.enableCors();
+    const config = app.get(ConfigService);
+    app.enableCors(corsOptions((nome) => config.get<string>(nome)));
 
     app.useGlobalPipes(
         new ValidationPipe({
