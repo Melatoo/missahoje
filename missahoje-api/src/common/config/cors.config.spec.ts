@@ -15,6 +15,12 @@ describe('corsOptions', () => {
         });
     });
 
+    it('ignora a barra no final da origem', () => {
+        expect(corsOptions(() => 'https://missahoje.com.br/')).toEqual({
+            origin: ['https://missahoje.com.br'],
+        });
+    });
+
     it('aceita uma lista de origens separadas por vírgula', () => {
         expect(
             corsOptions(
