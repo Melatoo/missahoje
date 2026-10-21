@@ -1,7 +1,6 @@
 import { extname, join } from 'path';
 import { DataSourceOptions } from 'typeorm';
-
-export type LerVariavel = (nome: string) => string | undefined;
+import { LerVariavel } from '../common/config/ler-variavel';
 
 const extensao = extname(__filename);
 
