@@ -3,6 +3,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { Test } from '@nestjs/testing';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import {
+    SSR_CLIENT_IP_HEADER,
     SSR_TOKEN_HEADER,
     THROTTLE_LIMIT,
     throttlerOptions,
@@ -32,12 +33,18 @@ describe('throttlerOptions', () => {
         baseUrl = await app.getUrl();
     }
 
+    function requisitar(headers: Record<string, string> = {}) {
+        return fetch(`${baseUrl}/itens`, { headers }).then((r) => r.status);
+    }
+
     async function esgotarLimite(headers: Record<string, string> = {}) {
         for (let i = 0; i < THROTTLE_LIMIT; i++) {
-            const resposta = await fetch(`${baseUrl}/itens`, { headers });
-            expect(resposta.status).toBe(200);
+            expect(await requisitar(headers)).toBe(200);
         }
-        return fetch(`${baseUrl}/itens`, { headers });
+    }
+
+    function doServidor(ip: string, token = 'segredo') {
+        return { [SSR_TOKEN_HEADER]: token, [SSR_CLIENT_IP_HEADER]: ip };
     }
 
     afterEach(async () => {
@@ -47,32 +54,49 @@ describe('throttlerOptions', () => {
     it('responde 429 depois do limite de requisições por minuto', async () => {
         await iniciar();
 
-        const resposta = await esgotarLimite();
+        await esgotarLimite();
 
-        expect(resposta.status).toBe(429);
+        expect(await requisitar()).toBe(429);
     });
 
-    it('não limita quem envia o token do servidor do front', async () => {
+    it('conta pelo IP repassado quando o token do servidor confere', async () => {
         await iniciar('segredo');
 
-        const resposta = await esgotarLimite({ [SSR_TOKEN_HEADER]: 'segredo' });
+        await esgotarLimite(doServidor('203.0.113.1'));
 
-        expect(resposta.status).toBe(200);
+        expect(await requisitar(doServidor('203.0.113.1'))).toBe(429);
+        expect(await requisitar(doServidor('203.0.113.2'))).toBe(200);
     });
 
-    it('limita quem envia um token errado', async () => {
+    it('não separa o servidor do front de quem chama a API direto', async () => {
         await iniciar('segredo');
 
-        const resposta = await esgotarLimite({ [SSR_TOKEN_HEADER]: 'outro' });
+        await esgotarLimite(doServidor('203.0.113.1'));
 
-        expect(resposta.status).toBe(429);
+        expect(await requisitar()).toBe(200);
     });
 
-    it('ignora o header quando SSR_API_TOKEN não está configurado', async () => {
+    it('ignora o IP repassado com token errado', async () => {
+        await iniciar('segredo');
+
+        await esgotarLimite(doServidor('203.0.113.1', 'outro'));
+
+        expect(await requisitar(doServidor('203.0.113.2', 'outro'))).toBe(429);
+    });
+
+    it('ignora o IP repassado quando SSR_API_TOKEN não está configurado', async () => {
         await iniciar(undefined);
 
-        const resposta = await esgotarLimite({ [SSR_TOKEN_HEADER]: '' });
+        await esgotarLimite(doServidor('203.0.113.1', ''));
 
-        expect(resposta.status).toBe(429);
+        expect(await requisitar(doServidor('203.0.113.2', ''))).toBe(429);
+    });
+
+    it('ignora um IP repassado inválido', async () => {
+        await iniciar('segredo');
+
+        await esgotarLimite(doServidor('qualquer-coisa'));
+
+        expect(await requisitar(doServidor('outra-coisa'))).toBe(429);
     });
 });
