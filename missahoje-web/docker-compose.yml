@@ -17,5 +17,6 @@ services:
       - WATCHPACK_POLLING=true
       - NEXT_PUBLIC_API_URL=http://localhost:3001
       - SSR_API_URL=http://host.docker.internal:3001
+      - SSR_API_TOKEN=dev_ssr_token
     extra_hosts:
       - "host.docker.internal:host-gateway"

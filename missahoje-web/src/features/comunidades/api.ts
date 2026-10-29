@@ -11,6 +11,7 @@ export async function fetchComunidade(id: string): Promise<Comunidade | null> {
   // Mesmo limite do cliente axios: API travada não prende a renderização
   const response = await fetch(`${serverApiUrl()}/comunidades/${encodeURIComponent(id)}`, {
     signal: AbortSignal.timeout(10_000),
+    headers: process.env.SSR_API_TOKEN ? { 'x-ssr-token': process.env.SSR_API_TOKEN } : undefined,
   });
   if (response.status === 400 || response.status === 404) return null;
   if (!response.ok) throw new Error(`GET /comunidades/${id} respondeu ${response.status}`);
