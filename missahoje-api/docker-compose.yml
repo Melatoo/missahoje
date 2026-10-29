@@ -18,6 +18,7 @@ services:
       - DB_PASS=postgres
       - DB_NAME=missas_lavras
       - JWT_SECRET=super_secret_lavras
+      - SSR_API_TOKEN=dev_ssr_token
     depends_on:
       - db
 
